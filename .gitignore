@@ -1,14 +1,3 @@
 /.idea
 /public_html/assets
-/public_html/akcms/u/config/*.php
-/public_html/akcms/u/models/*.php
-/public_html/akcms/u/template/_trash/*.shtm
-/public_html/akcms/u/template/errors/*.shtm
-/public_html/akcms/u/template/pages/*.shtm
-/public_html/akcms/u/template/parts/*.shtm
-/public_html/akcms/u/themes
-/public_html/akcms/u/units/Pg/SubSecLst
-/public_html/akcms/u/units/Pg/SubSecLstT
-/public_html/akcms/u/units/Pg/*.php
-/public_html/akcms/u/units/*.php
-/public_html/akcms/u/*.php
+/public_html/akcms/u/*
