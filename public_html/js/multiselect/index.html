@@ -1,0 +1,389 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>Multiple Select List Filter (modal window version)</title>
+		<link rel="stylesheet" href="/js/multiselect/selectfilter.css">
+		<script type="text/javascript" src="/js/mootools-adm.js"></script>
+		<script type="text/javascript" src="/js/multiselect/multipleSelectFilter.js"></script>
+		<script>
+window.addEvent('domready',function() {	
+	(new multipleSelectFilter()).init($('cats'));
+	(new multipleSelectFilter()).init($('dogs'));
+});		
+		</script>
+		<style>
+			.hidden {display: none;}
+		</style>
+	</head>
+	<body>
+	<div id="wrapper">
+		<h1>Multiple Select List with Modal Window Filter</h1>
+		<table>
+			<tr>
+				<td>
+					<select id="cats" name="cats" title="Select a Cat" class="lists searchables"  multiple="multiple" size="10" multiple="multiple" tabindex="2">
+						<option value="abyssinian.html">Abyssinian</option>
+						<option value="amcurl.html">American Curl</option>
+						<option value="amshort.html" class="redundant">American Shorthair</option>
+						<option value="whatever">American Wirehair</option>
+						<option value="balinese.html">Balinese</option>
+						<option value="bengal.html">Bengal</option>
+						<option value="birman.html">Birman</option>
+						<option value="bombay.html" class="redundant">Bombay</option>
+						<option value="britishshort.html" class="redundant">British Shorthair</option>
+						<option value="burmese.html">Burmese</option>
+						<option value="burmilla.html">Burmilla</option>
+						<option value="chartreux.html">Chartreux</option>
+						<option value="chausie.html">Chausie</option>
+						<option value="whatever">Colorpoint Shorthair</option>
+						<option value="cornishrex.html">Cornish Rex</option>
+						<option value="devonrex.html">Devon Rex</option>
+						<option value="egyptmau.html">Egyptian Mau</option>
+						<option value="exotic.html">Exotic</option>
+						<option value="havana.html">Havana Brown</option>
+						<option value="himalayan.html">Himalayan</option>
+						<option value="japbobtail.html">Japanese Bobtail</option>
+						<option value="whatever">Javanese</option>
+						<option value="whatever">Korat</option>
+						<option value="mainecoon.html">Maine Coon</option>
+						<option value="whatever">Manx</option>
+						<option value="munchkin.html">Munchkin</option>
+						<option value="whatever">Norwegian Forest Cat</option>
+						<option value="ocicat.html">Ocicat</option>
+						<option value="whatever">Oriental</option>
+						<option value="persian.html">Persian</option>
+						<option value="pixiebob.html">Pixie-Bob</option>
+						<option value="ragdoll.html">Ragdoll</option>
+						<option value="whatever">Russian Blue</option>
+						<option value="whatever">Savannah</option>
+						<option value="whatever">Scottish Fold</option>
+						<option value="whatever">Selkirk Rex</option>
+						<option value="siamese.html">Siamese</option>
+						<option value="singapura.html">Singapura</option>
+						<option value="somali.html">Somali</option>
+						<option value="whatever">Sphynx</option>
+						<option value="tiffanie.html">Tiffanie</option>
+						<option value="tonkinese.html">Tonkinese</option>
+						<option value="whatever">Turkish Angora</option>
+						<option value="turkishvan.html">Turkish Van</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<select id="dogs" name="dogs" title="Select a Dog" class="lists searchables"  multiple="multiple" size="10" multiple="multiple" tabindex="2">
+						<option value="021" selected="selected">021 Spaniel (selected on load)</option>
+						<option value="2321">0332 moggly dog</option>
+						<option value="022">022 Labrador</option>
+						<option value="023">023 Mutt</option>
+						<option value="whatever">Affenpinscher</option>
+						<option value="whatever">Afghan Hound</option>
+						<option value="whatever">Airedale Terrier</option>
+						<option value="whatever">Akbash</option>
+						<option value="whatever">Akita</option>
+						<option value="whatever">Alapaha Blue Blood Bulldog</option>
+						<option value="whatever">Alaskan Klee Kai</option>
+						<option value="whatever">Alaskan Malamute</option>
+						<option value="whatever">American Bulldog</option>
+						<option value="whatever">American English Coonhound</option>
+						<option value="whatever">American Eskimo Dog</option>
+						<option value="whatever">American Foxhound</option>
+						<option value="whatever">American Hairless Terrier</option>
+						<option value="whatever">American Pit Bull Terrier</option>
+						<option value="whatever">American Staffordshire Terrier</option>
+						<option value="whatever">American Water Spaniel</option>
+						<option value="whatever">Anatolian Shepherd</option>
+						<option value="whatever">Appenzell Mountain Dog</option>
+						<option value="whatever">Argentine Dogo</option>
+						<option value="whatever">Aussiedoodle</option>
+						<option value="whatever">Australian Cattle Dog/Blue Heeler</option>
+						<option value="whatever">Australian Kelpie</option>
+						<option value="whatever">Australian Shepherd</option>
+						<option value="whatever">Australian Terrier</option>
+						<option value="whatever">Azawakh</option>
+						<option value="whatever">Basenji</option>
+						<option value="whatever">Basset Hound</option>
+						<option value="whatever">Beagle</option>
+						<option value="whatever">Beaglier</option>
+						<option value="whatever">Bearded Collie</option>
+						<option value="whatever">Beauceron</option>
+						<option value="whatever">Bedlington Terrier</option>
+						<option value="whatever">Belgian Malinois</option>
+						<option value="whatever">Belgian Sheepdog</option>
+						<option value="whatever">Belgian Shepherd Laekenois</option>
+						<option value="whatever">Belgian Shepherd Malinois</option>
+						<option value="whatever">Belgian Shepherd Tervuren </option>
+						<option value="whatever">Belgian Tervuren</option>
+						<option value="whatever">Bergamasco</option>
+						<option value="whatever">Berger Picard</option>
+						<option value="whatever">Bernese Mountain Dog</option>
+						<option value="whatever">Bichon Frise</option>
+						<option value="whatever">Bich-Poo - Bichpoo</option>
+						<option value="whatever">Black and Tan Coonhound</option>
+						<option value="whatever">Black Mouth Cur</option>
+						<option value="whatever">Black Russian Terrier</option>
+						<option value="whatever">Bloodhound</option>
+						<option value="whatever">Bluetick Coonhound</option>
+						<option value="whatever">Bolognese</option>
+						<option value="whatever">Border Collie</option>
+						<option value="whatever">Border Terrier</option>
+						<option value="whatever">Borzoi</option>
+						<option value="whatever">Boston Terrier</option>
+						<option value="whatever">Bouvier Des Flandres</option>
+						<option value="whatever">Boxer</option>
+						<option value="whatever">Boxerdoodle</option>
+						<option value="whatever">Boykin Spaniel</option>
+						<option value="whatever">Bracco Italiano</option>
+						<option value="whatever">Briard</option>
+						<option value="whatever">Briquet Griffon Vend&#233;en</option>
+						<option value="whatever">Brittany Spaniel</option>
+						<option value="whatever">Brussels Griffon</option>
+						<option value="whatever">Bull Terrier</option>
+						<option value="whatever">Bulldog</option>
+						<option value="whatever">Bullmastiff</option>
+						<option value="whatever">Cairn Terrier</option>
+						<option value="whatever">Cairnoodle</option>
+						<option value="whatever">Canaan Dog</option>
+						<option value="whatever">Cane Corso Mastiff</option>
+						<option value="whatever">Cao De Castro Laboreiro</option>
+						<option value="whatever">Carolina Dog</option>
+						<option value="whatever">Catahoula Leopard Dog</option>
+						<option value="whatever">Caucasian Mountain Dog</option>
+						<option value="whatever">Cavachon</option>
+						<option value="whatever">Cavalier King Charles Spaniel</option>
+						<option value="whatever">Cavapoo</option>
+						<option value="whatever">Central Asian Ovtcharka</option>
+						<option value="whatever">Cesky Terrier</option>
+						<option value="whatever">Chesapeake Bay Retriever</option>
+						<option value="whatever">Chihuahua</option>
+						<option value="whatever">Chinese Chongqing Dog</option>
+						<option value="whatever">Chinese Crested</option>
+						<option value="whatever">Chinese Foo Dog</option>
+						<option value="whatever">Chinese Shar-Pei</option>
+						<option value="whatever">Chinook</option>
+						<option value="whatever">Chi-Poo - Chipoo</option>
+						<option value="whatever">Chow Chow</option>
+						<option value="whatever">Cirneco dell Etna</option>
+						<option value="whatever">Clumber Spaniel</option>
+						<option value="whatever">Cockabichon</option>
+						<option value="whatever">Cockapoo</option>
+						<option value="whatever">Cocker Spaniel</option>
+						<option value="whatever">Collie</option>
+						<option value="whatever">Corgi</option>
+						<option value="whatever">Coton De Tulear</option>
+						<option value="whatever">Curly Coated Retriever</option>
+						<option value="whatever">Czechoslovakian Wolfdog</option>
+						<option value="whatever">Dachshund</option>
+						<option value="whatever">Dachshund, Mini</option>
+						<option value="whatever">Dachshund, Smooth</option>
+						<option value="whatever">Dachshund, Wire</option>
+						<option value="whatever">Dalmatian</option>
+						<option value="whatever">Dandi Dinmont Terrier</option>
+						<option value="whatever">Doberman Pinscher</option>
+						<option value="whatever">Dogo Argentino</option>
+						<option value="whatever">Dogue De Bordeaux</option>
+						<option value="whatever">Doodleman Pinscher</option>
+						<option value="whatever">Dutch Shepherd</option>
+						<option value="whatever">English Boodle</option>
+						<option value="whatever">English Bulldog</option>
+						<option value="whatever">English Cocker Spaniel</option>
+						<option value="whatever">English Coonhound</option>
+						<option value="whatever">English Pointer</option>
+						<option value="whatever">English Setter</option>
+						<option value="whatever">English Shepherd</option>
+						<option value="whatever">English Springer Spaniel</option>
+						<option value="whatever">English Toy Spaniel</option>
+						<option value="whatever">Entlebucher Mountain Dog</option>
+						<option value="whatever">Eska-Poo - Eskapoo</option>
+						<option value="whatever">Eskimo Dog</option>
+						<option value="whatever">Estrela Mountain Dog</option>
+						<option value="whatever">Field Spaniel</option>
+						<option value="whatever">Fila Brasileiro</option>
+						<option value="whatever">Finnish Lapphund</option>
+						<option value="whatever">Finnish Spitz</option>
+						<option value="whatever">Flat Coated Retriever</option>
+						<option value="whatever">Fox Terrier, Smooth</option>
+						<option value="whatever">Fox Terrier, Toy</option>
+						<option value="whatever">Fox Terrier, Wire</option>
+						<option value="whatever">French Bulldog</option>
+						<option value="whatever">German Coolie</option>
+						<option value="whatever">German Hovawart</option>
+						<option value="whatever">German Pinscher</option>
+						<option value="whatever">German Shepherd</option>
+						<option value="whatever">German Shorthaired Pointer</option>
+						<option value="whatever">German Wirehaired Pointer</option>
+						<option value="whatever">Glen of Imaal Terrier</option>
+						<option value="whatever">Goldador</option>
+						<option value="whatever">Golden Retriever</option>
+						<option value="whatever">Goldendoodle</option>
+						<option value="whatever">Gordon Setter</option>
+						<option value="whatever">Great Dane</option>
+						<option value="whatever">Great Pyrenees</option>
+						<option value="whatever">Greater Swiss Mountain Dog</option>
+						<option value="whatever">Greyhound</option>
+						<option value="whatever">Harrier</option>
+						<option value="whatever">Havanese</option>
+						<option value="whatever">Hovawart</option>
+						<option value="whatever">Hunt Terrier</option>
+						<option value="whatever">Ibizan Hound</option>
+						<option value="whatever">Iceland Sheepdog</option>
+						<option value="whatever">Illyrian Sheepdog</option>
+						<option value="whatever">Irish Setter</option>
+						<option value="whatever">Irish Terrier</option>
+						<option value="whatever">Irish Water Spaniel</option>
+						<option value="whatever">Irish Wolfhound</option>
+						<option value="whatever">Italian Greyhound</option>
+						<option value="whatever">Italian Spinone</option>
+						<option value="whatever">Jack Russell Terrier</option>
+						<option value="whatever">Japanese Chin</option>
+						<option value="whatever">Jindo</option>
+						<option value="whatever">Kai Dog</option>
+						<option value="whatever">Karelian Bear Dog</option>
+						<option value="whatever">Keeshond</option>
+						<option value="whatever">Kerry Blue Terrier</option>
+						<option value="whatever">Kishu Ken</option>
+						<option value="whatever">Komondor</option>
+						<option value="whatever">Kooikerhondje</option>
+						<option value="whatever">Kuvasz</option>
+						<option value="whatever">Labradoodle</option>
+						<option value="whatever">Labrador Retriever</option>
+						<option value="whatever">Lagotto Romagnolo</option>
+						<option value="whatever">Lakeland Terrier</option>
+						<option value="whatever">Lancashire Heeler</option>
+						<option value="whatever">Leonberger</option>
+						<option value="whatever">Lhasa Apso</option>
+						<option value="whatever">Lhasapoo</option>
+						<option value="whatever">Lowchen</option>
+						<option value="whatever">Mal-Shi - Malshi</option>
+						<option value="whatever">Maltese</option>
+						<option value="whatever">Malti Pom - Maltipom</option>
+						<option value="whatever">Malti Poo - Maltipoo</option>
+						<option value="whatever">Manchester Terrier</option>
+						<option value="whatever">Manchester Terrier, Toy</option>
+						<option value="whatever">Maremma Sheepdog</option>
+						<option value="whatever">Mastiff</option>
+						<option value="whatever">McNab</option>
+						<option value="whatever">Mexican Hairless Dog</option>
+						<option value="whatever">Miniature Australian Shepherd</option>
+						<option value="whatever">Miniature Bull Terrier</option>
+						<option value="whatever">Miniature Pinscher</option>
+						<option value="whatever">Mixed/Other</option>
+						<option value="whatever">Morkie / Yorktese</option>
+						<option value="whatever">Mountain Cur</option>
+						<option value="whatever">Mudi</option>
+						<option value="whatever">Munsterlander</option>
+						<option value="whatever">Neapolitan Mastiff</option>
+						<option value="whatever">New Guinea Singing Dog</option>
+						<option value="whatever">Newfoundland</option>
+						<option value="whatever">Norfolk Terrier</option>
+						<option value="whatever">Norwegian Buhund</option>
+						<option value="whatever">Norwegian Elkhound</option>
+						<option value="whatever">Norwegian Lundehund</option>
+						<option value="whatever">Norwich Terrier</option>
+						<option value="whatever">Nova Scotia Duck Tolling Retriever</option>
+						<option value="whatever">Olde English Bulldogge</option>
+						<option value="whatever">Olde English Sheepdog</option>
+						<option value="whatever">Otterhound</option>
+						<option value="whatever">Papillon</option>
+						<option value="whatever">Papoo</option>
+						<option value="whatever">Parson Russell Terrier</option>
+						<option value="whatever">Patterdale Terrier (Fell Terrier)</option>
+						<option value="whatever">Peek-A-Pom</option>
+						<option value="whatever">Pekepoo</option>
+						<option value="whatever">Pekingese</option>
+						<option value="whatever">Peruvian Inca Orchid</option>
+						<option value="whatever">Petite Basset Griffon Vendeen</option>
+						<option value="whatever">Pharaoh Hound</option>
+						<option value="whatever">Plott Hound</option>
+						<option value="whatever">Podengo Portugueso</option>
+						<option value="whatever">Pointer</option>
+						<option value="whatever">Polish Lowland Sheepdog</option>
+						<option value="whatever">Polish Owczarek Nizinny</option>
+						<option value="whatever">Polish Tatra Sheepdog</option>
+						<option value="whatever">Poma-Poo - Pomapoo</option>
+						<option value="whatever">Pomchi</option>
+						<option value="whatever">Pomeranian</option>
+						<option value="whatever">Poodle, Miniature</option>
+						<option value="whatever">Poodle, Standard</option>
+						<option value="whatever">Poodle, Toy</option>
+						<option value="whatever">Portuguese Podengo</option>
+						<option value="whatever">Portuguese Pointer</option>
+						<option value="whatever">Portuguese Water Dog</option>
+						<option value="whatever">Prague Ratters</option>
+						<option value="whatever">Presa Canario</option>
+						<option value="whatever">Pug</option>
+						<option value="whatever">Pugapoo</option>
+						<option value="whatever">Puggle</option>
+						<option value="whatever">Puli</option>
+						<option value="whatever">Pumi</option>
+						<option value="whatever">Pyrenean Mastiff</option>
+						<option value="whatever">Pyrenean Shepherd</option>
+						<option value="whatever">Queensland Heeler</option>
+						<option value="whatever">Rafeiro do Alentejo</option>
+						<option value="whatever">Rat Terrier</option>
+						<option value="whatever">Redbone Coonhound</option>
+						<option value="whatever">Rhodesian Ridgeback</option>
+						<option value="whatever">Rottweiler</option>
+						<option value="whatever">Russian Wolfhound</option>
+						<option value="whatever">Saint Berdoodle - St. Berdoodle</option>
+						<option value="whatever">Saint Bernard - St. Bernard</option>
+						<option value="whatever">Saluki</option>
+						<option value="whatever">Samoyed</option>
+						<option value="whatever">Schapendoes</option>
+						<option value="whatever">Schipperke</option>
+						<option value="whatever">Schnauzer, Giant</option>
+						<option value="whatever">Schnauzer, Miniature</option>
+						<option value="whatever">Schnauzer, Standard</option>
+						<option value="whatever">Schnoodle</option>
+						<option value="whatever">Scottish Deerhound</option>
+						<option value="whatever">Scottish Terrier</option>
+						<option value="whatever">Sealyham Terrier</option>
+						<option value="whatever">Shepadoodle</option>
+						<option value="whatever">Shetland Sheepdog - Sheltie</option>
+						<option value="whatever">Shiba Inu</option>
+						<option value="whatever">Shih Tzu</option>
+						<option value="whatever">Shih-Poo - Shihpoo</option>
+						<option value="whatever">Shiloh Shepherd</option>
+						<option value="whatever">Siberian Husky</option>
+						<option value="whatever">Silky Terrier</option>
+						<option value="whatever">Skye Terrier</option>
+						<option value="whatever">Sloughi</option>
+						<option value="whatever">Soft Coated Wheaten Terrier</option>
+						<option value="whatever">South African Boerboel</option>
+						<option value="whatever">South Russian Ovcharka</option>
+						<option value="whatever">Spanish Water Dog</option>
+						<option value="whatever">Spinone Italiano</option>
+						<option value="whatever">Stabyhoun</option>
+						<option value="whatever">Staffordshire Bull Terrier</option>
+						<option value="whatever">Sussex Spaniel</option>
+						<option value="whatever">Swedish Vallhund</option>
+						<option value="whatever">Thai Ridgeback</option>
+						<option value="whatever">Tibetan Mastiff</option>
+						<option value="whatever">Tibetan Spaniel</option>
+						<option value="whatever">Tibetan Terrier</option>
+						<option value="whatever">Tosa Inu</option>
+						<option value="whatever">Treeing Tennessee Brindle</option>
+						<option value="whatever">Treeing Walker Coonhound</option>
+						<option value="whatever">Vizsla</option>
+						<option value="whatever">Weimaraner</option>
+						<option value="whatever">Weimardoodle</option>
+						<option value="whatever">Welsh Corgi, Cardigan</option>
+						<option value="whatever">Welsh Corgi, Pembroke</option>
+						<option value="whatever">Welsh Springer Spaniel</option>
+						<option value="whatever">Welsh Terrier</option>
+						<option value="whatever">West Highland White Terrier - Westie</option>
+						<option value="whatever">Westiepoo</option>
+						<option value="whatever">Whippet</option>
+						<option value="whatever">Whoodles</option>
+						<option value="whatever">Wirehaired Pointing Griffon</option>
+						<option value="whatever">Wolf Hybrid</option>
+						<option value="whatever">Xoloitzcuintli</option>
+						<option value="whatever">Yorkiepoo - Yorkie Poo</option>
+						<option value="whatever">Yorkshire Terrier - Yorkie</option>
+					</select>
+				</td>
+			</tr>
+		</table>
+	</div>
+	</body>
+</html>

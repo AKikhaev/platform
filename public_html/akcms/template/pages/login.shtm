@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width">
+	<meta name="robots" content="noindex" />
+	<title>{#title#}</title>
+	<style type="text/css">
+	html,body {
+		height:100%;
+		margin:0;
+		padding:0;
+	}
+	#tbl {
+		vertical-align: middle;
+		width:100%;
+		padding-top: 150px;
+		text-align: center;
+	}
+	#qrauth {
+		font-size: 10px;
+		cursor: pointer;
+		text-decoration: none;
+		background: none;
+		border: none;
+	}
+	#qrdiv {
+		margin: 0 auto 0;
+		width: 400px;
+		text-align:left;
+		font-size: 12px;
+	}
+	#qrdiv span{
+		font-size: 13px;
+		font-weight:bold;
+	}
+	.hidden {
+		display: none;
+	}
+	</style>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"></script>
+	<script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-38732859-1']);
+	  _gaq.push(['_trackPageview']);
+	  (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
+</head>
+<body>
+	
+	<div id="tbl"><form method="POST">
+		<table align="center">
+		<tr><td>Имя:</td><td><input type="text" name="lval" size="15"></td></tr>
+		<tr><td>Пароль:</td><td><input type="password" name="pval" size="15"></td></tr>
+		<tr><td></td><td><input type="submit" name="do" value="Enter"><input id="qrauth" type="button" title="Авторизация с помощью QR-кода" value="[QR-вход]"></td></tr>
+		<tr><td colspan=2 align="center" style="color:red;">{#msg#}</td></tr>
+		</table><input type="hidden" id="cvil" name="cval" value="571"></form>
+		<div id="qrdiv" class="hidden">
+			<span>QR-авторизация</span>
+			<p>Используйте авторизацию с помощью QR-кода, если вы находитесь за чужим компьютером.<p>
+			<ul>
+			<li>Просканируйте QR-код соответствующей программой на вашем мобильном устройстве</li>
+			<li>Авторизуйтесь на странице, которую откроет программа в вашем мобильном браузере</li>
+			<li>После авторизации в мобильном браузере <a id="ar" href="#">обновите</a> эту страницу и вы будете автоматически авторизованы</li>
+			</ul>
+			<span id="qr"></span>
+		</div>
+	</div>
+	<script>
+        var ax='{#cval#}',c='';
+        document.getElementById('cvil').value = ax.substring(4,9)+ax.substring(1,3);
+		window.addEvent('domready', function() {
+			$('qrdiv').fade('hide').removeClass('hidden');
+			$('qrauth').addEvent('click',function(){
+				new Request.JSON({url:'/ajx/_mng', onComplete:function (c) {
+					$('qrdiv').fade('in');$('qr').empty().grab(new Element('img',{'src':'/img/qrauth/?c='+c}));
+					$('ar').addEvent('click',function(e){e.stop();window.location.reload();});
+					$('tbl').set('morph', {duration: 'long', transition: 'quart:out'}).morph({'padding-top': 50});
+					(function(){$('qrdiv').fade('out');$('tbl').morph({'padding-top': 150});}).delay(500000);
+				}}).post();
+			});
+		});
+	</script>
+</body>
+</html>
+	

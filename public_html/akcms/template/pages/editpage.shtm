@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>{#title#}</title>
+    <link href="/s/css/style_u.css" rel="stylesheet" type="text/css"/>
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link href="/s/css/style_adm.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="/js/mootools-adm.js"></script>
+	{#jses#}
+	<script type="text/javascript" src="/js/pg_debug.js"></script>
+	<script type="text/javascript" src="/js/pg_units.js"></script>
+</head>
+
+<body>
+<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr>
+	<td><img src="/img/e.gif" width="1" height="1" alt="" /></td>
+	<td width="1050" class="wrap cp">
+		<div class="scpmb">
+			<div class="scpb">
+				<table cellpadding=0 cellspacing=0 border=0><tr>
+					<td class="mnu">
+						<div id="mnu">{#menuedit#}</div>
+					</td>
+					<td class="cpm">
+						<div class="cpmh"><h1>{#head#}</h1></div>
+						<div class="cpmb">
+							<div id="pgcontent" class="pgcontent">{#content#}</div><div class="clearfix"></div>
+							<div id='u_0' class="unitplace">{#pgunit_0#}</div>
+                            <div id='u_1' class="unitplace">{#pgunit_1#}</div>
+                            <div id='u_2' class="unitplace">{#pgunit_2#}</div>
+							<div id='u_3' class="unitplace">{#pgunit_3#}</div>
+                        </div>
+					</td>
+				</tr></table>
+
+				<div class="btm">
+					<div class="btmln">Система управления сайтом [ITteka.ru]</div>
+                    <div class="clrbth"></div>
+				</div>
+			</div>
+		</div>
+	</td>
+	<td><img src="/img/e.gif" width="1" height="1" alt="" /></td>
+</tr></table>
+
+</body>
+</html><!-- {#worktime#} -->

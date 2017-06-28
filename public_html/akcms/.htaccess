@@ -1,0 +1,6 @@
+Order Deny,Allow
+Deny from all
+<Files ~ "(getimage.php|gzip.php|minJsCss.php)">
+    Order Deny,Allow
+    Allow from all
+</Files>

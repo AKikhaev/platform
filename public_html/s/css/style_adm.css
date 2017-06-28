@@ -1,0 +1,248 @@
+@charset "utf-8";
+
+body,td,th {
+    font-family: Tahoma;
+    font-size: 12px;
+    color: #343538;
+}
+body {
+    background-color: #fff;
+    margin: 0px;
+    margin-top: 22px;
+}
+a:link {
+    color: #0b7bad;
+    text-decoration: none;
+}
+a:visited {
+    text-decoration: none;
+    color: #0b7bad;
+}
+a:hover {
+    text-decoration: underline;
+    color: #0b7bad;
+}
+a:active {
+    text-decoration: none;
+    color: #0b7bad;
+}
+h1 {
+    font-size: 14px;
+}
+h2 {
+    font-size: 12px;
+}
+h3 {
+    font-size: 12px;
+}
+h4 {
+    font-size: 12px;
+}
+h5 {
+    font-size: 12px;
+}
+h6 {
+    font-size: 12px;
+}
+.wrap {
+    min-height: 1000px;
+}
+
+/* main page */
+
+.cp {
+    min-width: 200px;
+    text-align: left;
+    vertical-align: top;
+}
+
+/*********************** mnu *********************/
+
+.mnu {
+    /*	padding: 0 3px 0 27px;*/
+    min-width: 250px;
+    /*float: left;*/
+    vertical-align: top;
+	background: url(/img/adm/adm_sm.png) right top repeat-y;
+}
+#mnu {
+	padding-top: 8px;
+	padding-left: 8px;
+}
+.mnu_ul,.mnu_li,.mnu_li_c,.mnu_lii,.mnu_lii_c {
+    list-style:none;
+    margin:0; padding:0;
+    list-style-type: none;
+}
+
+.mnu_ul ul {
+	padding-left: 0px;
+}
+
+.mnu_li {
+    padding:5px 10px 5px 21px;
+    background-image: url(/img/adm/sectsignm.png);
+    background-repeat: no-repeat;
+    background-position: left 5px;
+    font-family: Arial;
+    font-weight:bold;
+    font-size: 12px;
+    /*text-transform: uppercase;*/
+}
+.mnu_li_c {
+    padding:13px 10px 13px 26px;
+    background-image: url(/img/adm/sectsigns.gif);
+    background-repeat: no-repeat;
+    background-position: left 13px;
+    font-family: Arial;
+    font-weight:bold;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+.mnu_lii {
+    /*	margin: 7px 0 0 -40px;*/
+    padding:2px 5px 6px 20px;
+    background-image: url(/img/adm/sectsignm.png);
+    background-repeat: no-repeat;
+    background-position: left 3px;
+    font-family: Arial;
+    font-weight:bold;
+    font-size: 12px;
+    text-transform:none;
+}
+.mnu_lii_c {
+    /*	margin: 7px 0 0 -40px;*/
+    padding:2px 5px 6px 20px;
+    background-image: url(/img/adm/sectsigns.gif);
+    background-repeat: no-repeat;
+    background-position: left 3px;
+    font-family: Arial;
+    font-weight:bold;
+    font-size: 12px;
+}
+a.mnu_curr, a.mnu_curr:link, a.mnu_curr:visited, a.mnu_curr:hover, a.mnu_curr:active {
+    color: #c22235;
+    text-decoration: none;
+    font-weight: bold;
+}
+a.mnu_curr:hover, a.mnu_curr:active {
+    text-decoration: underline;
+}
+a.mnu_hddn, a.mnu_hddn:link, a.mnu_hddn:visited, a.mnu_hddn:hover, a.mnu_hddn:active {
+    color: #eba7a0;
+    text-decoration: none;
+    font-weight: bold;
+}
+a.mnu_hddn:hover, a.mnu_hddn:active {
+    text-decoration: underline;
+}
+.mnu_lii_l {
+    padding-bottom: 0;
+}
+.mnu_hc0 {
+	padding-left: 6px;
+	background: url(/img/adm/mnu_hc0.gif) left 2px no-repeat
+}
+.mnu_hc2 {
+	padding-left: 6px;
+	background: url(/img/adm/mnu_hc2.gif) left 2px no-repeat
+}
+.mnu_hc3 {
+	padding-left: 6px;
+	background: url(/img/adm/mnu_hc3.gif) left 2px no-repeat
+}
+/*************************************************/
+
+.cpm {
+    padding:0; margin: 0;
+    /*margin-left: 321px;*/
+    vertical-align: top;
+	min-width: 100px;
+    width: 99%;
+}
+.cpmh {
+    padding:12px 0 0 26px;
+    background-image: url(/img/adm/sectsignm.png);
+    background-repeat: no-repeat;
+    background-position: left 13px;
+    color: #0b7bad;
+    font-family: Arial;
+    font-weight:bold;
+    font-size: 15px;
+}
+.cpmh h1 {
+    margin: 0; padding: 0;
+}
+.cpmb {
+    padding-left: 26px;
+}
+
+.txtblnk {
+    text-align: right;
+    color: #c1233b;
+    font-weight: bold;
+}
+.txtblnk a, .txtblnk a:link, .txtblnk a:visited, .txtblnk a:hover, .txtblnk a:active {
+    color: #c1233b;
+    text-decoration: underline;
+}
+.txtblnk a:hover, .txtblnk a:active {
+    text-decoration: none;
+}
+
+
+
+.mnwsb {
+    padding: 10px 0 10px 26px;
+}
+.nwsb {
+    padding-left: 103px;
+    padding-right: 4px;
+    min-height: 103px;
+    height: auto !important;
+    height: 103px;
+    background: left top no-repeat;
+}
+.nwsb_i {
+    border: 0;
+    padding: 0 18px 10px 0;
+    float: left;
+}
+.nwsb_d {
+    color: #a7a7a7;
+    font-size: 11px;
+}
+.nwsb_h a, .nwsb_h a:link, .nwsb_h a:visited, .nwsb_h a:hover, .nwsb_h a:active {
+    color: #c1233b;
+    text-decoration: underline;
+    font-weight: bold;
+}
+.nwsb_h a:hover, .nwsb_h a:active {
+    text-decoration: none;
+}
+.nwsb_s p {
+    margin: 0; padding: 0;
+}
+.arr_red {
+    width: 8px;
+    height: 7px;
+    background-image:url(/img/adm/arw_red.gif);
+    background-repeat: no-repeat;
+    background-position: left bottom;
+}
+
+.btm {
+    padding-top: 0px;
+}
+.btmln {
+    border-top: 1px solid #c7c7c7;
+    margin: 20px 0px 0 0px;
+    padding-bottom: 40px;
+    height:1px;
+}
+
+
+.scpb {
+    padding: 0px 0 10px;
+    vertical-align: top;
+}

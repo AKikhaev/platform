@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>Kubado browser :: Загрузка файлов</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <script language="javascript" type="text/javascript" src="/js/tiny_mce/tiny_mce_popup.js"></script>
+        <link rel="stylesheet" type="text/css" media="all" href="/js/tiny_mce/themes/advanced/skins/default/dialog.css" />
+        <link rel="stylesheet" type="text/css" media="all" href="/js/tiny_mce/plugins/tinybrowser/css/style_tinybrowser.css" />
+        <!-- plupapload -->
+        <link rel="stylesheet" href="/js/plupload/jquery.plupload.queue/css/jquery.plupload.queue.css" type="text/css" media="screen" />
+        <script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+		<script type="text/javascript" src="/js/plupload/plupload.full.js"></script>
+		<script type="text/javascript" src="/js/plupload/i18n/ru.js"></script>
+		<script type="text/javascript" src="/js/plupload/jquery.plupload.queue/jquery.plupload.queue.js"></script>
+
+	</head>
+    <body>
+        <script type="text/javascript">
+			var str = new String(document.location);
+			postfix = str.substr(str.indexOf('?')+1);
+			
+			function getURLParameter(name) {
+				return decodeURI(
+					(RegExp('(&|\\?)'+name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[2]
+				);
+			};
+			
+			$(function() {
+				var filters = (getURLParameter('type')=='image')?[{title : "Изображения", extensions : "jpg,gif,png"}]:[];
+				$('#uploader').pluploadQueue({
+					runtimes : 'gears,html5,flash,silverlight,browserplus,html4',
+					browse_button : 'pickfiles',
+					multipart : true,
+					multipart_params: {'url': getURLParameter('url'),'type':getURLParameter('type')},
+					chunk_size : '500kb',
+					max_file_size : '900mb',
+					url : '/ajx/'+getURLParameter('url')+'_fileupl',
+					flash_swf_url : '/js/plupload/plupload.flash.swf',
+					silverlight_xap_url : '/js/plupload/plupload.silverlight.xap',
+					filters : filters
+				});
+			});			
+		</script>
+        <div class="tabs">
+            <ul>
+                <li id="browse_tab"><span><script type="text/javascript">document.write('<a href="/js/plupload/_b.html?'+postfix+'">');</script>Обзор</a></span></li>
+                <li id="upload_tab" class="current"><span><script type="text/javascript">document.write('<a href="/js/plupload/_u.html?'+postfix+'">');</script>Загрузить</a></span></li>
+        </div>
+        <div class="panel_wrapper">
+            <div id="general_panel" class="panel currentmod">
+                <div class="container">
+                    <form id="submit-form" method="post" action="/mce/file/dump">
+                        <h4>Загрузка файлов</h4>
+                        <div id="uploader">
+                            <style>
+                            #browser-upgrade-box .upgrade-message, #browser-upgrade-box .browser-links {
+                                color: black;
+                                font-size: 14px;
+                                line-height: 16px;
+                                margin-bottom: 2em;
+                                text-align: center;
+                            }
+                            #browser-upgrade-box .browser-link img {
+                                background-image: url("//s.ytimg.com/yt/img/browsers-vflEIu6dD.jpg");
+                                height: 50px;
+                                margin-right: 5px;
+                                width: 145px;
+                                border: none;
+                            }
+                            #browser-upgrade-box .ie8-link {
+                                background-position: 0 0;
+                                border: none;
+                            }
+                            #browser-upgrade-box .firefox-link {
+                                background-position: 0 -50px;
+                                border: none;
+                            }
+                            #browser-upgrade-box .chrome-link {
+                                background-position: 0 -100px;
+                                border: none;
+                            }
+                            #browser-upgrade-box .safari-link {
+                                background-position: 0 -150px;
+                                border: none;
+                            }
+                            #browser-upgrade-box .opera-link {
+                                background-position: 0 -200px;
+                                border: none;
+                            }      
+                            </style>
+                            <div id="alerts">  
+                              
+
+                              <div id="browser-upgrade-outer-box"><style>
+                                  
+                              </style>
+                                <div class="yt-rounded" id="browser-upgrade-inner-box">
+                                  <div class="yt-alert yt-alert-warn yt-rounded "><img alt="Значок оповещения" class="icon master-sprite" src="//s.ytimg.com/yt/img/pixel-vfl3z5WfW.gif"><div class="yt-alert-content">            <div id="browser-upgrade-box">
+                                  <p class="upgrade-message">
+                                    <strong class="nobr">Ваш браузер больше не поддерживается.</strong><br>
+                                    <span class="nobr">Установите современную версию браузера.</span>
+                                  </p>
+                                  <p class="browser-links">
+
+                                    <a onmousedown="yt.tracking.track('browserupgrade', 'browser=firefox');" class="browser-link" href="http://www.mozilla.com/?from=sfx&amp;uid=267821&amp;t=449">
+                                      <img class="firefox-link" src="//s.ytimg.com/yt/img/pixel-vfl3z5WfW.gif">
+                                    </a>
+
+                                    <a onmousedown="yt.tracking.track('browserupgrade', 'browser=chrome');" class="browser-link" href="http://www.google.com/chrome/index.html?brand=CHNY&amp;utm_campaign=en&amp;utm_source=en-et-youtube&amp;utm_medium=et">
+                                      <img class="chrome-link" src="//s.ytimg.com/yt/img/pixel-vfl3z5WfW.gif">
+                                    </a>
+
+                                    <a onmousedown="yt.tracking.track('browserupgrade', 'browser=safari');" class="browser-link" href="http://www.apple.com/safari/">
+                                      <img class="safari-link" src="//s.ytimg.com/yt/img/pixel-vfl3z5WfW.gif">
+                                    </a>
+
+                                    <a onmousedown="yt.tracking.track('browserupgrade', 'browser=opera');" class="browser-link" href="http://www.opera.com/browser/">
+                                      <img class="opera-link" src="//s.ytimg.com/yt/img/pixel-vfl3z5WfW.gif">
+                                    </a>
+                                  </p>
+                                </div>
+
+                            </div><button class="close master-sprite" onclick="_hidediv(this.parentNode);yt.tracking.track('browserupgrade', 'continueToVideo'); yt.net.cookies.set('hideBrowserUpgradeBox', true, 604800); return false;" type="button">закрыть</button></div>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>

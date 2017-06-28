@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>{#title#}</title>
+	{#gajs#}
+	
+	<!-- For Modern Browsers -->
+	<link rel="shortcut icon" href="/cab/img/favicons/favicon.png">
+	<!-- For everything else -->
+	<link rel="shortcut icon" href="/cab/img/favicons/favicon.ico">
+
+	<!-- iOS web-app metas -->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+	<!-- iPhone ICON -->
+	<link rel="apple-touch-icon" href="/cab/img/favicons/apple-touch-icon.png" sizes="57x57">
+	<!-- iPad ICON -->
+	<link rel="apple-touch-icon" href="/cab/img/favicons/apple-touch-icon-ipad.png" sizes="72x72">
+	<!-- iPhone (Retina) ICON -->
+	<link rel="apple-touch-icon" href="/cab/img/favicons/apple-touch-icon-retina.png" sizes="114x114">
+	<!-- iPad (Retina) ICON -->
+	<link rel="apple-touch-icon" href="/cab/img/favicons/apple-touch-icon-ipad-retina.png" sizes="144x144">
+
+	<!-- iPhone SPLASHSCREEN (320x460) -->
+	<link rel="apple-touch-startup-image" href="/cab/img/splash/iphone.png" media="(device-width: 320px)">
+	<!-- iPhone (Retina) SPLASHSCREEN (640x960) -->
+	<link rel="apple-touch-startup-image" href="/cab/img/splash/iphone-retina.png" media="(device-width: 320px) and (-webkit-device-pixel-ratio: 2)">
+	<!-- iPhone 5 SPLASHSCREEN (640×1096) -->
+	<link rel="apple-touch-startup-image" href="/cab/img/splash/iphone5.png" media="(device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
+	<!-- iPad (portrait) SPLASHSCREEN (748x1024) -->
+	<link rel="apple-touch-startup-image" href="/cab/img/splash/ipad-portrait.png" media="(device-width: 768px) and (orientation: portrait)">
+	<!-- iPad (landscape) SPLASHSCREEN (768x1004) -->
+	<link rel="apple-touch-startup-image" href="/cab/img/splash/ipad-landscape.png" media="(device-width: 768px) and (orientation: landscape)">
+	<!-- iPad (Retina, portrait) SPLASHSCREEN (2048x1496) -->
+	<link rel="apple-touch-startup-image" href="/cab/img/splash/ipad-portrait-retina.png" media="(device-width: 1536px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 2)">
+	<!-- iPad (Retina, landscape) SPLASHSCREEN (1536x2008) -->
+	<link rel="apple-touch-startup-image" href="/cab/img/splash/ipad-landscape-retina.png" media="(device-width: 1536px)  and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 2)">	
+</head>
+<body>
+Произошла ошибка. Наша команда уже работает над решением проблемы,<br/>
+но мы все равно будем Вам признательны если вы расскажите нам о том, как<br/>
+Вы попали на эту страницу. Пожалуйста, заполните форму на <a href="/support/">этой</a> странице.
+</body></html><!--{#worktime#}-{#reason#}->

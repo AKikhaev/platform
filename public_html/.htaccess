@@ -1,0 +1,42 @@
+php_flag	display_errors		on
+php_value	error_reporting		2047
+php_flag	magic_quotes_gpc	off
+#AddHandler php5-script			.php
+
+#AuthName "Restricted" 
+#AuthType Basic 
+#AuthUserFile /home/p/parablru/georghram.ru/.htpasswd 
+#Require valid-user
+
+#ExpiresActive On
+#ExpiresByType image/x-icon "access plus 1 month"
+
+<FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|swf|js|css|JPG)$">
+	Header set Cache-Control "public, max-age=604800"
+	ExpiresDefault "access plus 1 month" 
+	#Header unset ETag
+</FilesMatch>
+
+<FilesMatch "\.(js|css)$">
+	Header append Vary: Accept-Encoding
+</FilesMatch>
+
+RewriteEngine on
+
+RewriteCond %{REQUEST_URI}/ ^/(js|css)/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule . akcms/minJsCss.php [L]
+
+#RewriteCond %{REQUEST_URI}/ ^/(js|css)/
+#RewriteCond %{REQUEST_FILENAME} -f
+#RewriteRule . akcms/gzip.php [L]
+
+RewriteCond %{REQUEST_URI}/ ^/img/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . akcms/getimage.php [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . index.php [L]
+

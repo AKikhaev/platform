@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>Kubado browser :: Загрузка файлов</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <script language="javascript" type="text/javascript" src="/js/tiny_mce/tiny_mce_popup.js"></script>
+        <link rel="stylesheet" type="text/css" media="all" href="/js/tiny_mce/themes/advanced/skins/default/dialog.css" />
+        <link rel="stylesheet" type="text/css" media="all" href="/js/tiny_mce/plugins/tinybrowser/css/style_tinybrowser.css" />
+        <!-- plupapload -->
+        <link rel="stylesheet" href="/js/plupload/jquery.plupload.queue/css/jquery.plupload.queue.css" type="text/css" media="screen" />
+        <script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+		<script type="text/javascript" src="/js/plupload/plupload.full.js"></script>
+		<script type="text/javascript" src="/js/plupload/i18n/ru.js"></script>
+		<script type="text/javascript" src="/js/plupload/jquery.plupload.queue/jquery.plupload.queue.js"></script>
+	</head>
+    <body>
+        <script type="text/javascript">
+			var str = new String(document.location);
+			postfix = str.substr(str.indexOf('?')+1);
+			
+			function getURLParameter(name) {
+				return decodeURI(
+					(RegExp('(&|\\?)'+name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[2]
+				);
+			};
+			
+			var FileBrowserDialogue = {
+				init : function () {
+					// Here goes your code for setting your custom things onLoad.
+				},
+				mySubmit : function (v) {
+						var URL = v.url;
+					var win = tinyMCEPopup.getWindowArg("window");			
+					// insert information now
+					win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = URL;			
+					// for image browsers: update image dimensions
+					  if (typeof(win.ImageDialog) != "undefined" && document.URL.indexOf('type=image') != -1)
+						  {
+							if (win.ImageDialog.getImageData) win.ImageDialog.getImageData();
+							if (win.ImageDialog.showPreviewImage) win.ImageDialog.showPreviewImage(URL);
+						  }			
+					// close popup window
+					tinyMCEPopup.close();
+				}
+			}
+			//tinyMCEPopup.onInit.add(FileBrowserDialogue.init, FileBrowserDialogue);
+
+			function selectURL(url)
+			{
+				FileBrowserDialogue.mySubmit({url:url});
+			}
+			
+			function removeFile(filename,a) {
+				if (confirm('Удалить '+(getURLParameter('type')=='image'?'изображение ':'файл ')+filename+'?'))
+					jQuery.ajax({
+						url: '/ajx/'+getURLParameter('url')+'_filermv',
+						type: "POST",dataType : 'json',
+						data: {'type':getURLParameter('type'),'url':getURLParameter('url'),'file':filename},
+					}).done(function(data) {$(a).parent().parent().parent().remove();});				
+			}			
+			
+			function updateList() {
+				jQuery.ajax({
+					'url':'/ajx/'+getURLParameter('url')+'_filebrws',
+					type: "POST",
+					dataType : 'json',
+					data: {'type':getURLParameter('type'),'url':getURLParameter('url')},
+				}).done(function(data) {jQuery(data).appendTo($('#table_browse').empty());});
+			};
+			
+			$(function() {
+				function drawInfo(prcnt){
+					$('#upinfo').html('[' + fl_count + '] ' + fl_uplding + (prcnt != ''?': ' + prcnt + '%':''));
+				}
+				
+				var fl_count=0,fl_uplding=1,errstr='';
+				var filters = (getURLParameter('type')=='image')?[{title : "Изображения", extensions : "jpg,gif,png"}]:[];
+				var uploader = new plupload.Uploader({
+					runtimes : 'gears,html5,flash,silverlight,browserplus,html4',
+					browse_button : 'uploader_browse',
+					drop_element : 'drophere',
+					multipart : true,
+					multipart_params: {'url': getURLParameter('url'),'type':getURLParameter('type')},
+					chunk_size : '500kb',
+					max_file_size : '900mb',
+					url : '/ajx/'+getURLParameter('url')+'_fileupl',
+					flash_swf_url : '/js/plupload/plupload.flash.swf',
+					silverlight_xap_url : '/js/plupload/plupload.silverlight.xap',
+					filters : filters
+				});
+				uploader.init();
+				
+				$('#uploader_browse').click(function(e) {
+					e.preventDefault();
+				});
+				
+				uploader.bind('FilesAdded', function(up, files) {
+					$('#errorlist').html('');
+					errstr = '';
+					up.refresh();
+					fl_count = up.files.length;
+					up.start();
+					drawInfo('');			
+				});
+			 
+				uploader.bind('UploadProgress', function(up, file) {
+					drawInfo(file.percent);
+				});
+			 
+				uploader.bind('FileUploaded', function(up, file, respText) {
+					drawInfo(100); ++fl_uplding;
+					//var r = $.parseJSON(respText.response);
+					//var thisphoto = {'id_cgp':r.id_cgp,'cgp_name':'','cgp_file':r.cgp_file};
+					//parent.drawExtPhoto(thisphoto);
+					updateList();
+				});
+				
+				uploader.bind('UploadComplete', function(up, file) {
+					$('#upinfo').html('[' + fl_count + '] Завершено!');
+					up.splice(0,up.files.length);
+					fl_count = 0; fl_uplding = 1;
+				});				
+			 
+				uploader.bind('Error', function(up, err) {
+					errstr += err.message + (err.file ? ' ' + err.file.name : '')+"\n";
+					$('#errorlist').html('<img src="/img/edt/imgerr.png" width=20 height=16 alt="error" title="'+errstr+'">');
+					up.refresh();
+				});
+			});
+
+			$(document).ready(function(){ updateList(); });
+		</script>
+        <div class="tabs">
+            <ul>
+                <li id="browse_tab"><span><script type="text/javascript">document.write((getURLParameter('type')=='image'?'Изображения ':'Файлы'));</script></span></li>
+				<!--
+                <li id="browse_tab"><span><script type="text/javascript">document.write('<a href="/js/plupload/_b.html?'+postfix+'">');</script>Обзор</a></span></li>
+                <li id="upload_tab" class="current"><span><script type="text/javascript">document.write('<a href="/js/plupload/_u.html?'+postfix+'">');</script>Загрузить</a></span></li>
+				-->
+			</ul>
+        </div>
+		<style>
+			.filesbox {
+				overflow:auto;
+				height: 350px;
+				width: 100%;
+				background: none repeat scroll 0 0 #EFEFEF;
+				color: #42454A;
+			}
+			.filesbox .data {
+				overflow: auto;
+				height: 290px;
+				background: url(/img/edt/dropfiles.png) center center no-repeat;
+				border-left: 1px solid #CACACA;
+				border-right: 1px solid #CACACA;
+			}
+			.filesbox table {width:100%;border-collapse:collapse;}
+			.filesbox td {padding-right:2px;}
+			.filesbox a {text-decoration: none;}
+			.filesbox .fsize {float: right;text-align:right;line-height:160%;margin-top: 10px;}
+			.filesbox .even {background-color: #ebebeb;}
+			.filesbox tr {background-color: #efefef;}
+			.filesbox .flupl{
+				background: none repeat scroll 0 0 #CACACA;
+				color: #42454A;
+				padding: 7px;
+			}	
+			#upinfo {
+				vertical-align:top;
+			}
+		</style>
+        <div class="panel_wrapper">
+            <div id="general_panel" class="panel currentmod">
+                    <div class="filesbox">
+                        <table class="browse">
+							<thead>
+								<tr>
+									<th width="330">Название</th>
+									<th>Размер</th>
+								</tr>
+							</thead>
+						</table>
+						<div id="drophere">
+							<div class="data">
+								<table>
+									<tbody id="table_browse"></tbody>
+								</table>
+							</div>
+							<div class="flupl">
+								<a id="uploader_browse" class="plupload_button plupload_add" href="#" style="position: relative; z-index: 0;">Добавить и загрузить файлы</a>
+								<span id="errorlist"></span>
+								<span id="upinfo"></span>
+							</div>
+						</div>
+                    </div>
+            </div>
+        </div>
+    </body>
+</html>

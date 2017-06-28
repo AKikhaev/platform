@@ -1,0 +1,369 @@
+@charset "utf-8";
+.clearfix:before,
+.clearfix:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+.clearfix:after {
+    clear: both;
+}
+.clearfix {
+    *zoom: 1;
+	*clear:both;
+}
+.textboxlist {
+	width:500px;
+	color: #000;
+	background-color: #fff;
+}
+.errfld {
+	background-color:#f0c1c2 !important;
+	border:1px solid #f0c1c2 !important;
+}
+/**************************** unit placement ********************************/
+.unitplace {
+    border: 1px dotted #eba7a0;
+    padding: 5px;
+    margin: 1px;
+}
+#u_0 { background:url(/img/adm/u_0.gif) top left no-repeat;}
+#u_1 { background:url(/img/adm/u_1.gif) top left no-repeat;}
+#u_2 { background:url(/img/adm/u_2.gif) top left no-repeat;}
+#u_3 { background:url(/img/adm/u_3.gif) top left no-repeat;}
+#u_4 { background:url(/img/adm/u_4.gif) top left no-repeat;}
+#u_5 { background:url(/img/adm/u_5.gif) top left no-repeat;}
+#u_6 { background:url(/img/adm/u_6.gif) top left no-repeat;}
+#u_7 { background:url(/img/adm/u_7.gif) top left no-repeat;}
+#u_8 { background:url(/img/adm/u_8.gif) top left no-repeat;}
+/******************************** userpnl ************************************/
+
+/********************************* dWindow ****************************************/
+.dWindow .handle .textboxlist input[type="text"],.textboxlist .textboxlist-bits
+{
+    border: none;
+}
+.hideWindow{
+	position:absolute;
+	width:100%;
+	left:0;
+	top:0;
+	z-index:2000;
+	background-color:#FFFFFF;
+}
+.dWindow{
+	clear:both;
+	position:fixed;
+	top: 100px;
+	z-index:2001;
+}
+.dWindow .handle{
+	padding:10px 10px 10px;
+	background-color:#414041;
+	font-size:14px;
+	color:#ffffff;
+}
+.dWindow .handle th, .dWindow .handle td {
+	font-size:13px;
+	color:#ffffff;
+}
+.dWindow .handle h3{color:#FFFFFF; font-size:32px; font-weight:normal; margin:0; padding:5px 0 15px 0; }
+.dWindow .handle input[type=text], .dWindow .handle select{
+	/*height:27px;*/
+	font-size:12px;
+	color:#000000;
+	border: 1px solid #414041;
+}
+.dWindow .topBar .dw1{ margin:0 2px; background:#414041; border-left:1px solid #c0bfc0; border-right:1px solid #c0bfc0; height:1px; font-size:1px; overflow:hidden;}
+.dWindow .topBar .dw11{ margin:0; border-left:1px solid #747374; border-right:1px solid #747374; height:1px; font-size:1px; overflow:hidden;}
+
+.dWindow .topBar .dw2{ margin:0 1px; background:#414041; border-left:1px solid #999999; border-right:1px solid #999999; height:1px; font-size:1px; overflow:hidden;}
+.dWindow .topBar .dw3{ margin:0; background:#414041; border-left:1px solid #c0bfc0; border-right:1px solid #c0bfc0; height:1px; font-size:1px; overflow:hidden;}
+.dWindow .topBar .dw4{ margin:0; background:#414041; border-left:1px solid #686768; border-right:1px solid #686768; height:1px; font-size:1px; overflow:hidden;}
+
+.dWindow .closeBtn{
+	float:right;
+	background:url(/img/units/_mbx.gif) top left no-repeat;
+	width:9px;
+	height:9px;
+	margin-right:7px;
+	margin-top:3px;
+	cursor:pointer;
+}
+
+/************************************ datapicker *************************************/
+.datepicker_vista {
+	position: absolute;
+	font-size: 10px;
+	font-family: Tahoma, sans-serif;
+	color: #000;
+	line-height: normal;
+	width: 172px;
+	height: 135px;
+	padding: 14px;
+	background: url(/img/units/datepicker_vista/frame.png) no-repeat;
+	z-index:3000;
+}
+/* header */
+.datepicker_vista .header {
+	position: relative;
+	height: 15px;
+	margin-bottom: 5px;
+	padding-top: 1px;
+}
+
+.datepicker_vista .header .title {
+	text-align: center;
+	margin: 0 18px 0 18px;
+}
+
+.datepicker_vista .header .titleText {
+}
+
+.datepicker_vista .header .previous,
+.datepicker_vista .header .next,
+.datepicker_vista .header .closeButton {
+	position: absolute;
+	cursor: pointer;
+	text-indent: -40px;
+	overflow: hidden;
+	width: 12px;
+	height: 12px;
+	top: 2px;
+	background-image: url(/img/units/datepicker_vista/buttons.png);
+	background-position: left top;
+	background-repeat: no-repeat;
+	z-index:3000; 		
+}
+
+.datepicker_vista .header .previous {
+	left: 4px;
+}
+.datepicker_vista .header .previous:hover {
+	background-position: left bottom;
+}
+.datepicker_vista .header .next {
+	right: 4px;
+	background-position: -13px top;
+}
+.datepicker_vista .header .next:hover {
+	background-position: -13px bottom;
+}
+.datepicker_vista .header .closeButton {
+	display: none;
+	right: 0px;
+	top: 0px;
+	background-position: right top;
+}
+.datepicker_vista .header .closeButton:hover {
+	background-position: right bottom;
+}
+
+/* body */
+.datepicker_vista .body {
+	position: relative;
+	top: 0px;
+	left: 2px;
+	width: 168px;
+	height: 112px;
+	overflow: hidden;
+}
+
+/* time */
+.datepicker_vista .time {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.datepicker_vista .time .hour,
+.datepicker_vista .time .separator,
+.datepicker_vista .time .minutes {
+	border: 1px solid #ccc;
+	background: #fff;
+	width: 50px;
+	font-size: 32px;
+	position: absolute;
+	top: 10px;
+	text-align: center;
+	padding: 2px;
+}
+
+.datepicker_vista .time .hour {
+	left: 15px;
+}
+.datepicker_vista .time .separator {
+	background: transparent;
+	border: 0px;
+	width: 10px;
+	left: 76px;
+}
+
+.datepicker_vista .time .minutes {
+	left: 95px;
+}
+.datepicker_vista .time .ok {
+	position: absolute;
+	top: 65px;
+	width: 136px;
+	left: 15px;
+	font-size: 20px;
+}
+
+/* days-grid */
+.datepicker_vista .days .day {
+	float: left;
+	text-align: center;
+	overflow: hidden;
+	width: 23px;
+	height: 15px;
+	margin: 0 1px 1px 0;
+}
+.datepicker_vista .days .titles {
+	height: 15px;
+	border-bottom: 1px solid #e0e0e0;
+	margin-bottom: 1px;
+}
+.datepicker_vista .days .day0 {
+	margin-right: 0;
+}
+
+.datepicker_vista .days .week5 .day {
+	margin-bottom: 0;
+}
+
+/* days-colors */
+.datepicker_vista .days .week .day {
+	cursor: pointer;
+}
+.datepicker_vista .days .week .day:hover {
+	background: url(/img/units/datepicker_vista/days.png) left top no-repeat;
+	color: #0084AA;
+}
+
+.datepicker_vista .days .otherMonth {
+	color: #aaa;
+}
+
+.datepicker_vista .days .selected {
+	background: url(/img/units/datepicker_vista/days.png) left bottom no-repeat;
+	color: #316879;
+}
+
+/* months-grid */
+.datepicker_vista .months .month {
+	float: left;
+	cursor: pointer;
+	text-align: center;
+	padding-top: 6px;
+	width: 55px;
+	overflow: hidden;
+	height: 21px;
+	margin: 0 1px 1px 0;
+}
+
+.datepicker_vista .months .month3,
+.datepicker_vista .months .month6,
+.datepicker_vista .months .month9,
+.datepicker_vista .months .month12 {
+	margin-right: 0;
+}
+
+.datepicker_vista .months .month10,
+.datepicker_vista .months .month11,
+.datepicker_vista .months .month12 {
+	margin-bottom: 0;
+}
+
+/* months-colors */
+.datepicker_vista .months .month:hover {
+	background: url(/img/units/datepicker_vista/months.png) left top no-repeat;
+	color: #0084AA;
+}
+
+.datepicker_vista .months .selected {
+	background: url(/img/units/datepicker_vista/months.png) left bottom no-repeat;
+	color: #316879;
+}
+
+/* years-grid */
+.datepicker_vista .years .year {
+	float: left;
+	cursor: pointer;
+	text-align: center;
+	padding-top: 6px;
+	width: 32px;
+	overflow: hidden;
+	height: 21px;
+	margin: 0 1px 1px 0;
+}
+
+.datepicker_vista .years .year4,
+.datepicker_vista .years .year9,
+.datepicker_vista .years .year14,
+.datepicker_vista .years .year19 {
+	margin-right: 0;
+}
+
+.datepicker_vista .years .year15,
+.datepicker_vista .years .year16,
+.datepicker_vista .years .year17,
+.datepicker_vista .years .year18,
+.datepicker_vista .years .year19 {
+	margin-bottom: 0;
+}
+
+/* years-colors */
+.datepicker_vista .years .year:hover {
+	background: url(/img/units/datepicker_vista/years.png) left top no-repeat;
+	color: #0084AA;
+}
+
+.datepicker_vista .years .selected {
+	background: url(/img/units/datepicker_vista/years.png) left bottom no-repeat;
+	color: #316879;
+}
+
+/* global */
+.datepicker_vista .unavailable {
+	background: none !important;
+	color: #fbb !important;
+	cursor: default !important;
+}
+
+/************ ќформление текста **************/
+.ftable {float: inherit;}
+.ftable td p, .ftable th p{
+	margin: 0;
+	padding: 0;
+}
+table.ftable {
+	border-collapse: collapse;
+}
+.ftable th {
+	background-color:#dddddd;
+	color:#585858;
+	font-size:12px;
+	padding-bottom:4px;
+	padding-top:5px;
+	text-align:center;
+}
+.ftable td, .ftable th {
+	border:1px solid #dedede;
+	font-size:12px;
+	padding:3px 7px 2px;
+}
+p.noredstring {
+	text-indent: 15px;
+}
+img.alignleft {
+    margin: 5px 10px 3px 0;
+}
+.alignleft {
+    float: left;
+}
+img.alignright {
+    margin: 5px 0 3px 10px;
+}
+.alignright {
+    float: right;
+}

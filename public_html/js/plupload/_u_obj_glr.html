@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>Kubado gallery uploader</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <!-- plupapload -->
+		<script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+		<script type="text/javascript" src="/js/plupload/plupload.full.js?v1"></script>
+		<script type="text/javascript" src="/js/plupload/i18n/ru.js?v1"></script>
+	    <script type="text/javascript" src="/js/pg_debug.js?v1"></script>
+		<style>
+			body {
+				margin: 0;
+				padding: 0;
+				background-color: #414041;
+				color: white;
+				color: #FFFFFF;
+				font-size: 14px;
+				font-family: Tahoma;
+			}
+			#upinfo {
+				vertical-align:top;
+			}
+		</style>
+    </head>
+    <body>
+		<div id="container">
+			<img id="pickfiles" src="/img/edt/btnimgfew.png" width=19 height=18 alt="Загрузить" title="Загрузить изображения" />
+			<span id="errorlist"></span>
+			<span id="upinfo"></span>
+		</div>
+        <script type="text/javascript">
+			function getURLParameter(name) {
+				return decodeURI(
+					(RegExp('(&|\\?)'+name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[2]
+				);
+			}
+			$(function() {
+				function drawInfo(prcnt){
+					$('#upinfo').html('[' + fl_count + '] ' + fl_uplding + (prcnt != ''?': ' + prcnt + '%':''));
+				}
+
+				var fl_count,fl_uplding,errstr;
+				var uploader = new plupload.Uploader({
+					runtimes : 'gears,html5,flash,silverlight,browserplus',
+					browse_button : 'pickfiles',
+					multipart_params: {'obj':getURLParameter('obj'),'obj_id':getURLParameter('objid')},
+					container : 'container',
+					max_file_size : '10mb',
+					url : '/ajx/_sys/_glriupl?glr='+getURLParameter('glr'),
+					flash_swf_url : '/js/plupload/plupload.flash.swf',
+					silverlight_xap_url : '/js/plupload/plupload.silverlight.xap',
+					filters : [{title : "Изображения", extensions : "jpg,png,gif"}]
+				});
+				uploader.init();
+				
+				$('#pickfiles').click(function(e) {
+					$('#errorlist').html('');
+					fl_count = 0; fl_uplding = 1; errstr = '';
+					e.preventDefault();
+				});
+				
+				uploader.bind('FilesAdded', function(up, files) {
+					up.refresh();
+					fl_count = up.files.length;
+					up.start();
+					drawInfo('');			
+				});
+			 
+				uploader.bind('UploadProgress', function(up, file) {
+					drawInfo(file.percent);
+				});
+			 
+				uploader.bind('FileUploaded', function(up, file, respText) {
+					drawInfo(100); ++fl_uplding;
+					var r = $.parseJSON(respText.response);
+					if (r.status!=0) {
+						uploader.trigger('error', {'message' : r.msg, 'code' : 100, 'details' : ''});
+					} else {;
+						var thisphoto = {'id_cop':r.id_cop,'cop_name':'','cop_file':r.cop_file};
+						//parent.drawExtPhoto(thisphoto);
+						parent.kcms._exchdata[getURLParameter('obj')+getURLParameter('objid')+'_drawphoto'](thisphoto);
+					}
+				});
+				
+				uploader.bind('UploadComplete', function(up, file) {
+					$('#upinfo').html('[' + fl_count + '] Готово!');
+					up.splice(0,up.files.length);
+				});				
+			 
+				uploader.bind('Error', function(up, err) {
+					errstr += err.message + (err.file ? ' ' + err.file.name : '')+"\n";
+					$('#errorlist').html('<img src="/img/edt/imgerr.png" width=20 height=16 alt="error" title="'+errstr+'">');
+					up.refresh();
+				});
+			});			
+		</script>
+    </body>
+</html>

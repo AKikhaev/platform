@@ -1,0 +1,434 @@
+@charset "utf-8";
+.nolink {
+	text-decoration: none !important;
+}
+.hidden {
+  display: none;
+}
+.clrbth {
+	clear: both; 
+}
+.uppercase {
+	text-transform: uppercase;
+}
+.pgcontent img {
+	margin: 0 5px 0 5px;
+	border: 1px solid #000000;
+}
+/******************************* errortips ***********************************/
+.errtip {
+	position: absolute;
+	width: 200px;
+	background-color: #A50000;
+	color: #FFFF55;
+	border: 1px solid #520000;
+	padding: 1px 4px 1px;
+    -moz-box-shadow: 0 0 7px rgba(0,0,0,0.5);
+    -webkit-box-shadow: 0 0 7px rgba(0,0,0,0.5);
+    box-shadow: 0 0 7px rgba(0,0,0,0.5);
+	-moz-border-radius: 3px;
+	-webkit-border-radius 3px;
+	border-radius: 3px;
+	z-index:9999;
+}
+.errfld {
+	border: 1px solid #df7376;
+}
+/*******************************  gallery  ***********************************/
+.glrmultdiv,.objglrmult iframe,#glrmultfrm {
+	width: 170px;
+	height: 20px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	overflow: hidden;
+}
+.glrmultdiv {
+	float:right;
+}
+#glrnameinp {
+	width: 300px;
+}
+.glrprws {
+    margin-top: 1px;
+    background-color: #494949;
+	height: 39px;
+}
+.glrprws .actpanel {
+    padding-top: 10px;
+}
+.glrhdrimg img.glrimgs {
+	border: 1px solid red;
+}
+.glrimgs {
+	float:left;
+}
+.glrimgsn {
+	background-color: #494949;
+	border: none;
+	color:#fff;
+	width:260px;
+	padding: 2px;
+	height: 35px;
+}
+.imtdsbl {
+	border: 1px dashed #e2745c;
+}
+
+
+.glritem {
+	float:left;
+	margin:10px 63px 10px 0;
+	width: 244px;
+}
+.glrip {
+	border: 7px solid #e4eaee;
+}
+.glripi {
+	background:none;
+	border: 1px solid #fff;
+}
+.glrin {
+	padding: 14px 2px 0 7px;
+	font-size:14px;
+}
+.glrin a, .glrin a:link, .glrin a:visited, .glrin a:hover, .glrin a:active {
+	color: #c1233b;
+	text-decoration: underline;
+	font-weight: bold;
+	font-size:14px;
+}
+.glrin a:hover, .glrin a:active {
+	text-decoration: none;
+}
+.glrid {
+	padding: 4px 2px 0 7px;
+	color: #535353;
+}
+.glrind {
+	padding: 14px 2px 0 0;
+	font-size:14px;
+	font-weight: bold;
+}
+
+.glridd {
+	padding: 6px 2px 0 0;
+	color: #535353;
+}
+.glrphg {
+	padding-top: 20px;
+	float: left;
+}
+.glrphgb {
+	border: 5px solid #e4eaee;
+	*display: inline;
+}
+.glripp {
+	border: 1px solid white;
+}
+.glrippc {
+	border: 1px solid white;
+	border-width: 1px 0 1px;
+}
+/****************************  smallgallery  *********************************/
+.pix {
+	float:left;
+	margin:5px;
+}
+.pixc {
+	border: 3px solid #c2d0d8;
+}
+.pixi {
+	background:none;
+	border: 1px solid #fff;
+}
+/******************************* GuestBook ***********************************/
+.gstbktgs {
+	padding-top: 16px;
+}
+.gbitem {
+	padding-top: 14px;
+}
+.gbiname {
+	font-weight: bold;
+	color: #d9003b;
+}
+.gbidate {
+/*	font-weight: bold;*/
+	color: #535353;
+    font-size: 12px;
+    text-align: left;
+	position: relative;
+	top: -1px;
+	background: url(/img/t/artcl_dt.gif) left top no-repeat;
+	padding-left: 15px;
+}
+.gbimsg {
+	padding: 5px 0 5px;
+	text-align: justify;
+	color: #171717;
+}
+.gbianswr {
+	font-weight: bold;
+}
+.gbianswr span{
+	color: #d9003b;
+}
+.gbianswrph {
+	padding-right: 4px;
+}
+.gbiansw {
+	padding: 5px 0 0;
+	color: #535353;
+}
+.gbitgs {
+	padding: 5px 0 5px;
+}
+/******************************* Comments ***********************************/
+.cmntiname {
+	font-weight: bold;
+	padding-top: 16px;
+	color: #d9003b;
+}
+.cmntidate {
+	font-weight: bold;
+	color: #535353;
+}
+.cmntimsg {
+	padding-top: 5px;
+	text-align: justify;
+	color: #535353;
+}
+/******************************* News ***********************************/
+.newidate {
+	font-weight: bold;
+	color: #535353;
+	padding-top: 16px;
+}
+.newihead {
+	font-weight: bold;
+	color: #535353;
+}
+.newicnt {
+	padding-top: 5px;
+	text-align: justify;
+	color: #535353;
+}
+
+/******************************* search ***********************************/
+.srchr {
+	padding-top: 10px;
+}
+.srchr_r {
+	font-family:"Book Antiqua","Times New Roman",Times,serif;
+	padding:5px;
+}
+.srchr_r p{
+	margin: 0;
+	padding: 0;
+}
+.srchr_rs {
+	color:#888888;
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:8pt;
+}
+.srchrfi,.srchrfb {
+	border: 1px solid #c7d3dc;
+}
+.srchrfi {
+	width: 500px;
+}
+/*.srchrf {
+	text-align: center;
+}*/
+/******************************** pager ***********************************/
+.pager {
+	margin-top: 15px;
+	padding: 0 20px 0 20px;
+	background-position: right center;
+}
+.pager td{
+	padding: 0;
+}
+.pgrprev, .pgrnext {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #1f2734;
+}
+.pgrl {
+	background-image: url(/img/pgr/pgrl.gif);
+	height: 32px;
+	background-repeat: no-repeat;
+	background-position: right top;
+	width: 18px;
+}
+.pgrc {
+	background-image: url(/img/pgr/pgrcntr.gif);
+	background-repeat: repeat-x;
+	background-position: top;
+}
+.pgrr {
+	background-image: url(/img/pgr/pgrr.gif);
+	height: 32px;
+	background-repeat: no-repeat;
+	background-position: left top;
+	width: 18px;
+}
+a.pgrdgt {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	height: 21px;
+	width: 21px;
+	float: left;
+	padding-top: 5px;
+	display: block;
+	text-align:center;
+	margin: 0 1px 0 1px;
+}
+a.pgrdgt,a.pgrdgt:link,a.pgrdgt:visited {
+	color: #1f2734;
+	text-decoration: underline;
+}
+a.pgrdgt:hover,a.pgrdgt:active, .pgrprev a:hover,.pgrprev a:active,.pgrnext a:hover,.pgrnext a:active{
+	text-decoration: none;
+	color: #FF9900;
+}
+a.pgrdgtcurr {
+	font-size: 13px;
+	height: 21px;
+	width: 21px;
+	float: left;
+	padding-top: 5px;
+	background-image: url(/img/pgr/pgrdgt.gif);
+	background-repeat: no-repeat;
+	background-position: center center;
+	display: block;
+	text-align:center;
+}
+a.pgrdgtcurr, a.pgrdgtcurr:link, a.pgrdgtcurr:visited {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #FFFFFF;
+	text-decoration: underline;
+}
+a.pgrdgtcurr:hover,a.pgrdgtcurr:active {
+	text-decoration: none;
+	color: #FFFFFF;
+}
+/******************************** ajax ************************************/
+.actpanel {
+	float:right;
+	text-decoration: none;
+/*	position:relative; */
+}
+.actpanel img {
+	padding: 0 !important;
+}
+.actpanel div.btn {
+	padding: 0 !important;
+	width: 16px;
+	height: 16px;
+	background: left top no-repeat;
+	cursor: pointer;
+	text-align: center;
+	font-size: 11px;
+	color: red;
+	float: left;
+}
+.hacts .actpanel img, .hacts img.actpanel{
+	display: none;
+}
+.save-error {
+	background: url(/img/edt/imgerr.png) no-repeat right top;
+	padding-right: 20px;
+}
+.save-success {
+	background: url(/img/edt/imgsccs.png) no-repeat right top;
+	padding-right: 20px;
+}
+.ajax-loading {
+	background: url(/img/units/_adjspn.gif) no-repeat right top;
+	padding-right: 20px;
+}
+#admcntrl .ajax-loading {
+	background: url(/img/units/_adjspn_blk.gif) no-repeat right top;
+	padding-right: 20px;
+}
+.dWindow .ajax-loading {
+	background: url(/img/units/_adjspn_blk.gif) no-repeat right top;
+	padding-right: 20px;
+}
+/************************************ txtshowhide *************************************/
+.txtsh_shown .txtsh_hdr {
+	background: url(/img/units/txt_minus.gif) no-repeat 0 4px;
+	padding-left: 13px;
+	cursor: pointer;
+}
+.txtsh_shown .txtsh_txt {
+	padding-left: 13px;
+}
+.txtsh_hidden .txtsh_hdr {
+	background: url(/img/units/txt_plus.gif) no-repeat 0 4px;
+	padding-left: 13px;
+	cursor: pointer;
+}
+.txtsh_hidden .txtsh_txt {
+	display: none;
+}
+/************************************ txtstyle *************************************/
+.size08 {
+	font-size: 8px;
+}
+.size09 {
+	font-size: 9px;
+}
+.size10 {
+	font-size: 10px;
+}
+.size11 {
+	font-size: 11px;
+}
+.size12 {
+	font-size: 12px;
+}
+.size13 {
+	font-size: 13px;
+}
+.size14 {
+	font-size: 14px;
+}
+.size15 {
+	font-size: 15px;
+}
+.size16 {
+	font-size: 16px;
+}
+.mainpretxt {
+	font-size: 14px;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #1b536b;
+}
+.ftable {float: inherit;}
+.ftable td p, .ftable th p{
+	margin: 0;
+	padding: 0;
+}
+table.ftable {
+	border-collapse: collapse;
+}
+.ftable th {
+	background-color:#dddddd;
+	color:#585858;
+	font-size:12px;
+	padding-bottom:4px;
+	padding-top:5px;
+	text-align:center;
+}
+.ftable td, .ftable th {
+	border:1px solid #dedede;
+	font-size:12px;
+	padding:3px 7px 2px;
+}
+p.noredstring {
+	text-indent: 15px;
+}
+
