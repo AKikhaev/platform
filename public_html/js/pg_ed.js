@@ -302,7 +302,7 @@ window.addEvent('domready', function() {
 	};ru2lt.init();
 	var MakeEditSec = function(parentId,secId,closeEvent) {
 		if (closeEvent==undefined) closeEvent = null;
-		secitem = secId!=0?currpage.secs[secId]:{"section_id":0,"sec_parent_id":parentId,"sec_url":'',"sec_nameshort":'',"sec_namefull":'',"sec_showinmenu":"t","sec_openfirst":"f","sec_title":"","sec_keywords":"","sec_description":"",'sec_enabled':'f','sec_howchild':1,'_p_hc':0};
+		secitem = secId!=0?currpage.secs[secId]:{"section_id":0,"sec_parent_id":parentId,"sec_url":'',"sec_nameshort":'',"sec_namefull":'',"sec_showinmenu":"t","sec_openfirst":"f","sec_title":"","sec_keywords":"","sec_description":"",'sec_enabled':'f','sec_howchild':1,'_p_hc':0,'sec_page_child':'second','sec_page':(parentId!=0?currpage.secs[parentId].sec_page_child:'')};
 		var modalForm = new ModalBox({allowManualClose: false,width:500,top:100,onClose:closeEvent}),
 		errTips = new ErrorTips({}),
 		item_actpanel = new Element('div',{'class':'actpanel'}),

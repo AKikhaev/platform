@@ -80,7 +80,7 @@ class PageUnit extends CmsPage {
 	{
 		global $sql,$cfg;
 		$loadAnyway = core::$isAjax || core::$inEdit;
-		define('MENU_FIELDS','select section_id,sec_parent_id,sec_url_full,sec_url,sec_nameshort,sec_namefull,sec_imgfile,sec_showinmenu,sec_openfirst,sec_to_news,sec_enabled,sec_title,sec_keywords,sec_description,sec_units,sec_from,sec_howchild,sec_page, not sec_enabled or not sec_showinmenu as sec_hidden ');
+		define('MENU_FIELDS','select section_id,sec_parent_id,sec_url_full,sec_url,sec_nameshort,sec_namefull,sec_imgfile,sec_showinmenu,sec_openfirst,sec_to_news,sec_enabled,sec_title,sec_keywords,sec_description,sec_units,sec_from,sec_howchild,sec_page,sec_page_child, not sec_enabled or not sec_showinmenu as sec_hidden ');
 
 		$pathstr_str = $GLOBALS['pathstr'];
 		$pathstr_path = $GLOBALS['path'];
@@ -1253,6 +1253,7 @@ class PageUnit extends CmsPage {
 				'glr_id'=>$this->page['sec_glr_id'],
 				'sec_all_units'=>$sec_all_units,
 				'sec_units'=>$sec_units,
+                'sec_page_child'=>$this->page['sec_page_child'],
 				'sec_pages'=>assocArray2ajax($cfg['pages']))).';
 			function tinyBrowser (field_name, url, type, win) {
 				var cmsURL = "/js/plupload/_ub.html" + "?type=" + type + "&url='.($this->pageUri!==''?$this->pageUri:'/').'&rnd=" + Math.random(1,999999);
