@@ -1,5 +1,5 @@
 window.addEvent('domready', function() {
-	var myScript = Asset.javascript('/js/obj_glr_ed.js', {onLoad: function(){}});
+	var myScript = Asset.javascript('/akcms/js/v1/obj_glr_ed.js', {onLoad: function(){}});
 	var EditAdvert = function(catitem_id) {
 		var item = addata;
 		var modalForm = new ModalBox({allowManualClose: false,width:720,top:25,onClose: function() {

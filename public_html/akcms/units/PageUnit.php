@@ -79,7 +79,7 @@ class PageUnit extends CmsPage {
 	function __construct(&$pageTemplate)
 	{
 		global $sql,$cfg;
-		$loadAnyway = core::$isAjax || core::$inEdit;
+        $loadAnyway = core::$isAjax || core::$inEdit || $this->hasRight();
 		define('MENU_FIELDS','select section_id,sec_parent_id,sec_url_full,sec_url,sec_nameshort,sec_namefull,sec_imgfile,sec_showinmenu,sec_openfirst,sec_to_news,sec_enabled,sec_title,sec_keywords,sec_description,sec_units,sec_from,sec_howchild,sec_page,sec_page_child, not sec_enabled or not sec_showinmenu as sec_hidden ');
 
 		$pathstr_str = $GLOBALS['pathstr'];
@@ -1202,7 +1202,7 @@ class PageUnit extends CmsPage {
 			$vieweditLink = "new Element('a',{'href':'/".$this->pageMainUri."'}).inject(usrcntrldiv).grab(new Element('img',{'src':'/img/edt/btnview.png','title':'Просмотреть страницу'}));";
 
 			$shape['jses']  .= "
-			<link href=\"/s/css/style_adm_cntrl.css\" rel=\"stylesheet\" type=\"text/css\"/>
+			<link href=\"/akcms/css/v1/style_adm_cntrl.css\" rel=\"stylesheet\" type=\"text/css\"/>
 			<script type=\"text/javascript\">
 			window.addEvent('domready', function() {
 				var userControl = function() {
@@ -1256,10 +1256,10 @@ class PageUnit extends CmsPage {
                 'sec_page_child'=>$this->page['sec_page_child'],
 				'sec_pages'=>assocArray2ajax($cfg['pages']))).';
 			function tinyBrowser (field_name, url, type, win) {
-				var cmsURL = "/js/plupload/_ub.html" + "?type=" + type + "&url='.($this->pageUri!==''?$this->pageUri:'/').'&rnd=" + Math.random(1,999999);
+				var cmsURL = "/akcms/js/v1/plupload/_ub.html" + "?type=" + type + "&url='.($this->pageUri!==''?$this->pageUri:'/').'&rnd=" + Math.random(1,999999);
 				tinyMCE.activeEditor.windowManager.open({
 					file : cmsURL,
-					title : "Kubado Browser",
+					title : "ITteka Browser",
 					width : 470, 
 					height : 400,
 					resizable : "yes",
@@ -1273,18 +1273,6 @@ class PageUnit extends CmsPage {
 				return false;
 			}
 			</script>		
-			<script type="text/javascript" src="/js/modalbox.js"></script>
-			<script type="text/javascript" src="/js/errortips.js"></script>
-			<script type="text/javascript" src="/js/JsHttpRequest.js"></script>
-			<script type="text/javascript" src="/js/datepicker.js"></script>
-			<script type="text/javascript" src="/js/tiny_mce/tiny_mce.js"></script>
-			<script type="text/javascript" src="/js/textboxlist/TextboxList.js"></script>
-			<script type="text/javascript" src="/js/textboxlist/TextboxList.Autocomplete.js"></script>
-			<script type="text/javascript" src="/js/textboxlist/TextboxList.Autocomplete.Binary.js"></script>
-			<link href="/s/css/style_e.css" rel="stylesheet" type="text/css"/>
-			<link href="/js/textboxlist/TextboxList.css" rel="stylesheet" type="text/css" />
-			<link href="/js/textboxlist/TextboxList.Autocomplete.css" rel="stylesheet" type="text/css" />
-			<script type="text/javascript" src="/js/pg_ed.js"></script>
 			';//,'glrsall'=>$this->getGalleriesList()
 			
 			#Меню

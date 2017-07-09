@@ -89,7 +89,7 @@ var ImgView = new Class({
                             sfvvars['stretching'] = 'fill';
                             sfvvars['plugins'] = 'revolt-1';
                         }
-                        new Swiff('/js/player/player.swf', {
+                        new Swiff('/akcms/js/v1/player/player.swf', {
 							id: 'mpl',
 							width: 480,
 							height: 362,

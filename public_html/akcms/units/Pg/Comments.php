@@ -151,7 +151,7 @@ class Pg_Comments extends PgUnitAbstract {
 
 			$html .= $htmlform;
 			
-			if ($editMode) $html .= '<script type="text/javascript" src="/js/pg_cmnt_ed.js"></script><script type="text/javascript">var cmntsi='.json_encode($u_items).';</script>';
+			if ($editMode) $html .= '<script type="text/javascript" src="/akcms/js/v1/pg_cmnt_ed.js"></script><script type="text/javascript">var cmntsi='.json_encode($u_items).';</script>';
 		} else throw new CmsException("page_not_found");
 		return $html;
 	}

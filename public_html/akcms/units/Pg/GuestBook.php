@@ -245,7 +245,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 					'a'=>$dataset===false?array():$dataset,
 					't'=>$tagsAll
 				);
-				$html .= '<script type="text/javascript" src="/js/pg_gb_ed.js"></script><script type="text/javascript">var gbi='.json_encode($u_data).';</script>';
+				$html .= '<script type="text/javascript" src="/akcms/js/v1/pg_gb_ed.js"></script><script type="text/javascript">var gbi='.json_encode($u_data).';</script>';
 			}
 		} else throw new CmsException("page_not_found");
 		return $html;

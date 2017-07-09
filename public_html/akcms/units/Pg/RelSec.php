@@ -112,9 +112,9 @@ class Pg_RelSec extends PgUnitAbstract {
 		$res .= '</div>';
 		if ($editMode) {
 			$shape['jses'] .= '
-			<link rel="stylesheet" href="/js/multiselect/selectfilter.css">
-			<script type="text/javascript">var glrs_mini='.json_encode($glrs).';</script><script type="text/javascript" src="/js/pg_glr_mini_sel.js"></script>
-			<script type="text/javascript" src="/js/multiselect/multipleSelectFilter.js"></script>
+			<link rel="stylesheet" href="/akcms/js/v1/multiselect/selectfilter.css">
+			<script type="text/javascript">var glrs_mini='.json_encode($glrs).';</script><script type="text/javascript" src="/akcms/js/v1/pg_glr_mini_sel.js"></script>
+			<script type="text/javascript" src="/akcms/js/v1/multiselect/multipleSelectFilter.js"></script>
 			';
 		}
 		return $res;

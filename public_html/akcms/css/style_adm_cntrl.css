@@ -13,7 +13,7 @@ body {
     position: fixed;
     top: 0;
     width: 100%;
-    z-index: 11001;
+    z-index: 8011;
     background-color: #414041;
 	background: url(/img/adm/adm_tp.png) repeat-x;
     height: 28px;

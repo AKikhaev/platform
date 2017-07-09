@@ -1,5 +1,5 @@
 window.addEvent('domready', function() {
-	var myScript = Asset.javascript('/js/obj_glr_ed.js', {onLoad: function(){}});
+	var myScript = Asset.javascript('/akcms/js/v1/obj_glr_ed.js', {onLoad: function(){}});
 	var news_editorLoaded = false;
 	var MakeEditCati = function(catitem_id) {
 		var catitem = catitem_id!=0?cati[catitem_id]:{"cati_id":"0","cati_nameshort":"","cati_namefull":"","cati_photofile":"","cati_desc":"","cati_sec_id":null,"cati_show":"t","cati_bcost":"","cati_cost":0,"cati_costold":0,"cati_artcl":""};
@@ -10,7 +10,7 @@ window.addEvent('domready', function() {
 				theme : "advanced",
 				plugins : "safari,table,advimage,inlinepopups,searchreplace,print,contextmenu,paste,fullscreen,noneditable,nonbreaking,visualchars", //,autosave
 				file_browser_callback : "tinyBrowser",
-				//content_css : "/css/content.css",
+				//content_css : "/akcms/css/v1/content.css",
 				theme_advanced_buttons1 : "fullscreen,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,|,cleanup,|,forecolor,backcolor", //,restoredraft
 				theme_advanced_buttons2 : "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,grabimg,|,visualchars,code",
 				theme_advanced_buttons3 : "tablecontrols,|,removeformat,visualaid,|,sub,sup,|,charmap,nonbreaking,|,print",

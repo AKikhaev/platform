@@ -29,7 +29,7 @@ $fileinf = pathinfo($delpoyFile);
 
 $listFile = $fileinf['dirname'].'/../'.$fileinf['filename'].'.set';
 
-if (isset($fileinf['extension']) && (mb_strpos($pathstr,'/js/')===0 || mb_strpos($pathstr,'/css/')===0)) {
+if (isset($fileinf['extension']) && (mb_strpos($pathstr,'/akcms/js/v1/')===0 || mb_strpos($pathstr,'/css/')===0)) {
 	if (!in_array($fileinf['extension'],array('js','css'))) { header("HTTP/1.0 423 Locked"); exit('Locked'); }
 } else { header("HTTP/1.0 423 Locked"); exit('Unexpected locked'); }
 $data = '';
@@ -69,7 +69,7 @@ if ($data != '') {
 		header('Content-Encoding: '.$encoding);
 		header('Vary: Accept-Encoding');
 		header('Cache-Control:public, max-age=604800');
-		header('X-Powered-By: kubado.ru');
+		header('X-Powered-By: itTeka.ru');
 		echo gzencode($data, 9);
 	} else echo $data;	
 }

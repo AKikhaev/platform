@@ -687,7 +687,7 @@ class Pg_Gallery extends PgUnitAbstract {
 			if ($editMode) $res .= '<script type="text/javascript">var glra='.json_encode(array(
 				'glrs'=>array($glrItem),
 				'glr_ph'=>array($glrItem['id_glr']=>$glrPhotos)
-			)).';</script><script type="text/javascript" src="/js/pg_glr_ed.js"></script>';
+			)).';</script><script type="text/javascript" src="/akcms/js/v1/pg_glr_ed.js"></script>';
 		} elseif ((count($this->unitParam)==0) || (count($this->unitParam)==1?preg_match('/^\d{1,3}$/',$this->unitParam[0])==1:false))
 		{
 			$pgNum = 1;	if (count($this->unitParam)==1) $pgNum = $this->unitParam[0]>0?$this->unitParam[0]:1;
@@ -722,7 +722,7 @@ class Pg_Gallery extends PgUnitAbstract {
                 $res .= '<div class="cb"></div></div>';
             }
 
-			if ($editMode) $res .= '<script type="text/javascript">var glra={\'glrs\':[],\'glr_ph\':[]};</script><script type="text/javascript" src="/js/pg_glr_ed.js"></script>';
+			if ($editMode) $res .= '<script type="text/javascript">var glra={\'glrs\':[],\'glr_ph\':[]};</script><script type="text/javascript" src="/akcms/js/v1/pg_glr_ed.js"></script>';
 		} else throw new CmsException("page_not_found");
 		return $res;
 	}

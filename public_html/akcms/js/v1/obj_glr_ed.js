@@ -67,7 +67,7 @@ window.addEvent('domready', function() {
 			return photodiv;
 		};
 		var multidiv = new Element('div',{'class':'objglrmult'});
-		new Element('iframe',{'src':'/js/plupload/_u_obj_glr.html?glr='+5+'&rnd='+Math.random()+'&obj='+objName+'&objid='+objId}).inject(multidiv);
+		new Element('iframe',{'src':'/akcms/js/v1/plupload/_u_obj_glr.html?glr='+5+'&rnd='+Math.random()+'&obj='+objName+'&objid='+objId}).inject(multidiv);
 		var photosdiv = new Element('div',{'style':'height:'+(phDivHeight-38)+'px;overflow: auto;'});
         var ThisObjDiv = new Element('div',{'style':'border-top:1px solid gray;'}).adopt(new Element('div',{'html':divHdr,'style':'text-align:center;'}),multidiv,photosdiv);
 		glrObjDiv.grab(ThisObjDiv);

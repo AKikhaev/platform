@@ -31,7 +31,7 @@ if (file_exists($path)) {
 	header('Last-Modified: ' . gmdate ("D, d M Y H:i:s", filemtime($path)) . ' GMT');
 	header('Vary: Accept-Encoding');
 	header('Cache-Control:public, max-age=604800');
-	header('X-Powered-By: kubado.ru');
+	header('X-Powered-By: itTeka.ru');
 	switch ($fileinf['extension']) {
 		case 'js'  : header('Content-Type: application/x-javascript'); {
 			//require_once('../akcms/classes/jsMin.php'); $data = JSMin::minify($data);

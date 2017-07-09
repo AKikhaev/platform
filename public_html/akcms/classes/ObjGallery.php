@@ -1,6 +1,6 @@
 <?php # Галлереи раздела
 
-class Obj_Gallery extends PgUnitAbstract {
+class ObjGallery extends PgUnitAbstract {
 	public $imgglrpath = 'img/objph/';
 	
 	function initAjx()

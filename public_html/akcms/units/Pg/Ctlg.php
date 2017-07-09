@@ -425,7 +425,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 			$res .= '</div></div>'; #<div class="ctlg_under"><a href="/'.$pageLinkUri.'" title="К списку">К списку</a></div>
 
 			if ($item['cati_photofile']=='0.jpg') $item['cati_photofile'] = '';
-			if ($editMode) $res .= '<script type="text/javascript" src="/js/pg_ctlg_ed.js"></script><script type="text/javascript">var cati='.json_encode(array($item['cati_id']=>$item,'noadd'=>true)).';</script>';
+			if ($editMode) $res .= '<script type="text/javascript" src="/akcms/js/v1/pg_ctlg_ed.js"></script><script type="text/javascript">var cati='.json_encode(array($item['cati_id']=>$item,'noadd'=>true)).';</script>';
             /*
             $query_where = sprintf('from cms_cat_gds where cati_sec_id=%d and cati_id<>%d',$page->page['section_id'],$item['cati_id']);
             $query = 'select * '.$query_where.'';
@@ -497,7 +497,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 			$dataset = $sql->query_all($query);
 			$pgNums = ceil($countRecords/$pgSize);
 
-			if ($editMode) $res .= '<script type="text/javascript" src="/js/pg_ctlg_ed.js"></script>'; //<script type="text/javascript">var cati='.json_encode($ctlg_items).'</script>;
+			if ($editMode) $res .= '<script type="text/javascript" src="/akcms/js/v1/pg_ctlg_ed.js"></script>'; //<script type="text/javascript">var cati='.json_encode($ctlg_items).'</script>;
 		
 			if ($countRecords==0 && $pgNum==1) return $res.'<div id="ctlg"><div class="ctlgitms"></div></div>';
 			if ($pgNum<1 || $pgNum>$pgNums)

@@ -90,7 +90,7 @@ class Pg_Sects extends PgUnitAbstract {
 			$res .= '</div>';
 			if ($pgNums>1)
 			$res .= '<div class="pager">'.makePager($countRecords, $pgSize, $pgNum, '/'.$page->pageMainUri.'p{pg}/').'</div>';
-			if ($editMode) $res .= '<script type="text/javascript" src="/js/pg_secnews_ed.js"></script><script type="text/javascript">var newsi='.json_encode($news_items).';</script>';
+			if ($editMode) $res .= '<script type="text/javascript" src="/akcms/js/v1/pg_secnews_ed.js"></script><script type="text/javascript">var newsi='.json_encode($news_items).';</script>';
 		} else throw new CmsException("page_not_found");
 		return $res;
 	}

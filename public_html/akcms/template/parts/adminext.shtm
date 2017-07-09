@@ -1,4 +1,4 @@
-<link href="/s/css/style_adm_cntrl.css" rel="stylesheet" type="text/css"/>
+<link href="/akcms/css/v1/style_adm_cntrl.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript">
 jQuery(document).ready(function(){
     $(document.body).append($('<div class="admcntrl_cnt"><div id="admcntrl" class="admcntrl"><nobr><img class="admlogo" width="212" height="19" src="/img/adm/adm_logo.png"><img id="admexit" src="/img/edt/btnlgout.png" title="Выход"><a href="/_/"><img src="/img/edt/btnhome.png" title="На главную редактора"></a><a href="/_/{#pageMainUri#}"><img src="/img/edt/btnadm.gif" title="Редактировать страницу"></a></nobr></div></div>'));
@@ -12,10 +12,12 @@ jQuery(document).ready(function(){
             $.fancybox.open({
                 'type':'iframe',
                 'href':'/ajx/_sys/_sse?id='+$(this).data('id'),
-                'width': 800,
-                'height': 350,
-                'autoSize':false,
-                    helpers : {
+                'width': $(document).width()*.9,
+                'height': $(document).height()*.9,
+                //'autoScale':true,
+                //'autoSize':true,
+                //'autoDimensions':true,
+                helpers : {
                     overlay : {
                         locked : false,
                         closeClick : false
@@ -31,4 +33,4 @@ jQuery(document).ready(function(){
     });
     //parent.jQuery.fancybox.close();
 });
-</script><link rel="stylesheet" type="text/css" href="/js/fancybox/jquery.fancybox.css"><script src="/js/fancybox/jquery.fancybox.js"></script>
+</script><link rel="stylesheet" type="text/css" href="/akcms/js/v1/fancybox/jquery.fancybox.css"><script src="/akcms/js/v1/fancybox/jquery.fancybox.js"></script>

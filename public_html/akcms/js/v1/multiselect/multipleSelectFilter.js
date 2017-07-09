@@ -1,6 +1,6 @@
 /*
  * Class:		multipleSelectFilter http://www.cbolson.com/sandbox/mootools/multipleSelectModalFilter/index.php
- * Authors:		Chris Bolson <chris[at]cbolson.com>, full rewrited a@kubado.ru
+ * Authors:		Chris Bolson <chris[at]cbolson.com>, full rewrited a@itTeka.ru
  * Requires: 	core 1.2.4 more: delegation
  *
  * Initiate: 	new multipleSelectFilter({options})

@@ -3,13 +3,26 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>{#title#}</title>
-    <link href="/s/css/style_u.css" rel="stylesheet" type="text/css"/>
+    <link href="/akcms/css/v1/style_u.css" rel="stylesheet" type="text/css"/>
 	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <link href="/s/css/style_adm.css" rel="stylesheet" type="text/css" />
-	<script type="text/javascript" src="/js/mootools-adm.js"></script>
+    <link href="/akcms/css/v1/style_adm.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="/akcms/js/v1/mootools-adm.js"></script>
 	{#jses#}
-	<script type="text/javascript" src="/js/pg_debug.js"></script>
-	<script type="text/javascript" src="/js/pg_units.js"></script>
+	<script type="text/javascript" src="/akcms/js/v1/modalbox.js"></script>
+	<script type="text/javascript" src="/akcms/js/v1/errortips.js"></script>
+	<script type="text/javascript" src="/akcms/js/v1/JsHttpRequest.js"></script>
+	<script type="text/javascript" src="/akcms/js/v1/datepicker.js"></script>
+	<script type="text/javascript" src="/akcms/js/v1/tiny_mce/tiny_mce.js"></script>
+	<script type="text/javascript" src="/akcms/js/v1/textboxlist/TextboxList.js"></script>
+	<script type="text/javascript" src="/akcms/js/v1/textboxlist/TextboxList.Autocomplete.js"></script>
+	<script type="text/javascript" src="/akcms/js/v1/textboxlist/TextboxList.Autocomplete.Binary.js"></script>
+	<link href="/akcms/css/v1/style_e.css" rel="stylesheet" type="text/css"/>
+	<link href="/akcms/js/v1/textboxlist/TextboxList.css" rel="stylesheet" type="text/css" />
+	<link href="/akcms/js/v1/textboxlist/TextboxList.Autocomplete.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="/akcms/js/v1/pg_ed.js"></script>
+
+	<script type="text/javascript" src="/akcms/js/v1/pg_debug.js"></script>
+	<script type="text/javascript" src="/akcms/js/v1/pg_units.js"></script>
 </head>
 
 <body>

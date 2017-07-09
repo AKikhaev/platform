@@ -140,7 +140,7 @@ window.addEvent('domready', function() {
 			});
 			glrnameinp.fireEvent('keyup');
 			glrdescinp.set('disabled',false);
-			new Element('iframe',{'id':'glrmultfrm','src':'/js/plupload/_u_glr.html?glr='+thisglr.id_glr+'&rnd='+Math.random(1,999999)+'&url='+currpage.pageurl}).inject(multidiv);
+			new Element('iframe',{'id':'glrmultfrm','src':'/akcms/js/v1/plupload/_u_glr.html?glr='+thisglr.id_glr+'&rnd='+Math.random(1,999999)+'&url='+currpage.pageurl}).inject(multidiv);
 		};
         var glrdescinp = new Element('textarea',{'type':'text','name':'glrdescinp','id':'glrdescinp','disabled':'disabled','value':thisglr.glr_desc,'style':'width: 410px;background-color:inherit;border:1px solid #aaaaaa; color: #fff; padding-right:0;'}).addEvent('blur', function() {
                 if (thisglr.glr_desc!=this.value && thisglr.id_glr>0) {

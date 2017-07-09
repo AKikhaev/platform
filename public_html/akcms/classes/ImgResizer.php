@@ -229,7 +229,7 @@ class ImgResizer {
 		
 		if ($output===1) {
 			header('Content-type: '.$this->imginfo['mime']); 
-			header('X-Powered-By: kubado.ru');
+			header('X-Powered-By: itTeka.ru');
 			imageinterlace($dst,1);
 			ImageJpeg($dst,null,90);
 			exit();
@@ -262,7 +262,7 @@ class ImgResizer {
 
 		if ($output===true) {
 			header('Content-type: '.$this->imginfo['newmime']);
-			header('X-Powered-By: kubado.ru');
+			header('X-Powered-By: itTeka.ru');
 			@readfile($pathstr);#
 			#ImageJpeg($dst,null,90);#
 			exit();

@@ -55,7 +55,7 @@ class Pg_CtlgHeads extends PgUnitAbstract {
 				//$res .= '<div class="newsitem'.($ctlgItem['news_enabled']=='f'?' imtdsbl':'').'" id="newsi'.$ctlgItem['news_id'].'"><div class="newidate">'.DtTmToDtStr($newsItem['news_date']).'</div><div class="newihead">'.$newsItem['news_head'].'</div><div class="newicnt">'.$newsItem['news_short'].($newsItem['news_detaillink']=='t'?' <a href="/'.$page->pageMainUri.'n'.$newsItem['news_id'].'/">Подробнее...</a>':'').'</div></div>';
 			}
 			$res .= '<div class="clrbth"></div></div>';
-			//if ($editMode) $res .= '<script type="text/javascript" src="/js/pg_ctlg_ed.js"></script><script type="text/javascript">var ctlgis='.json_encode($ctlg_items).';</script>';
+			//if ($editMode) $res .= '<script type="text/javascript" src="/akcms/js/v1/pg_ctlg_ed.js"></script><script type="text/javascript">var ctlgis='.json_encode($ctlg_items).';</script>';
 		return $res;
 	}
   

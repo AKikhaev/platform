@@ -389,6 +389,7 @@ class core {
             unset($GLOBALS['shapes']);
             unset($GLOBALS['shape']);
             unset($GLOBALS['Cacher']);
+            unset($GLOBALS['pagecontent']);
             $GlobalVars = print_r($GLOBALS,true);
             $GlobalVars = preg_replace('/Array\n\s*/','Array',$GlobalVars);
             $GlobalVars = preg_replace('/\n\s+\(/','(',$GlobalVars);

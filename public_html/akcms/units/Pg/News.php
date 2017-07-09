@@ -254,7 +254,7 @@ class Pg_News extends PgUnitAbstract {
 			$newsItem = $dataset[0];
 			$res .= '<div id="news"><div class="newsitem" id="newsi'.$newsItem['news_id'].'"><div class="newidate">'.DtDbFormatDate('d/m/Y',$newsItem['news_date']).'</div><div class="newicnt">'.$newsItem['news_content'].'</div></div></div>';  
 			$res .= '<div class="news_under"><a href="/'.$page->pageMainUri.'" title="Все новости">Все новости <img src="/img/arr_r.gif" border="0" alt="" height="7" width="8" /></a></div>'; 
-			if ($editMode) $res .= '<script type="text/javascript" src="/js/pg_news_ed.js"></script><script type="text/javascript">var newsi='.json_encode(array($newsItem['news_id']=>$newsItem,'noadd'=>true)).';</script>';
+			if ($editMode) $res .= '<script type="text/javascript" src="/akcms/js/v1/pg_news_ed.js"></script><script type="text/javascript">var newsi='.json_encode(array($newsItem['news_id']=>$newsItem,'noadd'=>true)).';</script>';
 		} elseif ((count($this->unitParam)==0) || (count($this->unitParam)==1?preg_match('/^\d{1,3}$/',$this->unitParam[0])==1:false))
 		{
 			$pgNum = 1;	if (count($this->unitParam)==1) $pgNum = $this->unitParam[0]>0?$this->unitParam[0]:1;
@@ -282,7 +282,7 @@ class Pg_News extends PgUnitAbstract {
 			$res .= '</div>';
 			if ($pgNums>1)
 			$res .= '<div class="pager">'.makePager($countRecords, $pgSize, $pgNum, '/'.$page->pageMainUri.'{pg}/').'</div>';
-			if ($editMode) $res .= '<script type="text/javascript" src="/js/pg_news_ed.js"></script><script type="text/javascript">var newsi='.json_encode($news_items).';</script>';
+			if ($editMode) $res .= '<script type="text/javascript" src="/akcms/js/v1/pg_news_ed.js"></script><script type="text/javascript">var newsi='.json_encode($news_items).';</script>';
 		} else throw new CmsException("page_not_found");
 		return $res;
 	}

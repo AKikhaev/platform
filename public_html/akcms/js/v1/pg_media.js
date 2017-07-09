@@ -9,7 +9,7 @@ window.addEvent('domready', function() {
 				new Element('div', {'id':'pc' + p_count}).inject(aitem.addClass('hidden'), 'after');
 				if (!Browser.ie) aitem.destroy();
 				if (Browser.ie7!=undefined) {
-					players.push(new Swiff('/js/player/player.swf', {
+					players.push(new Swiff('/akcms/js/v1/player/player.swf', {
 					id: 'po'+p_count,
 					width: 480,
 					height: p_h,
@@ -24,7 +24,7 @@ window.addEvent('domready', function() {
 				}
 				else {
 					var po = jwplayer('pc' + p_count).setup({
-						'flashplayer':'/js/player/player.swf',
+						'flashplayer':'/akcms/js/v1/player/player.swf',
 						'id':'po' + p_count,
 						'width':'480',
 						'height':p_h,

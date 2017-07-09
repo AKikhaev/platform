@@ -69,7 +69,7 @@ class Pg_Advert extends PgUnitAbstract {
 		$res = '<div id="adedit"></div>';
 		$editMode = $this->hasRight() && core::$inEdit;
 		$pageLinkUri = ($editMode?'_/':'').$page->pageMainUri;
-		if ($editMode) $res .= '<script type="text/javascript">var addata='.json_encode(self::paramsGet()).';</script><script type="text/javascript" src="/js/pg_ad_ed.js"></script>';
+		if ($editMode) $res .= '<script type="text/javascript">var addata='.json_encode(self::paramsGet()).';</script><script type="text/javascript" src="/akcms/js/v1/pg_ad_ed.js"></script>';
 		return $res;
 	}
   
