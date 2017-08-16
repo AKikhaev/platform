@@ -98,7 +98,8 @@ function sendMailHTML($to, $subject, $message, $headersAdds = '', $from = 'norep
   return mail($to, $subject, $message, $headers);
 }
 
-function sendTelegram($text,$to='203405254',$nitify = false,$web = false) {
+function sendTelegram($text,$to=null,$nitify = true,$web = false) {
+    if ($to==null) $to = '203405254';
     $auth = '276469341:AAE1A1kt1APsm8WsmxCvgFiOOc0BAnVaOZg';
     $url = 'https://api.telegram.org/bot'.$auth.'/sendMessage?'.http_build_query(array(
             'chat_id'=>$to,
