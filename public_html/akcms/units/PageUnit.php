@@ -1279,7 +1279,7 @@ class PageUnit extends CmsPage {
 			$shape['menuedit'] = self::buildAdminMenu($this->pageMenu,(core::$inEdit?'_/':'')); #
 		} 
 		if (!core::$inEdit) {
-			VisualTheme::buildPageExtension($this,$editMode); // Расширение страницы под конкретный сайт находится в теме
+			VisualTheme::buildPageExtension($this); // Расширение страницы под конкретный сайт находится в теме
 		}
 
         $shape['pageuri'] = $this->pageUri;

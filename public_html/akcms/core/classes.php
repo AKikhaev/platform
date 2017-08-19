@@ -370,6 +370,8 @@ class core {
     {
         Global $cfg;
         if (self::$GlobalErrors!='') {
+            if (mb_stripos(self::$ErrorFirstTitle,'page_not_found')!==false && mb_stripos(self::$ErrorFirstTitle,'.js.map/')!==false) return;
+
             $emailTo = $cfg['email_error'];
             $inf = "sessioninfo:\n";
             //if (isset($_SERVER['SERVER_NAME'])) $inf .= " addr: " . $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] . "\n";
@@ -488,7 +490,7 @@ class core {
 }
 class shp{
     static $editMode = false;
-    static function edtble($html, $vars=array()) //Возвращает готовый HTML код
+    static function edtble(&$html, $vars=array()) //Возвращает готовый HTML код
     {
         $html=preg_replace_callback('/{#(e):(\w+)#}/u',function($matches){
             var_dump__($matches);

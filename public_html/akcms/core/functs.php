@@ -157,10 +157,11 @@ function var_export__($var) {
     exit();
 }
 
-function var_log($var,$js=true) {
+function var_log($var) {
+    $var = func_get_args();
     ///$stacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS); $line = $stacktrace['line'];
-    if ($js) echo '<script>console.log('.json_encode($var).');</script>';
-    else die(json_encode($var));
+        echo '<script>console.log('.json_encode(count($var)==1?$var[0]:$var).');</script>';
+    //else die(json_encode($var));
 }
 
 

@@ -46,20 +46,18 @@ try {
         } else {
             $html = '';
             #if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') var_dump__($pathstr);
-            #if (core::$renderPage || !$Cacher->cache_read($pathstr,$html))
+            if (core::$renderPage || !$Cacher->cache_read($pathstr,$html))
             {
                 $pagecontent = $page->getContent();
-
                 $pagecontent = preg_replace('/\<img\s/','<img itemprop="image" ',$pagecontent,1);
-
                 $shape['title'] = $page->getTitle();
-                #$shape['worktime'] = (microtime(true)-core::$time_start);
 
                 $html = shp::tmpl('pages/'.$pageTemplate,array('content'=>$pagecontent));
                 $html = shp::str($html, $shape, false);
+                VisualTheme::replacementsEditable($html, $page);
                 //$html = Minify_HTML::minify($html);
 
-                #if (!core::$userAuth && $page->canCache()) $Cacher->cache_write($pathstr,$html,600);
+                //if (!core::$userAuth && $page->canCache()) $Cacher->cache_write($pathstr,$html,600);
             }
             core::$outputData = $html;
             unset($html);
