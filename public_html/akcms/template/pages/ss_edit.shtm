@@ -5,25 +5,31 @@
 	<title></title>
     <link href="/akcms/css/v1/style_u.css" rel="stylesheet" type="text/css">
 	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <!--link href="/akcms/css/v1/style_adm.css" rel="stylesheet" type="text/css"-->
-	<script type="text/javascript" src="/akcms/js/v1/mootools-adm.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script type="text/javascript" src="/akcms/js/v1/tiny_mce/tiny_mce.js"></script>
     <script type="text/javascript">
-        var savethis = function(callback){
-            var arrPost = {
-                'data':tinyMCE.get('mce_fullscreen').getContent(),//valueedit
-                'id':'{#id#}'
-            };
-            var jsonRequest = new Request.JSON({url: '/ajx/_sys/_sse_save', onComplete: function(sres){
-                if (sres=='t') parent.window['editdiv'].html(arrPost.data);
-                if (callback!=undefined) callback(sres=='t');
-            }}).post(arrPost);
-        };
         var fullscreen_on = function myCustomInitInstance(ed) {
-            if(ed.editorId != 'mce_fullscreen')
-                ed.execCommand('mceFullScreen');
-        }
-        window.addEvent('domready', function() {
+            if(ed.editorId !== 'mce_fullscreen') ed.execCommand('mceFullScreen');
+        };
+        jQuery(document).ready(function() {
+            $('#valueedit').html(parent.window['editdiv'].html());
+            var savethis = function(callback){
+                var arrPost = {
+                    'data':tinyMCE.get('mce_fullscreen').getContent(),//valueedit
+                    'code':parent.window['editdiv'].data('code'),
+                    'mult':parent.window['editdiv'].data('mult')
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: '/ajx/'+parent._akcms.uri+'_sse_save',
+                    data: arrPost,
+                    success: function (sres) {
+                        if (sres === 't') parent.window['editdiv'].html(arrPost.data);
+                        if (callback !== undefined) callback(sres === 't');
+                    },
+                    dataType: 'json'
+                });
+            };
             var params = {
                 mode : "textareas",
                 theme : "advanced",
@@ -74,18 +80,12 @@
                     });
                 }
             };
-            if ('{#multiline#}'!='t') {
+            if (parent.window['editdiv'].data('mult') !== 'm') {
                 params.force_br_newlines=true;
                 params.force_p_newlines=false;
             }
             tinyMCE.init(params);
             tinyMCE.execCommand('mceAddControl', false, 'valueedit');
-            $$('.btnsave').addEvent('click',function(){
-                savethis(function(res){
-                    if (res) parent.window.location.reload();
-                    else alert('Не удалось сохранить данные.');
-                });
-            });
         });
     </script>
     <style type="text/css">
@@ -94,6 +94,6 @@
 
 <body>
         <div style="text-align: right"><input class="btnsave" type="button" value="Сохранить"/></div>
-        <textarea id="valueedit">{#value#}</textarea>
+        <textarea id="valueedit"></textarea>
 </body>
 </html>

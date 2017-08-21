@@ -370,7 +370,7 @@ class core {
     {
         Global $cfg;
         if (self::$GlobalErrors!='') {
-            if (mb_stripos(self::$ErrorFirstTitle,'page_not_found')!==false && mb_stripos(self::$ErrorFirstTitle,'.js.map/')!==false) return;
+            if (mb_stripos(self::$ErrorFirstTitle,'page_not_found')!==false && mb_substr(self::$ErrorFirstTitle,-5,5)=='.map/') return;
 
             $emailTo = $cfg['email_error'];
             $inf = "sessioninfo:\n";

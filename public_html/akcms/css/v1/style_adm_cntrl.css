@@ -14,9 +14,11 @@ body {
     top: 0;
     width: 100%;
     z-index: 8011;
-    background-color: #414041;
-	background: url(/img/adm/adm_tp.png) repeat-x;
-    height: 28px;
+    background-color: #323132;
+    -webkit-box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.62);
+    -moz-box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.62);
+    box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.62);
+    height: 25px;
 }
 .admcntrl {
     /* border-bottom-left-radius: 4px;
@@ -45,9 +47,41 @@ body {
     text-align: left !important;
 }
 
-.ss_edithl {
-    background-color: rgba(255, 255, 84, 0.55) !important;
+div.ss_edit {
+   display: inline;
+}
+.ss_edithl,.ss_edithl>p{
+    background-color: #fdffaf !important;
     color: #000000 !important;
     text-decoration: underline !important;
+    text-decoration-color: #fdffaf !important;
     cursor: copy;
+    -webkit-box-shadow: inset 0px 0px 1px 0px rgba(0,0,0,0.45) !important;
+    -moz-box-shadow: inset 0px 0px 1px 0px rgba(0,0,0,0.45) !important;
+    box-shadow: inset 0px 0px 1px 0px rgba(0,0,0,0.45) !important;
+    min-height: 5px !important;
+    min-width: 5px !important;
+}
+.ss_edithl:empty:before,.ss_edithl:empty:after {
+    content: "\00a0";
+}
+.ss_edithl[data-hint]:hover {} /* IE10 без этой строчки не работает */
+.ss_edithl[data-hint]:hover:after {
+    opacity: 1;
+    -webkit-transition: opacity 0.2s 50ms ease;
+    -moz-transition: opacity 0.2s 50ms ease;
+    -o-transition: opacity 0.2s 50ms ease;
+    transition: opacity 0.2s 50ms ease;
+    position: absolute;
+    content: attr(data-hint);
+    white-space: pre;
+    top: 90%;
+    left: 60%;
+    border: 1px solid #999;
+    border-radius: 3px;
+    font: normal 11px Tahoma;
+    padding: 5px 5px 5px 5px;
+    box-shadow: 3px 3px 3px -2px rgba(0,0,0,0.5);
+    z-index: 1000;
+    cursor: default;
 }

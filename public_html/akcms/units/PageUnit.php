@@ -52,8 +52,12 @@ class PageUnit extends CmsPage {
 			$this->pageUri.'_filermv' => array(
 				'func' => 'ajxFileRemove'),	
 			$this->pageUri.'_smdmstk' => array(
-				'func' => 'ajxSendMistake'),					
-			);
+				'func' => 'ajxSendMistake'),
+            $this->pageUri.'_sse' => array(
+                'func' => 'ajxSSELoad'),
+            $this->pageUri.'_sse_save' => array(
+                'func' => 'ajxSSESave'),
+		);
 		foreach ($this->pageUnits as $pageUnit)
 		{
 			$ajaxes = array_merge($ajaxes, $pageUnit->initAjx());
@@ -1170,6 +1174,54 @@ class PageUnit extends CmsPage {
 		$str .= '</ul>';
 		return $str;
 	}
+
+    function ajxSSELoad()
+    {
+        global $sql;
+        $checkRule = array();
+        $checkResult = checkForm($_GET,$checkRule);
+        if (count($checkResult)==0)
+        {
+            return GetShape('pages/ss_edit');
+        }
+        return json_encode(array('error'=>$checkResult));
+    }
+
+    function ajxSSESave()
+    {
+        global $sql;
+        $checkRule = array();
+        $checkRule[] = array('code', '/^\w{2}_\w+/');
+        $checkRule[] = array('data', '');
+        $checkRule[] = array('mult', '/^(m|s)$/');
+        $checkResult = checkForm($_POST, $checkRule, $this->hasRight());
+        if (count($checkResult) == 0) {
+            $data = $_POST;
+            list($sec,$name) = explode('_',$data['code']);
+            $secs = array(
+                'eg'=>0,
+                'ep'=>$this->page['section_id']
+            );
+            /* @var $sql pgdb */
+            $query = $sql->pr_u('cms_sections_string',array(
+                'secs_str'=>$sql->t($data['data']),
+                'secs_multiline'=>$sql->b($data['mult']=='m'),
+            ),'sec_id='.$sql->d($secs[$sec]).' AND secs_code='.$sql->t($name));
+            $res_count = $sql->command($query);
+            if ($res_count===0) {
+                $query = $sql->pr_i('cms_sections_string',array(
+                    'sec_id'=>$sql->d($secs[$sec]),
+                    'secs_code'=>$sql->t($name),
+                    'secs_str'=>$sql->t($data['data']),
+                    'secs_multiline'=>$sql->b($data['mult']=='m'),
+                ));
+                $res_count = $sql->command($query);
+            }
+            return json_encode($res_count > 0 ? 't' : 'f');
+        }
+        return json_encode(array('error' => $checkResult));
+    }
+
 
 	#Content
 	function getContent()

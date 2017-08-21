@@ -1,36 +1,37 @@
 <link href="/akcms/css/v1/style_adm_cntrl.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript">
-jQuery(document).ready(function(){
-    $(document.body).append($('<div class="admcntrl_cnt"><div id="admcntrl" class="admcntrl"><nobr><img class="admlogo" width="212" height="19" src="/img/adm/adm_logo.png"><img id="admexit" src="/img/edt/btnlgout.png" title="Выход"><a href="/_/"><img src="/img/edt/btnhome.png" title="На главную редактора"></a><a href="/_/{#pageMainUri#}"><img src="/img/edt/btnadm.gif" title="Редактировать страницу"></a></nobr></div></div>'));
-    $('#admexit').click(function(){if (confirm('Выйти из панели управления?')) document.location='/_logout';});
-    //Редактор
-    var ss_edits=$('.ss_edit').click(function(e){
-        if (e.ctrlKey) {
-            window['editdiv'] = $(this);
-            e.preventDefault();
-            e.stopPropagation();
-            $.fancybox.open({
-                'type':'iframe',
-                'href':'/ajx/_sys/_sse?id='+$(this).data('id'),
-                'width': $(document).width()*.9,
-                'height': $(document).height()*.9,
-                //'autoScale':true,
-                //'autoSize':true,
-                //'autoDimensions':true,
-                helpers : {
-                    overlay : {
-                        locked : false,
-                        closeClick : false
+    var _akcms = _akcms || {}; _akcms.uri = '{#pageMainUri#}';
+    jQuery(document).ready(function(){
+        $(document.body).append($('<div class="admcntrl_cnt"><div id="admcntrl" class="admcntrl"><nobr><img class="admlogo" width="212" height="19" src="/img/adm/adm_logo.png" alt=""><img id="admexit" src="/img/edt/btnlgout.png" title="Выход"><a href="/_/"><img src="/img/edt/btnhome.png" title="На главную редактора"></a><a href="/_/{#pageMainUri#}"><img src="/img/edt/btnadm.gif" title="Редактировать страницу"></a></nobr></div></div>'));
+        $('#admexit').click(function(){if (confirm('Выйти из панели управления?')) document.location='/_logout';});
+        //Редактор
+        var ss_edits=$('.ss_edit').click(function(e){
+            if (e.ctrlKey) {
+                window['editdiv'] = $(this);
+                e.preventDefault();
+                e.stopPropagation();
+                $.fancybox.open({
+                    'type':'iframe',
+                    'href':'/ajx/'+_akcms.uri+'_sse?code='+$(this).data('code')+'&mult='+$(this).data('mult'),
+                    'width': $(document).width()*.9,
+                    'height': $(document).height()*.9,
+                    //'autoScale':true,
+                    //'autoSize':true,
+                    //'autoDimensions':true,
+                    helpers : {
+                        overlay : {
+                            locked : false,
+                            closeClick : false
+                        }
                     }
-                }
-            });
-        }
+                });
+            }
+        });
+        $(window).keydown(function(evt) {
+            if (evt.which == 17) ss_edits.addClass('ss_edithl');
+        }).keyup(function(evt) {
+            if (evt.which == 17) ss_edits.removeClass('ss_edithl');
+        });
+        //parent.jQuery.fancybox.close();
     });
-    $(window).keydown(function(evt) {
-        if (evt.which == 17) ss_edits.addClass('ss_edithl');
-    }).keyup(function(evt) {
-        if (evt.which == 17) ss_edits.removeClass('ss_edithl');
-    });
-    //parent.jQuery.fancybox.close();
-});
 </script><link rel="stylesheet" type="text/css" href="/akcms/js/v1/fancybox/jquery.fancybox.css"><script src="/akcms/js/v1/fancybox/jquery.fancybox.js"></script>
