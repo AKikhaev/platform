@@ -2,11 +2,12 @@
 <script type="text/javascript">
     var _akcms = _akcms || {}; _akcms.uri = '{#pageMainUri#}';
     jQuery(document).ready(function(){
+        var editable_visible = false;
         $(document.body).append($('<div class="admcntrl_cnt"><div id="admcntrl" class="admcntrl"><nobr><img class="admlogo" width="212" height="19" src="/img/adm/adm_logo.png" alt=""><img id="admexit" src="/img/edt/btnlgout.png" title="Выход"><a href="/_/"><img src="/img/edt/btnhome.png" title="На главную редактора"></a><a href="/_/{#pageMainUri#}"><img src="/img/edt/btnadm.gif" title="Редактировать страницу"></a></nobr></div></div>'));
         $('#admexit').click(function(){if (confirm('Выйти из панели управления?')) document.location='/_logout';});
         //Редактор
         var ss_edits=$('.ss_edit').click(function(e){
-            if (e.ctrlKey) {
+            if (editable_visible) {
                 window['editdiv'] = $(this);
                 e.preventDefault();
                 e.stopPropagation();
@@ -15,6 +16,7 @@
                     'href':'/ajx/'+_akcms.uri+'_sse?code='+$(this).data('code')+'&mult='+$(this).data('mult'),
                     'width': $(document).width()*.9,
                     'height': $(document).height()*.9,
+                    'top':40,
                     //'autoScale':true,
                     //'autoSize':true,
                     //'autoDimensions':true,
@@ -27,11 +29,22 @@
                 });
             }
         });
+        var update_editable_visible = function(state) {
+            if (state==editable_visible) return;
+            if (state) {
+                editable_visible = true;
+                ss_edits.addClass('ss_edithl');
+            } else {
+                ss_edits.removeClass('ss_edithl');
+                editable_visible = false;
+            }
+        };
         $(window).keydown(function(evt) {
-            if (evt.which == 17) ss_edits.addClass('ss_edithl');
+            if ((evt.which == 17 || evt.which == 145) && !editable_visible) update_editable_visible(true);
         }).keyup(function(evt) {
-            if (evt.which == 17) ss_edits.removeClass('ss_edithl');
+            if (evt.which == 17) update_editable_visible(false);
         });
         //parent.jQuery.fancybox.close();
     });
-</script><link rel="stylesheet" type="text/css" href="/akcms/js/v1/fancybox/jquery.fancybox.css"><script src="/akcms/js/v1/fancybox/jquery.fancybox.js"></script>
+</script>
+<link rel="stylesheet" type="text/css" href="/akcms/js/v1/fancybox/jquery.fancybox.css"><script src="/akcms/js/v1/fancybox/jquery.fancybox.js"></script>

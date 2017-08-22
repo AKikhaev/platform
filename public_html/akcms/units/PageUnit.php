@@ -1203,19 +1203,30 @@ class PageUnit extends CmsPage {
                 'ep'=>$this->page['section_id']
             );
             /* @var $sql pgdb */
-            $query = $sql->pr_u('cms_sections_string',array(
-                'secs_str'=>$sql->t($data['data']),
-                'secs_multiline'=>$sql->b($data['mult']=='m'),
-            ),'sec_id='.$sql->d($secs[$sec]).' AND secs_code='.$sql->t($name));
-            $res_count = $sql->command($query);
-            if ($res_count===0) {
-                $query = $sql->pr_i('cms_sections_string',array(
-                    'sec_id'=>$sql->d($secs[$sec]),
-                    'secs_code'=>$sql->t($name),
-                    'secs_str'=>$sql->t($data['data']),
-                    'secs_multiline'=>$sql->b($data['mult']=='m'),
-                ));
+            if ($data['code']=='ep_content') {
+
+                $query = $sql->pr_u('cms_sections', array(
+                    'sec_content' => $sql->t($data['data']),
+                ), 'section_id=' . $sql->d($secs[$sec]));
                 $res_count = $sql->command($query);
+
+            } else {
+
+                $query = $sql->pr_u('cms_sections_string', array(
+                    'secs_str' => $sql->t($data['data']),
+                    'secs_multiline' => $sql->b($data['mult'] == 'm'),
+                ), 'sec_id=' . $sql->d($secs[$sec]) . ' AND secs_code=' . $sql->t($name));
+                $res_count = $sql->command($query);
+                if ($res_count === 0) {
+                    $query = $sql->pr_i('cms_sections_string', array(
+                        'sec_id' => $sql->d($secs[$sec]),
+                        'secs_code' => $sql->t($name),
+                        'secs_str' => $sql->t($data['data']),
+                        'secs_multiline' => $sql->b($data['mult'] == 'm'),
+                    ));
+                    $res_count = $sql->command($query);
+                }
+
             }
             return json_encode($res_count > 0 ? 't' : 'f');
         }

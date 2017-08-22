@@ -164,6 +164,16 @@ function var_log($var) {
     //else die(json_encode($var));
 }
 
+function var_log_terminal($var) {
+    $var = func_get_args();
+    $var = count($var)==1?$var[0]:$var;
+    $printVar = print_r($var,true);
+    $printVar = preg_replace('/Array\n\s*/','Array',$printVar);
+    $printVar = preg_replace('/\n\s+\(/','(',$printVar);
+    $printVar = preg_replace('/\n\s+\)/',')',$printVar);
+    $printVar = preg_replace('/\n\s*\n/',"\n",$printVar);
+    core::writeToTerminal("\x07".$printVar);
+}
 
 function print_r_($var) {
 	$out = preg_replace('/\s*\n\(/'," (",call_user_func_array('print_r',array($var,true)));

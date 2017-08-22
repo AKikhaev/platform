@@ -17,6 +17,5 @@ User-agent: gigabot
 Disallow: /
 
 User-agent: *
-Allow: /
-Host: www.yugtimes.com
+Disallow: /
 

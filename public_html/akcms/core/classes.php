@@ -497,8 +497,12 @@ class shp{
         },$html);
         return $html;
     }
-    static function str($html, $vars, $replace_once = false) //Возвращает готовый HTML код
+    static function str($html, &$vars, $replace_once = false) //Возвращает готовый HTML код
     {
+        $html=preg_replace_callback('/{#tmpl:(.*?)#}/u',function($matches) use (&$vars,$replace_once){
+            return shp::tmpl($matches[1], $vars, $replace_once);
+        },$html);
+
         foreach ($vars as $key => $val) if ($replace_once) {
             $html=preg_replace('/{#'.$key.'#}/',$val,$html,1);
             $html=str_replace('{#'.$key.'#}','',$html);
