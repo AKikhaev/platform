@@ -228,11 +228,12 @@ class PageUnit extends CmsPage {
     }
     private function _getMenuItems($parentId,$howchild,$showHidden = false,$prefix=false)
     {
-		global $sql;
+        global $sql;
 		$order = $this->_howchildToOrder($howchild); 
 		if (core::$inEdit && $order==false) {
-			$order = $this->_howchildToOrder(1);
-			$wherespec = ($showHidden?'and (not sec_enabled or not sec_showinmenu or now()<=sec_from)':'and sec_enabled and sec_showinmenu and now()>sec_from').' and not sec_system';
+            $order = 'sec_enabled,sec_showinmenu,sec_from DESC';
+			$wherespec = ($showHidden?' ':'and sec_enabled and sec_showinmenu and now()>sec_from').' and not sec_system';
+			//'and (not sec_enabled or not sec_showinmenu or now()<=sec_from)'
 		}
 		else {
 			if ($order==false) return false;
@@ -1155,7 +1156,7 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));
 	}
 
-	static function buildAdminMenu($subItems,$urlprefix='',$ul='',$li='')
+	static function buildAdminMenu(&$subItems,$urlprefix='',$ul='',$li='')
 	{
 		$str = '<ul class="mnu_ul'.$ul.'">';
 		foreach($subItems as $subItem) {
@@ -1186,7 +1187,7 @@ class PageUnit extends CmsPage {
         $checkRule = array();
         $checkRule[] = array('code', '/^\w{2}_\w+/');
         $checkRule[] = array('data', '');
-        $checkRule[] = array('mult', '/^(m|s)$/');
+        $checkRule[] = array('mult', '/^(m|s|l)$/');
         $checkResult = checkForm($_POST, $checkRule, $this->hasRight());
         if (count($checkResult) == 0) {
             $data = $_POST;
@@ -1200,6 +1201,13 @@ class PageUnit extends CmsPage {
 
                 $query = $sql->pr_u('cms_sections', array(
                     'sec_content' => $sql->t($data['data']),
+                ), 'section_id=' . $sql->d($secs[$sec]));
+                $res_count = $sql->command($query);
+
+            } elseif ($data['code']=='ep_namefull') {
+
+                $query = $sql->pr_u('cms_sections', array(
+                    'sec_namefull' => $sql->t($data['data']),
                 ), 'section_id=' . $sql->d($secs[$sec]));
                 $res_count = $sql->command($query);
 

@@ -68,9 +68,7 @@ class CmsPage extends AclProcessor { /* page */
 	protected $cacheWholePage = true;
 	function canCache() { return $this->cacheWholePage;}
 	function noCache() { $this->cacheWholePage=false; }
-	function __construct(&$pageTemplate) {
-	    return true; //$this->title = $GLOBALS['cfg']['site_title'];
-    }
+	function __construct(&$pageTemplate) {}
 	public function getTitle() {return $this->title;}
 	function initAjx() {return array();}
 }
@@ -393,13 +391,14 @@ class core {
             unset($GLOBALS['shape']);
             unset($GLOBALS['Cacher']);
             unset($GLOBALS['pagecontent']);
+            unset($GLOBALS['e']);
             $GlobalVars = print_r($GLOBALS,true);
             $GlobalVars = preg_replace('/Array\n\s*/','Array',$GlobalVars);
             $GlobalVars = preg_replace('/\n\s+\(/','(',$GlobalVars);
             $GlobalVars = preg_replace('/\n\s+\)/',')',$GlobalVars);
             $GlobalVars = preg_replace('/\n\s*\n/',"\n",$GlobalVars);
 
-            $sent = core::writeToTerminal(
+            $sent = core::terminalWrite(
                 "\x07\x1b[2J\x1b[H\x1b[3J" .
                 "\033]0;".date('M d H:i:s ').self::$ErrorFirstTitle."\007" .
                 '=> ' . date('M d H:i:s ').self::$ErrorFirstTitle . "\n" . self::$GlobalErrors . $GlobalVars . '<=='
@@ -456,7 +455,7 @@ class core {
 
         return self::$terminals = array_reverse($out);
     }
-    public static function writeToTerminal($data,$terminal=null){
+    public static function terminalWrite($data, $terminal=null){
 
         if ($terminal==null) {
             if (!isset(self::$terminals[0])) core::getTerminalsList();
@@ -469,6 +468,8 @@ class core {
         fclose($tty);
         return $r !== false;
     }
+    public static function terminalClear($terminal=null) { self::terminalWrite("\e[2J\e[H\e[3J",$terminal); }
+    public static function terminalBeep($terminal=null) { self::terminalWrite("\x07",$terminal); }
     public static function proceedAjax(){
         global $page,$pathstr;
         /* @var $page CmsPage */

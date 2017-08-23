@@ -66,9 +66,11 @@ try {
                 $html = shp::str($html, $shape, false);
                 VisualTheme::replacementsEditable($html, $page);
                 //$html = Minify_HTML::minify($html);
-
+                //
                 //if (!core::$userAuth && $page->canCache()) $Cacher->cache_write($pathstr,$html,600);
             }
+            if (core::$testServer)
+                $html = str_replace('<head>','<head><meta name="robots" content="noindex, nofollow, noarchive"/>',$html);
             core::$outputData = $html;
             unset($html);
         }

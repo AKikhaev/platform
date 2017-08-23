@@ -172,7 +172,8 @@ function var_log_terminal($var) {
     $printVar = preg_replace('/\n\s+\(/','(',$printVar);
     $printVar = preg_replace('/\n\s+\)/',')',$printVar);
     $printVar = preg_replace('/\n\s*\n/',"\n",$printVar);
-    core::writeToTerminal("\x07".$printVar);
+    core::terminalBeep();
+    core::terminalWrite($printVar);
 }
 
 function print_r_($var) {
@@ -222,6 +223,26 @@ function assocArray2ajax($arr) {
 	$narr = array();
 	foreach ($arr as $k=>$v) $narr[] = array('k'=>$k,'v'=>$v);
 	return $narr;
+}
+
+function mb_strpos_all($haystack, $needle) {
+    $s = 0;
+    $i = 0;
+    while(is_integer($i)) {
+
+        $i = mb_strpos($haystack, $needle, $s);
+
+        if(is_integer($i)) {
+            $aStrPos[] = $i;
+            $s = $i + mb_strlen($needle);
+        }
+    }
+
+    if(isset($aStrPos)) {
+        return $aStrPos;
+    } else {
+        return false;
+    }
 }
 
 function messagesToErrorArray($messages,$errors) {

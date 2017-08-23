@@ -115,6 +115,7 @@ function LOAD_CORE() {
     }
 
     $path = array_values($path);
+    $pathlen = count($path);
     $pathstr = implode('/',$path).'/';
 
 	if (file_exists('akcms/u/config/redirect.php')) {#site redirect

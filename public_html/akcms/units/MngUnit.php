@@ -27,10 +27,6 @@ class MngUnit extends CmsPage {
 		'default'=>null
 		);
 	}
-  
-	function MngUnit(&$pageTemplate)
-	{
-	}
 
 	function ajxAuth(){
 		$checkRule = array();
