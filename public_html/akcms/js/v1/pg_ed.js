@@ -345,7 +345,7 @@ window.addEvent('domready', function() {
 				var jsonRequest = new Request.JSON({url: '/ajx/'+currpage.pageurl+'_secdrp', onComplete: function(sres) {
 					if (sres.r!=undefined?sres.r=='t':false) {
 						ajxImgInfo(item_actpanel,2);
-						if (currpage['id']==secitem['section_id']) window.location='/_/'+sres.url; else window.location.reload();
+						if (currpage['id']==secitem['section_id']) window.location='/_/'+(sres.url=='/'?'':sres.url); else window.location.reload();
 					} else ajxImgInfo(item_actpanel,3);
 				}}).post({'section_id':secitem['section_id']});
 			}
@@ -382,7 +382,7 @@ window.addEvent('domready', function() {
 				if (sres.r!=undefined?sres.r=='t':false) {
 					ajxImgInfo(item_actpanel,2);
 					secitem = arrPost;
-					if (currpage['id']==secitem['section_id'] || secId==0) window.location='/_/'+sres.url; else window.location.reload();
+					if (currpage['id']==secitem['section_id'] || secId==0) window.location='/_/'+(sres.url=='/'?'':sres.url); else window.location.reload();
 				} else {
 					ajxImgInfo(item_actpanel,3);
 					//kcms.errorsShow(tablediv,sres.error);

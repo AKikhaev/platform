@@ -97,8 +97,7 @@ function LOAD_CORE() {
     {
         core::$isAjax = true;
         unset($path[1]);
-        end($path);
-        if (mb_substr(current($path),0,1)=='_') {
+        if (mb_substr(end($path),0,1)=='_') {
             core::$ajaxAction = current($path);
             unset($path[key($path)]);
         }
