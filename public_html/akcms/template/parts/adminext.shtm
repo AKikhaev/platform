@@ -4,7 +4,7 @@
     jQuery(document).ready(function(){
         var editable_visible = false;
         $(document.body).append($('<div class="admcntrl_cnt"><div id="admcntrl" class="admcntrl"><nobr><img class="admlogo" width="212" height="19" src="/img/adm/adm_logo.png" alt=""><img id="admexit" src="/img/edt/btnlgout.png" title="Выход"><a href="/_/"><img src="/img/edt/btnhome.png" title="На главную редактора"></a><a href="/_/{#pageMainUri#}"><img src="/img/edt/btnadm.gif" title="Редактировать страницу"></a></nobr></div></div>'));
-        $('#admexit').click(function(){if (confirm('Выйти из панели управления?')) document.location='/_logout';});
+        $('#admexit').click(function(){if (confirm('Выйти из панели управления?')) document.location='/_logout/';});
         //Редактор
         var ss_edits=$('.ss_edit').click(function(e){
             if (editable_visible) {

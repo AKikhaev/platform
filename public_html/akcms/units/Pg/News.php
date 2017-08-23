@@ -7,19 +7,19 @@ class Pg_News extends PgUnitAbstract {
 	{
 		global $page;
 		return array(
-		$page->pageUri.'_newsins' => array(
+		'_newsins' => array(
 			'func' => 'ajxNewsins',
 			'object' => $this),
-		$page->pageUri.'_newssve' => array(
+		'_newssve' => array(
 			'func' => 'ajxNewssve',
 			'object' => $this),
-		$page->pageUri.'_newsiupl' => array(
+		'_newsiupl' => array(
 			'func' => 'ajxNewsIUpload',
 			'object' => $this),	
-		$page->pageUri.'_newsidrp' => array(
+		'_newsidrp' => array(
 			'func' => 'ajxNewsIDrp',
 			'object' => $this),			
-		$page->pageUri.'_newsdrp' => array(
+		'_newsdrp' => array(
 			'func' => 'ajxNewsdrp',
 			'object' => $this),
 		);

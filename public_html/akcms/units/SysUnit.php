@@ -31,15 +31,17 @@ class SysUnit extends CmsPage {						// Страницы из DB
   
 	function __construct(&$pageTemplate)
 	{
-		global $sql,$cfg;
-
-		$this->pageUri = '_sys/';
+		global $pathlen,$path;
+        if ($pathlen==2 && $path[0]=='_sys') {
+            $this->pageUri = '_sys/';
+            core::$renderPage = true;
+            foreach ($this->units as $pgUnitClass)
+            {
+                $this->pageUnits[$pgUnitClass] = new $pgUnitClass(array());
+            }
+        } else throw new CmsException('page_not_found');
 	
-		foreach ($this->units as $pgUnitClass)
-		{
-			$this->pageUnits[$pgUnitClass] = new $pgUnitClass(array());
-		}
 	}
 	
-	static function getContent() { throw new CmsException('page_not_found');	}
+	static function getContent() { throw new CmsException('page_not_found'); }
 }

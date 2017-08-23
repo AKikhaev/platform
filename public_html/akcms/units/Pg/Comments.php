@@ -6,10 +6,10 @@ class Pg_Comments extends PgUnitAbstract {
 	{
 		global $page;
 		return array(
-		$page->pageUri.'_cmntsve' => array(
+		'_cmntsve' => array(
 			'func' => 'ajxIsve',
 			'object' => $this),
-		$page->pageUri.'_cmntdrp' => array(
+		'_cmntdrp' => array(
 			'func' => 'ajxIdrp',
 			'object' => $this),
 		);

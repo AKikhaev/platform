@@ -1,4 +1,4 @@
-<?php # ������� �������
+<?php
 
 class Pg_RelSec extends PgUnitAbstract {
 	public $Injected = true;
@@ -7,10 +7,10 @@ class Pg_RelSec extends PgUnitAbstract {
 	{
 		global $page;
 		return array(
-        $page->pageUri.'_rellist' => array(
+        '_rellist' => array(
 			'func' => 'ajxRelList',
 			'object' => $this),
-        $page->pageUri.'_relassign' => array(
+        '_relassign' => array(
 			'func' => 'ajxRelAssgn',
 			'object' => $this),		
 		);

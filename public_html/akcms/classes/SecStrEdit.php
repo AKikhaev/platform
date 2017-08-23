@@ -7,10 +7,10 @@ class SecStrEdit extends PgUnitAbstract {
 	{
 		global $page;
 		return array(		
-		$page->pageUri.'_sse' => array(
+		'_sse' => array(
 			'func' => 'ajxLoad',
 			'object' => $this),
-		$page->pageUri.'_sse_save' => array(
+		'_sse_save' => array(
 			'func' => 'ajxSave',
 			'object' => $this),
 		);

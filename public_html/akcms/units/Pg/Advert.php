@@ -6,7 +6,7 @@ class Pg_Advert extends PgUnitAbstract {
 	{
 		global $page;
 		return array(
-		$page->pageUri.'_updad' => array(
+		'_updad' => array(
 			'func' => 'ajxParamsUpd',
 			'object' => $this)
 		);

@@ -83,15 +83,40 @@ function LOAD_CORE() {
 	CmsUser::init();
 	core::$userAuth = CmsUser::isLogin();
 
-	if (!isset($_SERVER['SCRIPT_URL']))  $pathstr = strtolower(urldecode($_SERVER['SCRIPT_URL']));
+	if (isset($_SERVER['SCRIPT_URL']))  $pathstr = strtolower(urldecode($_SERVER['SCRIPT_URL']));
 	else {
-		$pathstr = strtolower(urldecode($_SERVER['REQUEST_URI']));
+        $pathstr = strtolower(urldecode($_SERVER['REQUEST_URI']));
 		if (mb_strpos($pathstr,'?')!==false) $pathstr = mb_substr($pathstr,0,mb_strpos($pathstr,'?'));
 		if (mb_strpos($pathstr,'#')!==false) $pathstr = mb_substr($pathstr,0,mb_strpos($pathstr,'#'));
 		if (mb_strpos($pathstr,'&')!==false) $pathstr = mb_substr($pathstr,0,mb_strpos($pathstr,'&'));
 	}
 	$pathurl = $pathstr;
-	if (substr($pathstr,-1)!='/') $pathstr .= '/';
+
+	$path = array_filter(explode('/',$pathstr));
+    if (@$path[1]=='ajx')
+    {
+        core::$isAjax = true;
+        unset($path[1]);
+        end($path);
+        if (mb_substr(current($path),0,1)=='_') {
+            core::$ajaxAction = current($path);
+            unset($path[key($path)]);
+        }
+    }
+    elseif (@$path[1]=='_')
+    {
+        core::$inEdit = true;
+        unset($path[1]);
+        if (!core::$userAuth) throw new CmsException("login_needs");
+    }
+    elseif (substr($_SERVER['SCRIPT_URL'],-1)!='/')
+    {
+        header('Location: http://'.core::$serverName.$_SERVER['SCRIPT_URL'].'/'.substr($_SERVER['REQUEST_URI'],strlen($_SERVER['SCRIPT_URL'])));
+        exit;
+    }
+
+    $path = array_values($path);
+    $pathstr = implode('/',$path).'/';
 
 	if (file_exists('akcms/u/config/redirect.php')) {#site redirect
 		require_once('akcms/u/config/redirect.php');
@@ -105,28 +130,6 @@ function LOAD_CORE() {
 		}
 		*/
 	}
-
-	if (strpos($pathstr,'/ajx/')===0)
-	{
-		core::$isAjax = true;
-		$pathstr = substr($pathstr,4);
-	}
-	elseif (strpos($pathstr,'/_/')===0)
-	{
-		core::$inEdit = true;
-		$pathstr = substr($pathstr,2);
-		if (!core::$userAuth) throw new CmsException("login_needs");
-	}
-	elseif (substr($_SERVER['SCRIPT_URL'],-1)!='/')
-	{
-		header('Location: http://'.core::$serverName.$_SERVER['SCRIPT_URL'].'/'.substr($_SERVER['REQUEST_URI'],strlen($_SERVER['SCRIPT_URL'])));
-		exit;
-	}
-
-	foreach (explode('/',$pathstr) as $item)
-		if ($item != '') $path[] = $item;
-	$pathstr = implode('/',$path);
-	$pathlen = count($path);
 
     require_once('akcms/u/VisualTheme.php');
 }

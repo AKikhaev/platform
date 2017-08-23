@@ -7,43 +7,43 @@ class Pg_Gallery extends PgUnitAbstract {
 	{
 		global $page;
 		return array(
-		$page->pageUri.'_glrdrp' => array(
-			'func' => 'ajxGlrDrp',
-			'object' => $this),
-		$page->pageUri.'_glrnew' => array(
-			'func' => 'ajxGlrNew',
-			'object' => $this),			
-		$page->pageUri.'_glrupl' => array(
-			'func' => 'ajxGlrUpload',
-			'object' => $this),
-		$page->pageUri.'_glriupl' => array(
-			'func' => 'ajxGlrIUpload',
-			'object' => $this),
-		$page->pageUri.'_glrcpghdr' => array(
-			'func' => 'ajxGlrChHdr',
-			'object' => $this),
-		$page->pageUri.'_glrcpgdrp' => array(
-			'func' => 'ajxGlrCpgDrp',
-			'object' => $this),
-		$page->pageUri.'_glrnameupd' => array(
-			'func' => 'ajxGlrNameUpd',
-			'object' => $this),
-        $page->pageUri.'_glrdescupd' => array(
-            'func' => 'ajxGlrDescUpd',
-            'object' => $this),
-        $page->pageUri.'_glrcpgnmupd' => array(
-			'func' => 'ajxGlrCpgNameUpd',
-			'object' => $this),
-        $page->pageUri.'_glrlist' => array(
-			'func' => 'ajxGlrList',
-			'object' => $this),
-        $page->pageUri.'_glrsetordr' => array(
-			'func' => 'ajxGlrSetOrder',
-			'object' => $this),
-		$page->pageUri.'_tst' => array(
-			'func' => 'ajxTst',
-			'object' => $this),			
-		);
+            '_glrdrp' => array(
+                'func' => 'ajxGlrDrp',
+                'object' => $this),
+            '_glrnew' => array(
+                'func' => 'ajxGlrNew',
+                'object' => $this),
+            '_glrupl' => array(
+                'func' => 'ajxGlrUpload',
+                'object' => $this),
+            '_glriupl' => array(
+                'func' => 'ajxGlrIUpload',
+                'object' => $this),
+            '_glrcpghdr' => array(
+                'func' => 'ajxGlrChHdr',
+                'object' => $this),
+            '_glrcpgdrp' => array(
+                'func' => 'ajxGlrCpgDrp',
+                'object' => $this),
+            '_glrnameupd' => array(
+                'func' => 'ajxGlrNameUpd',
+                'object' => $this),
+            '_glrdescupd' => array(
+                'func' => 'ajxGlrDescUpd',
+                'object' => $this),
+            '_glrcpgnmupd' => array(
+                'func' => 'ajxGlrCpgNameUpd',
+                'object' => $this),
+            '_glrlist' => array(
+                'func' => 'ajxGlrList',
+                'object' => $this),
+            '_glrsetordr' => array(
+                'func' => 'ajxGlrSetOrder',
+                'object' => $this),
+            '_tst' => array(
+                'func' => 'ajxTst',
+                'object' => $this),
+        );
 	}
   
 	function _rigthList()

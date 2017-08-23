@@ -7,22 +7,22 @@ class Pg_Ctlg extends PgUnitAbstract {
 	{
 		global $page;
 		return array(
-		$page->pageUri.'_catisve' => array(
+		'_catisve' => array(
 			'func' => 'ajxCatiSave',
 			'object' => $this),
-		$page->pageUri.'_catiiupl' => array(
+		'_catiiupl' => array(
 			'func' => 'ajxCatiIUpload',
 			'object' => $this),	
-		$page->pageUri.'_catiidrp' => array(
+		'_catiidrp' => array(
 			'func' => 'ajxCatiIDrp',
 			'object' => $this),			
-		$page->pageUri.'_catidrp' => array(
+		'_catidrp' => array(
 			'func' => 'ajxCatidrp',
 			'object' => $this),
-        $page->pageUri.'_catlist' => array(
+        '_catlist' => array(
 			'func' => 'ajxCatiList',
 			'object' => $this),
-        $page->pageUri.'_catsetordr' => array(
+        '_catsetordr' => array(
 			'func' => 'ajxCatiSetOrder',
 			'object' => $this),
 		);

@@ -1,4 +1,5 @@
-<?php # Карта сайта в виде структуры <ul>
+<?php
+
 class Pg_SiteMap extends PgUnitAbstract {
 
 	function initAjx()

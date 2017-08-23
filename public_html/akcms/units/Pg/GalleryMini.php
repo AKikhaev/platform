@@ -7,7 +7,7 @@ class Pg_GalleryMini extends Pg_Gallery {
 	{
 		global $page;
 		$ajxs = parent::initAjx();
-		$ajxs[$page->pageUri.'_glrsec'] = array(
+		$ajxs['_glrsec'] = array(
 			'func' => 'ajxGlrSec',
 			'object' => $this);
 		return $ajxs;

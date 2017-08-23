@@ -11,29 +11,40 @@ try {
     $pageTemplate = '';
     core::$renderPage = core::$userAuth || core::$inEdit || core::$isAjax;
 
-    if ($pathlen==1 && ($path[0]=='_auth' || $path[0]=='_mng' || $path[0]=='_logout')) {
-        $pageClass = 'MngUnit';
-        core::$renderPage = true;
-    }
-    elseif ($pathlen==2 && $path[0]=='feed')
-        $pageClass = 'FeedUnit';
-    elseif ($pathlen==2 && $path[0]=='_sys') {
-        $pageClass = 'SysUnit';
-        core::$renderPage = true;
-    }
-    elseif($pathlen==1 && $path[0]=='bot_test') {
+    if($pathlen==1 && $path[0]=='bot_test') {
         $tb = new TelegramBot();
         $tb->webHook();
         die('.');
     }
-    else
-        $pageClass = 'PageUnit';
+    else {
 
-    //sendTelegram($pathurl.' '.core::get_client_ip());
+        //sendTelegram($pathurl.' '.core::get_client_ip());
+        $classes = array(
+            'PageUnit',
+            'MngUnit',
+            'SysUnit',
+            //'FeedUnit',
+            'TmplMapperUnit',
+        );
 
-    /* @var  $page CmsPage */
-    $page = new $pageClass($pageTemplate);
+        /* @var  $page CmsPage */
+        $page = null;
+        foreach ($classes as $pageClass) {
+            try {
+                $page = new $pageClass($pageTemplate);
+                break;
+            } catch (Exception $e) {
+                $page = null;
+                if ($e->getMessage() != 'page_not_found') {
+                    throw $e;
+                }
+            }
+        }
+        if (is_null($page)) throw $e;
+    }
+
     #if ($pageClass=='') throw new CmsException("page_not_found");
+
     if (core::$isAjax) {
         core::$outputData .= core::proceedAjax();
     }
@@ -46,12 +57,11 @@ try {
         } else {
             $html = '';
             #if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') var_dump__($pathstr);
-            if (core::$renderPage || !$Cacher->cache_read($pathstr,$html))
+            //if (core::$renderPage || !$Cacher->cache_read($pathstr,$html))
             {
                 $pagecontent = $page->getContent();
                 $pagecontent = preg_replace('/\<img\s/','<img itemprop="image" ',$pagecontent,1);
                 $shape['title'] = $page->getTitle();
-
                 $html = shp::tmpl('pages/'.$pageTemplate,array('content'=>$pagecontent));
                 $html = shp::str($html, $shape, false);
                 VisualTheme::replacementsEditable($html, $page);

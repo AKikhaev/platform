@@ -7,7 +7,7 @@ class Pg_Sects extends PgUnitAbstract {
 	{
 		global $page;
 		return array(
-		$page->pageUri.'_secnewssve' => array(
+		'_secnewssve' => array(
 			'func' => 'ajxSecNewssve',
 			'object' => $this),
 		);

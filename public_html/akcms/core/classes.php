@@ -23,7 +23,7 @@ class DBException extends CmsException {
 	}
 }
 
-class AclPrecessor { /* acl */
+class AclProcessor { /* acl */
 	protected $thisOwner = false;
 	protected function initAcl() {return array();} // return array(); ...,owner,admin,idividual
 	protected function isOwner() {return $this->thisOwner;}  
@@ -63,18 +63,18 @@ class AclPrecessor { /* acl */
 	}
 }
 
-class CmsPage extends AclPrecessor { /* page */
+class CmsPage extends AclProcessor { /* page */
 	protected $title;
 	protected $cacheWholePage = true;
 	function canCache() { return $this->cacheWholePage;}
-	function noCache() {$this->cacheWholePage=false;}
+	function noCache() { $this->cacheWholePage=false; }
 	function __construct(&$pageTemplate) {
 	    return true; //$this->title = $GLOBALS['cfg']['site_title'];
     }
 	public function getTitle() {return $this->title;}
 	function initAjx() {return array();}
 }
-class PgUnitAbstract extends AclPrecessor { /* Pg_ untits */
+class PgUnitAbstract extends AclProcessor { /* Pg_ untits */
 	public $unitParam = array();
 	function view($viewName) {
 		$viewUnit = str_replace('_','/',get_class($this));
@@ -261,6 +261,7 @@ class CmsUser {
 }
 class core {
     public static $isAjax = false;
+    public static $ajaxAction = '';
     public static $inEdit = false;
     public static $serverName = '';
     public static $testServer = false;
@@ -474,8 +475,8 @@ class core {
         $outputData = '';
         $f = false;
         foreach ($page->initAjx() as $k => $v) {
-            #echo $pathstr.'=='.$k.'<br>';
-            if ($pathstr==$k) {
+            //echo $pathstr.'=='.$k."<br>\n";
+            if (core::$ajaxAction==$k) {
                 $runObj = &$page;
                 if (isset($v['object'])) $runObj = &$v['object'];
                 elseif (isset($v['class'])) $runObj = new $v['class']();

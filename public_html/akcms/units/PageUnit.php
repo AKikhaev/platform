@@ -19,43 +19,43 @@ class PageUnit extends CmsPage {
 	function initAjx()
 	{
 		$ajaxes = array(
-			$this->pageUri.'_cntsve' => array(
-				'func' => 'ajxCntsve'),
-			$this->pageUri.'_optsve' => array(
-				'func' => 'ajxOptSve'),				
-			$this->pageUri.'_secsve' => array(
-				'func' => 'ajxSecsve'),
-			$this->pageUri.'_secins' => array(
-				'func' => 'ajxSecins'),
-			$this->pageUri.'_secdrp' => array(
-				'func' => 'ajxSecdrp'),
-			$this->pageUri.'_secup' => array(
-				'func' => 'ajxSecUp'),
-			$this->pageUri.'_sectop' => array(
-				'func' => 'ajxSecTop'),
-			$this->pageUri.'_secdwn' => array(
-				'func' => 'ajxSecDown'),
-			$this->pageUri.'_secbttm' => array(
-				'func' => 'ajxSecBottom'),
-			$this->pageUri.'_seciupl' => array(
-				'func' => 'ajxSecIUpload'),
-			$this->pageUri.'_seciuplurl' => array(
-				'func' => 'ajxSecIUploadUrl'),
-			$this->pageUri.'_secidrp' => array(
-				'func' => 'ajxSecIDrp'),						
-			$this->pageUri.'_imggrb' => array(
-				'func' => 'ajxImagesGrab'),						
-			$this->pageUri.'_filebrws' => array(
-				'func' => 'ajxFileList'),
-			$this->pageUri.'_fileupl' => array(
-				'func' => 'ajxFileUpload'),
-			$this->pageUri.'_filermv' => array(
-				'func' => 'ajxFileRemove'),	
-			$this->pageUri.'_smdmstk' => array(
-				'func' => 'ajxSendMistake'),
-            $this->pageUri.'_sse' => array(
+            '_cntsve' => array(
+                'func' => 'ajxCntsve'),
+            '_optsve' => array(
+                'func' => 'ajxOptSve'),
+            '_secsve' => array(
+                'func' => 'ajxSecsve'),
+            '_secins' => array(
+                'func' => 'ajxSecins'),
+            '_secdrp' => array(
+                'func' => 'ajxSecdrp'),
+            '_secup' => array(
+                'func' => 'ajxSecUp'),
+            '_sectop' => array(
+                'func' => 'ajxSecTop'),
+            '_secdwn' => array(
+                'func' => 'ajxSecDown'),
+            '_secbttm' => array(
+                'func' => 'ajxSecBottom'),
+            '_seciupl' => array(
+                'func' => 'ajxSecIUpload'),
+            '_seciuplurl' => array(
+                'func' => 'ajxSecIUploadUrl'),
+            '_secidrp' => array(
+                'func' => 'ajxSecIDrp'),
+            '_imggrb' => array(
+                'func' => 'ajxImagesGrab'),
+            '_filebrws' => array(
+                'func' => 'ajxFileList'),
+            '_fileupl' => array(
+                'func' => 'ajxFileUpload'),
+            '_filermv' => array(
+                'func' => 'ajxFileRemove'),
+            '_smdmstk' => array(
+                'func' => 'ajxSendMistake'),
+            '_sse' => array(
                 'func' => 'ajxSSELoad'),
-            $this->pageUri.'_sse_save' => array(
+            '_sse_save' => array(
                 'func' => 'ajxSSESave'),
 		);
 		foreach ($this->pageUnits as $pageUnit)
@@ -88,14 +88,7 @@ class PageUnit extends CmsPage {
 
 		$pathstr_str = $GLOBALS['pathstr'];
 		$pathstr_path = $GLOBALS['path'];
-		# Очищаем параметр ajax
-		if (core::$isAjax && $GLOBALS['pathlen']>0?substr($pathstr_path[$GLOBALS['pathlen']-1],0,1)=='_':false)
-		{
-			unset($pathstr_path[$GLOBALS['pathlen']-1]);
-			$pathstr_str = $pathstr = implode('/',$pathstr_path);
-		}
-		$pathstr_str .= '/';
-		
+
 		$query = sprintf ('select * from cms_sections where %s ilike sec_url_full || %s '.($loadAnyway?'':'and sec_enabled and now()>sec_from').' order by length(sec_url_full) desc limit 1;', 
 			$sql->t($pathstr_str),
 			"'%'");
@@ -1262,7 +1255,7 @@ class PageUnit extends CmsPage {
 		$secTags = implode(',',$secTagsArr);
 		
 		if ($adminPart) {
-			$vieweditLink = "new Element('a',{'href':'/".$this->pageMainUri."'}).inject(usrcntrldiv).grab(new Element('img',{'src':'/img/edt/btnview.png','title':'Просмотреть страницу'}));";
+			$vieweditLink = "new Element('a',{'href':'/".$this->pageMainUri."'+'?'+new Date().getTime()}).inject(usrcntrldiv).grab(new Element('img',{'src':'/img/edt/btnview.png','title':'Просмотреть страницу'}));";
 
 			$shape['jses']  .= "
 			<link href=\"/akcms/css/v1/style_adm_cntrl.css\" rel=\"stylesheet\" type=\"text/css\"/>
@@ -1271,7 +1264,7 @@ class PageUnit extends CmsPage {
 				var userControl = function() {
 					var usrcntrldiv = new Element('nobr').inject(new Element('div',{'class':'admcntrl','id':'admcntrl'}).inject(new Element('div',{'class':'admcntrl_cnt".(core::$inEdit?' inedit':'')."'}).inject(document.body)));
 					new Element('img',{'src':'/img/adm/adm_logo.png','class':'admlogo','width':212,'height':19}).inject(usrcntrldiv);
-					new Element('img',{'src':'/img/edt/btnlgout.png','title':'Выход'}).inject(usrcntrldiv).addEvent('click',function() { if (confirm('Выйти из панели управления?')) document.location='/_logout'; });
+					new Element('img',{'src':'/img/edt/btnlgout.png','title':'Выход'}).inject(usrcntrldiv).addEvent('click',function() { if (confirm('Выйти из панели управления?')) document.location='/_logout/'; });
 					new Element('a',{'href':'/_/'}).inject(usrcntrldiv).grab(new Element('img',{'src':'/img/edt/btnhome.png','title':'На главную редактора'}));
 					".$vieweditLink."
 				};

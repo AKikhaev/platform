@@ -1,4 +1,4 @@
-<?php # ��������������� �����-������ �� ���������, ������� ��������� ����������
+<?php
 
 class Pg_Media extends PgUnitAbstract {
 

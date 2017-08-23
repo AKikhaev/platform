@@ -1,4 +1,4 @@
-<?php # Галерея раздела
+<?php
 
 class Pg_GalleryInject extends Pg_Gallery {
 	public $Injected = true;

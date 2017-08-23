@@ -7,16 +7,16 @@ class ObjGallery extends PgUnitAbstract {
 	{
 		global $page;
 		return array(		
-		$page->pageUri.'_glrilst' => array(
+		'_glrilst' => array(
 			'func' => 'ajxGlrCopList',
 			'object' => $this),
-		$page->pageUri.'_glriupl' => array(
+		'_glriupl' => array(
 			'func' => 'ajxGlrIUpload',
 			'object' => $this),
-		$page->pageUri.'_glrcpgdrp' => array(
+		'_glrcpgdrp' => array(
 			'func' => 'ajxGlrCpgDrp',
 			'object' => $this),
-        $page->pageUri.'_glrcpgnmupd' => array(
+        '_glrcpgnmupd' => array(
 			'func' => 'ajxGlrCpgNameUpd',
 			'object' => $this),
 		);

@@ -6,10 +6,10 @@ class Pg_GuestBook extends PgUnitAbstract {
 	{
 		global $page;
 		return array(
-		$page->pageUri.'_gbsve' => array(
+		'_gbsve' => array(
 			'func' => 'ajxIsve',
 			'object' => $this),
-		$page->pageUri.'_gbdrp' => array(
+		'_gbdrp' => array(
 			'func' => 'ajxIdrp',
 			'object' => $this),
 		);

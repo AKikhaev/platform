@@ -53,37 +53,35 @@ class MngUnit extends CmsPage {
 		setcookie($cfg['site_session_name_qr'], $qr, time()+600, '/');
 		return json_encode(mb_substr(md5($qr.'!'),1,11));
 	}
-	
-  #Content
-	function getContent()
+
+	function __construct(&$pageTemplate)
 	{
-		global $cfg,$shape,$Cacher,$pageTemplate;
+		global $cfg,$shape,$Cacher;
 
 		$pathstr_part = $GLOBALS['path'][0];
 
-		$this->title = 'Добро пожаловать';
 		if ($pathstr_part=='_auth') {
-			if (isset($_GET['a'])) {
-				
-			}
+            core::$renderPage = true;
+            $this->title = 'Добро пожаловать';
+
             $shape['cval'] = md5($_SERVER['REMOTE_ADDR']);
 			$shape['msg'] = '';
 			$shape['location'] = '';
 			$location = (isset($_GET['url'])?!empty($_GET['url']):false)?$_GET['url']:'/_/';
-			if (!isset($_GET['c'])) {
+            if (isset($_GET['c'])) {
+                $pageTemplate = 'login_qr';
+            } else {
 				$pageTemplate = 'login';
 				if (isset($_COOKIE[$cfg['site_session_name_qr']])) {
 					$qr = $_COOKIE[$cfg['site_session_name_qr']];
 					$data = array();
 					if ($Cacher->cache_read_drop($cfg['site_session_name_qr'].'_'.mb_substr(md5($qr.'!'),1,11),$data)) {
 						if (!isset($_COOKIE[session_name()])) session_start();
-						$_SESSION['u'] = $data['u'];
+                        $_SESSION['u'] = $data['u'];
 						$_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
 						header('Location: '.$location);
 					}
 				}
-			} else {
-				$pageTemplate = 'login_qr';
 			}
 			if (isset($_POST['do'])) {
 				$checkRule = array();
@@ -101,18 +99,17 @@ class MngUnit extends CmsPage {
 					else $shape['msg'] = 'Неверное имя или пароль!';
 				} else $shape['msg'] = 'Введите имя и пароль!';
 			}
-		} else {
-			$pageTemplate = 'logout';	
+		} elseif ($pathstr_part=='_logout') {
+            core::$renderPage = true;
+			$pageTemplate = 'logout';
 			CmsUser::logout();
             $shape['newurl'] = '/';
             //$shape['newurl'] = isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'/';
-		}
+		} elseif ($pathstr_part==':auth' && core::$isAjax) {
+        }
+		else throw new CmsException('page_not_found');
 
-		//var_dump_($this);	
-	
-	
-		return '';
 	}
-}
 
-?>
+    static function getContent() {}
+}
