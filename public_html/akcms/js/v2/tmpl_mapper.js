@@ -92,7 +92,34 @@ var _getSelected = function () {
 };
 
 $(window).keyup(function(e){
-    if (e.ctrlKey && e.which==32) {
+    if (e.shiftKey && e.which==32) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (confirm("Отменить последнюю вставку?"))
+        {
+            $.ajax({
+                type: 'POST',
+                url: '/ajx/_tmpl/'+_akcms.template+'/' + '_cr_undo',
+                data: {confirm:1},
+                success: function (sres) {
+                    if (sres==='t') {
+                        alert("Предыдущее состояние восстановлено.");
+                        window.location.reload();
+                    }
+                    else if (sres==='nobackup') alert("НЕТ ДАННЫХ восстановления!");
+                    else if (sres==='i') alert("Файлы ИДЕНТИЧНЫ!");
+                    else if (sres==='f') alert("НЕ УДАЛОСЬ восстановить!");
+                    else alert("Неизвестная ошибка!");
+                },
+                dataType: 'json'
+            });
+        }
+    }
+
+    if (e.ctrlKey && !e.altKey && e.which==32) {
+        e.preventDefault();
+        e.stopPropagation();
 
         console.clear();
         var selected = _getSelected();
@@ -111,6 +138,9 @@ $(window).keyup(function(e){
 
         text += "\n! - замена включая родителя"+"\n";
         text += "* - не закрывать тег замены"+"\n";
+        text += "\nПримеры:"+"\n";
+        text += "ep:content:m - основной контент"+"\n";
+        text += "ep:namefull:l - заголовок страницы"+"\n";
         var answer = prompt(text+' ','!');
         if(answer!==null) {
             if (answer.length>4) {

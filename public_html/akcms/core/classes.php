@@ -64,6 +64,7 @@ class AclProcessor { /* acl */
 }
 
 class CmsPage extends AclProcessor { /* page */
+    public $page = [];
 	protected $title;
 	protected $cacheWholePage = true;
 	function canCache() { return $this->cacheWholePage;}

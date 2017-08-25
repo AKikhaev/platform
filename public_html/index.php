@@ -64,7 +64,7 @@ try {
                 $shape['title'] = $page->getTitle();
                 $html = shp::tmpl('pages/'.$pageTemplate,array('content'=>$pagecontent));
                 $html = shp::str($html, $shape, false);
-                VisualTheme::replacementsEditable($html, $page);
+                VisualTheme::replacementsEditable($html, $page->page);
                 //$html = Minify_HTML::minify($html);
                 //
                 //if (!core::$userAuth && $page->canCache()) $Cacher->cache_write($pathstr,$html,600);

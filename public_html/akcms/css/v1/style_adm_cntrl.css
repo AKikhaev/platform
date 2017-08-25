@@ -50,7 +50,7 @@ body {
 div.ss_edit {
    display: inline;
 }
-.ss_edithl,.ss_edithl>p{
+.ss_edithl,.ss_edithl>p,.ss_edithl>ul,.ss_edithl>table,.ss_edithl>h2,.ss_edithl>h3,.ss_edithl>h4,.ss_edithl>h5,.ss_edithl>h6{
     background-color: #fdffaf !important;
     color: #000000 !important;
     text-decoration: underline !important;
