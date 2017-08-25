@@ -48,7 +48,7 @@ class phpMorphyAdapter extends phpMorphy {
             if (isset($base_form[$bulk_words[$i]])?$base_form[$bulk_words[$i]]==false:false)
                 $base_form[$bulk_words[$i]][0] = $bulk_words[$i];
         }
-        return $union?array_unique(self::extractValues($base_form)):$base_form;
+        return $union?array_unique($this->extractValues($base_form)):$base_form;
     }
 
     function getAllForms($bulk_words,$union = true)
@@ -57,7 +57,7 @@ class phpMorphyAdapter extends phpMorphy {
         for ($i=0; $i<count($bulk_words); $i++)
             if ($all_forms[$bulk_words[$i]]==false)
                 $all_forms[$bulk_words[$i]][0] = $bulk_words[$i];
-        return $union?array_unique(self::extractValues($all_forms)):$all_forms;
+        return $union?array_unique($this->extractValues($all_forms)):$all_forms;
     }
 
     function extractValues(&$arr)

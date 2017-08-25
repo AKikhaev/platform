@@ -5,7 +5,7 @@
 		width: 207px;
 		min-height: 184px;
 		float: left;
-		margin-right: 0px;
+		margin-right: 0;
 		margin-bottom: 10px;
 		background: url(/img/t/phfrm.jpg) top left no-repeat;
 	}
@@ -14,7 +14,7 @@
 		background-position: 22px 23px;
 	}
 	.glritmlast {
-		margin-right: 0px !important;
+		margin-right: 0 !important;
 	}
 	a.glritm_h {
 		padding-top: 170px;
@@ -28,8 +28,7 @@
 		font-size: 12px;
 	}
 	</style>';
-	;
-	$glrs_items = array(); $glrnum = 0;
+$glrs_items = array(); $glrnum = 0;
 	if ($glrItms!==false) foreach ($glrItms as $glrItem)
 	{
 		$glrs_items[$glrItem['id_glr']] = $glrItem; $glrnum++;

@@ -62,7 +62,7 @@ trait SQLpgModelAdapter {
      * @return string
      * @throws DBException
      */
-    private function _where($where = []) {
+    private function _where(array $where = []) {
         if (count($where)==3 && is_string($where[1])) {
             $field = @$this->struct['fields'][$this->struct['fieldsDB'][$where[0]]];
             if ($field!==NULL) {
@@ -116,7 +116,7 @@ trait SQLpgModelAdapter {
 
     public function AND_($where = []) {
         $this->query = '!';
-        if (func_num_args()==3) $where = $this->_where(func_get_args());
+        if (func_num_args()===3) $where = $this->_where(func_get_args());
         else if (is_array($where)) {
             $f = [];
             foreach ($where as $w) {
@@ -215,7 +215,7 @@ trait SQLpgModelAdapter {
         if (is_array($this->query_order) && count($this->query_order)>0) $query .= ' ORDER BY '.implode(',',$this->query_order);
         if (is_string($this->query_order) && $this->query_order!='') $query .= ' ORDER BY '.$this->query_order;
 
-        if ($this->query_limit>0) $query .= ' LIMIT '.@intval($this->query_limit);
+        if ($this->query_limit>0) $query .= ' LIMIT '.@(int)$this->query_limit;
         else if ($this->query_page>0)
             $query .= ' LIMIT '.$this->query_pageSize.' OFFSET '.($this->query_pageSize*($this->query_page-1));
         $this->query = $query;
@@ -361,7 +361,7 @@ trait SQLpgModelAdapter {
         $field = $this->struct['fields'][$primary];
         if ($primary=='') throw new DBException('No primary for '.__CLASS__);
         $FieldClass = 'CMS'.$field['FIELD_CLASS'];
-        if (is_null($id)) {
+        if ($id === null) {
             if (!isset($this->data[$field['COLUMN_NAME']])) throw new DBException('Primary is unset for '.__CLASS__);
             return $field['COLUMN_NAME'].'='.$FieldClass::quote($this->sql,$this->data[$field['COLUMN_NAME']]);
         }

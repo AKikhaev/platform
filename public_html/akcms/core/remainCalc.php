@@ -1,13 +1,13 @@
 <?php
 class profiler {
     static private $timers = array();
-    static function start($name = 'Default') {
+    public static function start($name = 'Default') {
         self::$timers[$name] = microtime(true);
     }
-    static function time($name = 'Default') {
+    public static function time($name = 'Default') {
         return (microtime(true) - self::$timers[$name])*1000;
     }
-    static function toLog($name = 'Default') {
+    public static function toLog($name = 'Default') {
         toLogInfo($name.': '.self::time($name).' ms '._ls(31).self::convert(memory_get_peak_usage(true))._ls());
     }
     private static function convert($size)
@@ -15,7 +15,7 @@ class profiler {
         $unit=array('b','kb','mb','gb','tb','pb');
         return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
     }
-    static function showOverallTime(){
+    public static function showOverallTime(){
         register_shutdown_function(function(){
             self::toLog('Overall');
         });

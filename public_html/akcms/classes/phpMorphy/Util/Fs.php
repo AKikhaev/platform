@@ -62,12 +62,12 @@ class phpMorphy_Util_Fs {
 
         foreach($iterator as $node) {
             if($iterator->isDot()) continue;
-            $pathname = $iterator->getPathName();
+            $pathname = $iterator->getPathname();
             $filename = $iterator->getFilename();
 
             if($iterator->isDir()) {
                  $files_in_dir += self::deleteEmptyDirectories(
-                     $iterator->getPathName(),
+                     $iterator->getPathname(),
                      $log
                  );
             } else {

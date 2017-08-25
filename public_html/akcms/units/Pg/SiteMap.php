@@ -2,25 +2,25 @@
 
 class Pg_SiteMap extends PgUnitAbstract {
 
-	function initAjx()
+	public function initAjx()
 	{
 		return array(
 		);
 	}
 
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		);
 	}
 
-	function render()
+	public function render()
 	{ # http://javascript.ru/ui/tree
 		$siteAllMenu = $GLOBALS['page']->getAllMenu();
 		$res = '

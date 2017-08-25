@@ -72,7 +72,7 @@ function convert_entity($matches, $destroy = true) {
 
 class TmplMapperUnit extends CmsPage {
 
-	function initAjx()
+	public function initAjx()
 	{
 		$ajaxes = array(
 			'_cr' => array(
@@ -85,13 +85,13 @@ class TmplMapperUnit extends CmsPage {
 		return $ajaxes;
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -100,7 +100,7 @@ class TmplMapperUnit extends CmsPage {
 		);
 	}
 
-	function prepareHtml($html){
+	public function prepareHtml($html){
 	    $html = str_replace('<br/>','<br>',$html);
         $html = str_replace('<br />','<br>',$html);
         $html = str_replace("\r\n","\n",$html);
@@ -108,7 +108,7 @@ class TmplMapperUnit extends CmsPage {
 	    return $html;
     }
 
-    function ajxCreateRegion_undo(){
+    public function ajxCreateRegion_undo(){
         $checkRule = array();
         $checkRule[] = array('confirm','/^1$/');
         $checkResult = checkForm($_POST,$checkRule,$this->hasRight());
@@ -129,7 +129,7 @@ class TmplMapperUnit extends CmsPage {
 
     }
 
-    function ajxCreateRegion(){
+    public function ajxCreateRegion(){
         $checkRule = array();
         $checkRule[] = array('html','');
         $checkRule[] = array('locate','.');
@@ -190,12 +190,12 @@ class TmplMapperUnit extends CmsPage {
 
     }
 
-	function __construct(&$pageTemplate)
+	public function __construct(&$pageTemplate)
 	{
 		global $pathlen;
 
 		if ($GLOBALS['path'][0]=='_tmpl') {
-            if (!core::$userAuth) throw new CmsException("login_needs");
+            if (!core::$userAuth) throw new CmsException('login_needs');
             if (core::$isAjax) return;
             if ($pathlen==1) {
                 $templates = [];
@@ -221,5 +221,5 @@ class TmplMapperUnit extends CmsPage {
 
 	}
 
-    static function getContent() {}
+    public static function getContent() {}
 }

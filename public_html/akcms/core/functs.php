@@ -98,13 +98,20 @@ function sendMailHTML($to, $subject, $message, $headersAdds = '', $from = 'norep
   return mail($to, $subject, $message, $headers);
 }
 
-function sendTelegram($text,$to=null,$nitify = true,$web = false) {
-    if ($to==null) $to = '203405254';
+/**
+ * @param $text
+ * @param string $to
+ * @param bool $notify
+ * @param bool $web
+ * @return bool
+ */
+function sendTelegram($text,$to=null,$notify = true,$web = false) {
+    if ($to===null) $to = '203405254';
     $auth = '276469341:AAE1A1kt1APsm8WsmxCvgFiOOc0BAnVaOZg';
     $url = 'https://api.telegram.org/bot'.$auth.'/sendMessage?'.http_build_query(array(
             'chat_id'=>$to,
             'text'=>$text,
-            'disable_notification'=>$nitify?'0':'1',
+            'disable_notification'=>$notify?'0':'1',
             'disable_web_page_preview',$web?'0':'1',
         ));
 
@@ -137,36 +144,36 @@ function sendTelegram($text,$to=null,$nitify = true,$web = false) {
 
 function var_dump_($var) {
 	if (php_sapi_name()!=='cli') echo '<pre>';  #var_dump($var);
-	call_user_func_array('var_dump',func_get_args());
+	var_dump(...func_get_args());
 	if (php_sapi_name()!=='cli') echo '</pre>';
 }
 
 function var_dump__($var) {
-    call_user_func_array('var_dump_',func_get_args());
+    var_dump_(...func_get_args());
     exit();
 }
 
 function var_export_($var) {
 	if (php_sapi_name()!=='cli') echo '<pre>';  #var_dump($var);
-    call_user_func_array('var_export',func_get_args());
+    var_export(...func_get_args());
 	if (php_sapi_name()!=='cli') echo '</pre>';
 }
 
 function var_export__($var) {
-    call_user_func_array('var_export_',func_get_args());
+    var_export_(...func_get_args());
     exit();
 }
 
-function var_log($var) {
+function var_log() {
     $var = func_get_args();
     ///$stacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS); $line = $stacktrace['line'];
         echo '<script>console.log('.json_encode(count($var)==1?$var[0]:$var).');</script>';
     //else die(json_encode($var));
 }
 
-function var_log_terminal($var) {
+function var_log_terminal() {
     $var = func_get_args();
-    $var = count($var)==1?$var[0]:$var;
+    $var = count($var)===1?$var[0]:$var;
     $printVar = print_r($var,true);
     $printVar = preg_replace('/Array\n\s*/','Array',$printVar);
     $printVar = preg_replace('/\n\s+\(/','(',$printVar);
@@ -177,12 +184,12 @@ function var_log_terminal($var) {
 }
 
 function print_r_($var) {
-	$out = preg_replace('/\s*\n\(/'," (",call_user_func_array('print_r',array($var,true)));
+	$out = preg_replace('/\s*\n\(/'," (", print_r(...array($var, true)));
 	if (php_sapi_name()!=='cli') echo '<pre>'.htmlentities($out,ENT_COMPAT,'UTF-8').'</pre>'; else echo $out;
 }
 
 function print_r__($var) {
-    call_user_func_array('print_r_',func_get_args());
+    print_r_(...func_get_args());
     exit();
 }
 
@@ -228,11 +235,11 @@ function assocArray2ajax($arr) {
 function mb_strpos_all($haystack, $needle) {
     $s = 0;
     $i = 0;
-    while(is_integer($i)) {
+    while(is_int($i)) {
 
         $i = mb_strpos($haystack, $needle, $s);
 
-        if(is_integer($i)) {
+        if(is_int($i)) {
             $aStrPos[] = $i;
             $s = $i + mb_strlen($needle);
         }
@@ -271,7 +278,7 @@ Function dgtToChar($dgt) {
 }
 
 Function Intwz($dg) { // Возращает двухзначное число
-  if ($dg<10) return '0'.intval($dg); else return intval($dg);
+  if ($dg<10) return '0'. (int)$dg; else return (int)$dg;
 }
 
 Function Str_($str,$cnt) { //Возвращает n-значное число
@@ -302,9 +309,9 @@ Function GetTruncText($str,$cnt,$p3after = true) // Возвращает час�
 Function DtTmToDtStr($dttm,$y=true) // Конвертирует 2005-05-06 в 6 мая 2005г.
 {
 	$MonthStr = array("января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря");
-	$Year  = intval(mb_substr($dttm,0,4));
-	$Month = intval(mb_substr($dttm,5,2));
-	$Day   = intval(mb_substr($dttm,8,2));
+	$Year  = (int)mb_substr($dttm,0,4);
+	$Month = (int)mb_substr($dttm,5,2);
+	$Day   = (int)mb_substr($dttm,8,2);
 	return $Day.' '.$MonthStr[$Month-1].($y?' '.$Year.' г.':'');
 }
 
@@ -321,7 +328,7 @@ function DtDbFormatDate($dateFormat,$dbDate) {
 function RightWordForm($dgt,$wordarr)	// Возвращает верную форму слова в 
 {										// соответсвии с правилами русского языка
 										// 1 час  2 часа  5 часов
-	if (intval($dgt%100/10)==1) return $wordarr[2];
+	if ((int)($dgt%100/10)===1) return $wordarr[2];
 	switch ($dgt%10) {
 		case 1:
 			return $wordarr[0];
@@ -333,13 +340,13 @@ function RightWordForm($dgt,$wordarr)	// Возвращает верную фо�
 }
 
 function intervalToWords($sec) {
-	$min = intval($sec/60);
-	$min10 = intval($sec/600);
-	$hrs = intval($min/60);
-	$days = intval($hrs/24);
-	$weeks = intval($days/7);
-	$mnts = intval($days/30);
-	$years = intval($days/365);
+	$min = (int)($sec/60);
+	$min10 = (int)($sec/600);
+	$hrs = (int)($min/60);
+	$days = (int)($hrs/24);
+	$weeks = (int)($days/7);
+	$mnts = (int)($days/30);
+	$years = (int)($days/365);
 	if ($years!=0) return $years.' '.RightWordForm($years,array('год','год','лет'));
 	if ($mnts!=0) return $mnts.' '.RightWordForm($mnts,array('месяц','месяца','месяцев'));
 	if ($weeks!=0) return $weeks.' '.RightWordForm($weeks,array('неделю','недели','недель'));
@@ -388,12 +395,12 @@ function num2str($num) {
         array('миллиард','милиарда','миллиардов',0),
     );
     //
-    list($rub,$kop) = explode('.',sprintf("%015.2f", floatval($num)));
+    list($rub,$kop) = explode('.',sprintf("%015.2f", (float)$num));
     $out = array();
-    if (intval($rub)>0) {
+    if ((int)$rub >0) {
         foreach(str_split($rub,3) as $uk=>$v) { // by 3 symbols
-            if (!intval($v)) continue;
-            $uk = sizeof($unit)-$uk-1; // unit key
+            if (!(int)$v) continue;
+            $uk = count($unit)-$uk-1; // unit key
             $gender = $unit[$uk][3];
             list($i1,$i2,$i3) = array_map('intval',str_split($v,1));
             // mega-logic
@@ -405,9 +412,9 @@ function num2str($num) {
         } //foreach
     }
     else $out[] = $nul;
-    $out[] = morph(intval($rub), $unit[1][0],$unit[1][1],$unit[1][2]); // rub
+    $out[] = morph((int)$rub, $unit[1][0],$unit[1][1],$unit[1][2]); // rub
     $out[] = $kop.' '.morph($kop,$unit[0][0],$unit[0][1],$unit[0][2]); // kop
-    return trim(preg_replace('/ {2,}/', ' ', join(' ',$out)));
+    return trim(preg_replace('/ {2,}/', ' ', implode(' ',$out)));
 }
 
 /**
@@ -415,7 +422,7 @@ function num2str($num) {
  * @ author runcore
  */
 function morph($n, $f1, $f2, $f5) {
-    $n = abs(intval($n)) % 100;
+    $n = abs((int)$n) % 100;
     if ($n>10 && $n<20) return $f5;
     $n = $n % 10;
     if ($n>1 && $n<5) return $f2;
@@ -579,8 +586,8 @@ function getCoordsByAddress($addr)
 	curl_close($ch);
 	if(preg_match("#<pos>([0-9\\.]*) ([0-9\\.]*)</pos>#i", $xml, $out)) 
 	{
-		$lng=floatval(trim($out[1]));
-		$lat=floatval(trim($out[2]));
+		$lng= (float)trim($out[1]);
+		$lat= (float)trim($out[2]);
 		if($lng>0 && $lat>0) 
 		$result = array($lng,$lat);
 		else 

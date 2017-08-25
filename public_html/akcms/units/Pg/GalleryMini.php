@@ -3,7 +3,7 @@
 class Pg_GalleryMini extends Pg_Gallery {
 	public $Injected = true;
 	
-	function initAjx()
+	public function initAjx()
 	{
 		global $page;
 		$ajxs = parent::initAjx();
@@ -19,7 +19,7 @@ class Pg_GalleryMini extends Pg_Gallery {
 	}
 	*/
 	
-	function ajxGlrSec()
+	public function ajxGlrSec()
 	{
 		global $sql,$page;
 		$checkRule = array();
@@ -37,12 +37,12 @@ class Pg_GalleryMini extends Pg_Gallery {
 		return json_encode(array('error'=>$checkResult));   
 	}
 
-	function render()
+	public function render()
 	{
 		global $page,$shape;
 		$editMode = $this->hasRight() && core::$inEdit;
 
-		$galleries = $this->getSecGalleries();
+		$galleries = static::getSecGalleries();
 		$res = '
 		<style scoped="scoped">
 		.glrmini_nm {

@@ -67,7 +67,7 @@ class TinyMCE_Compressor {
 		$this->settings = array_merge(self::$defaultSettings, $settings);
 
 		if (empty($this->settings["cache_dir"]))
-			$this->settings["cache_dir"] = dirname(__FILE__);
+			$this->settings["cache_dir"] = __DIR__;
 	}
 
 	/**
@@ -88,7 +88,7 @@ class TinyMCE_Compressor {
 		$files = array();
 		$supportsGzip = false;
 		$expiresOffset = $this->parseTime($this->settings["expires"]);
-		$tinymceDir = dirname(__FILE__);
+		$tinymceDir = __DIR__;
 
 		// Override settings with querystring params
 		$plugins = self::getParam("plugins");
@@ -227,7 +227,7 @@ class TinyMCE_Compressor {
 		$settings = array_merge(self::$defaultSettings, $tagSettings);
 
 		if (empty($settings["cache_dir"]))
-			$settings["cache_dir"] = dirname(__FILE__);
+			$settings["cache_dir"] = __DIR__;
 
 		$scriptSrc = $settings["url"] . "?js=1";
 
@@ -306,7 +306,7 @@ class TinyMCE_Compressor {
 			$multipel = 2592000;
 
 		// Trim string
-		return intval($time) * $multipel;
+		return (int)$time * $multipel;
 	}
 
 	/**

@@ -3,7 +3,7 @@
 class Pg_Sects extends PgUnitAbstract {
 	public $imgnewspath = 'img/pages/';
 	
-	function initAjx()
+	public function initAjx()
 	{
 		global $page;
 		return array(
@@ -13,13 +13,13 @@ class Pg_Sects extends PgUnitAbstract {
 		);
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -29,7 +29,7 @@ class Pg_Sects extends PgUnitAbstract {
 	}
   
   
-	function ajxSecNewssve()
+	public function ajxSecNewssve()
 	{
 		global $sql;
 		$checkRule = array();
@@ -50,7 +50,7 @@ class Pg_Sects extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));
 	}
 	  
-	function render()
+	public function render()
 	{
 		global $sql,$page;
 		$res = '';
@@ -71,7 +71,7 @@ class Pg_Sects extends PgUnitAbstract {
 			$dataset = $sql->query_all($query);
 			$pgNums = ceil($countRecords/$pgSize);
 			if ($pgNum<1 || $pgNum>$pgNums)
-				throw new CmsException("page_not_found");
+				throw new CmsException('page_not_found');
 			
 			if ($editMode) ;
 			$res .= '<div id="news">';
@@ -91,10 +91,8 @@ class Pg_Sects extends PgUnitAbstract {
 			if ($pgNums>1)
 			$res .= '<div class="pager">'.makePager($countRecords, $pgSize, $pgNum, '/'.$page->pageMainUri.'p{pg}/').'</div>';
 			if ($editMode) $res .= '<script type="text/javascript" src="/akcms/js/v1/pg_secnews_ed.js"></script><script type="text/javascript">var newsi='.json_encode($news_items).';</script>';
-		} else throw new CmsException("page_not_found");
+		} else throw new CmsException('page_not_found');
 		return $res;
 	}
   
 }
-
-?>

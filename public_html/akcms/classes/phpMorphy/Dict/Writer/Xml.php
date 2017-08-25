@@ -306,7 +306,7 @@ class phpMorphy_Dict_Writer_Xml extends phpMorphy_Dict_Writer_WriterAbstract {
     private function createXmlWriter($fileName) {
         $writer = new XMLWriter();
 
-        if(false === $writer->openUri($fileName)) {
+        if(false === $writer->openURI($fileName)) {
             throw new Exception("Can`t create $fileName xml file for XMLWriter");
         }
 

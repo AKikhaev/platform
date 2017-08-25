@@ -161,11 +161,11 @@ class ObjGallery extends PgUnitAbstract {
 									if (!file_exists($dirpath)) mkdir($dirpath,0755,true);
 									try {
                                         if ($file_ext=='jpg') {
-                                            ImageJpeg($dst,$pathstr,90);
+                                            imagejpeg($dst,$pathstr,90);
                                             imagedestroy($dst);
                                         }
                                         if ($file_ext=='png') {
-                                            ImagePng($dst,$pathstr,9);
+                                            imagepng($dst,$pathstr,9);
                                             imagedestroy($dst);
                                         }
                                         if ($file_ext=='gif') {

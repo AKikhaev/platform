@@ -3,7 +3,7 @@
 class Pg_RelSec extends PgUnitAbstract {
 	public $Injected = true;
 
-	function initAjx()
+	public function initAjx()
 	{
 		global $page;
 		return array(
@@ -16,7 +16,7 @@ class Pg_RelSec extends PgUnitAbstract {
 		);
 	}
 
-	function ajxRelList()
+	public function ajxRelList()
 	{
 		global $sql;
 		$checkRule = array();
@@ -30,7 +30,7 @@ class Pg_RelSec extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));   
 	}
 	
-	function ajxRelAssgn()
+	public function ajxRelAssgn()
 	{
 		global $sql,$page;
 		$checkRule = array();
@@ -50,7 +50,7 @@ class Pg_RelSec extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));   
 	}
 
-	function render()
+	public function render()
 	{
 		global $shape;
 		$editMode = $this->hasRight() && core::$inEdit;

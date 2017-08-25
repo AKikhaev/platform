@@ -2,7 +2,7 @@
 
 class Pg_Comments extends PgUnitAbstract {
 
-	function initAjx()
+	public function initAjx()
 	{
 		global $page;
 		return array(
@@ -15,13 +15,13 @@ class Pg_Comments extends PgUnitAbstract {
 		);
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -30,7 +30,7 @@ class Pg_Comments extends PgUnitAbstract {
 		);
 	}
   
-	function ajxIsve()
+	public function ajxIsve()
 	{
 		global $sql;
 		$checkRule = array();
@@ -53,7 +53,7 @@ class Pg_Comments extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));
 	}
   
-	function ajxIdrp()
+	public function ajxIdrp()
 	{
 		global $sql;
 		$checkRule = array();
@@ -70,7 +70,7 @@ class Pg_Comments extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));
 	}  
   
-	function render()
+	public function render()
 	{
 		global $cfg,$sql,$page;
 		$html = '<style>.cmntitem{padding-bottom: 10px;}</style>';
@@ -134,7 +134,7 @@ class Pg_Comments extends PgUnitAbstract {
 			$pgNums = ceil($countRecords/$pgSize);
 			if ($pgNums==0) $pgNums = 1;
 			if ($pgNum<1 || $pgNum>$pgNums)
-				throw new CmsException("page_not_found");
+				throw new CmsException('page_not_found');
 			
 			if ($editMode) ;
 			$html .= '<div class="cmtsupline"></div><div id="cmnts">';
@@ -152,9 +152,8 @@ class Pg_Comments extends PgUnitAbstract {
 			$html .= $htmlform;
 			
 			if ($editMode) $html .= '<script type="text/javascript" src="/akcms/js/v1/pg_cmnt_ed.js"></script><script type="text/javascript">var cmntsi='.json_encode($u_items).';</script>';
-		} else throw new CmsException("page_not_found");
+		} else throw new CmsException('page_not_found');
 		return $html;
 	}
   
 }
-?>

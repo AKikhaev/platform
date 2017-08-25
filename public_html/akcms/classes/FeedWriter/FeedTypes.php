@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-	require_once(dirname(__FILE__) . '/FeedWriter.php');
+	require_once(__DIR__ . '/FeedWriter.php');
 
 /**
  * Wrapper for creating RSS1 feeds

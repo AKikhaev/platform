@@ -2,7 +2,7 @@
 
 class Pg_Advert extends PgUnitAbstract {
 	
-	function initAjx()
+	public function initAjx()
 	{
 		global $page;
 		return array(
@@ -12,13 +12,13 @@ class Pg_Advert extends PgUnitAbstract {
 		);
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -27,7 +27,7 @@ class Pg_Advert extends PgUnitAbstract {
 		);
 	}
 
-	static public function paramsGet()
+	public static function paramsGet()
 	{
 		global $page;
 		return $page->paramsGet('Pg_Advert',array(
@@ -39,7 +39,7 @@ class Pg_Advert extends PgUnitAbstract {
 		));
 	}
 	
-	function ajxParamsUpd()
+	public function ajxParamsUpd()
 	{
 		global $sql,$page;
 		$checkRule = array();
@@ -63,7 +63,7 @@ class Pg_Advert extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));   
 	}
 
-	function render()
+	public function render()
 	{
 		global $page;
 		$res = '<div id="adedit"></div>';

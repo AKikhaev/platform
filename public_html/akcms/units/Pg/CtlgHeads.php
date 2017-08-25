@@ -3,20 +3,20 @@
 class Pg_CtlgHeads extends PgUnitAbstract {
 	public $imgnewspath = 'img/news/';
 
-	function initAjx()
+	public function initAjx()
 	{
 		global $page;
 		return array(
 		);
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -25,7 +25,7 @@ class Pg_CtlgHeads extends PgUnitAbstract {
 		);
 	}
 
-	function render()
+	public function render()
 	{
 		global $sql,$page;
 		$res = '';
@@ -60,5 +60,3 @@ class Pg_CtlgHeads extends PgUnitAbstract {
 	}
   
 }
-
-?>

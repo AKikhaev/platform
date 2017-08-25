@@ -63,19 +63,19 @@ class ImgResizer {
 					$width = 119; $height = 89;
 				} else $src = $src0;
 			}
-			else $src = @ImageCreateFromJpeg($pathstrOrgn);
+			else $src = @imagecreatefromjpeg($pathstrOrgn);
 			$this->imginfo['newmime']='image/jpeg';
 		}
 		elseif ($this->imginfo['mime']=='image/png') {
 			$src = @imagecreatefrompng($pathstrOrgn);
-			imageAlphaBlending($src, false);
-			imageSaveAlpha($src, true);
+			imagealphablending($src, false);
+			imagesavealpha($src, true);
 			$this->imginfo['newmime']='image/jpeg';
 		}		
 		elseif ($this->imginfo['mime']=='image/gif') {
 			$src = @imagecreatefromgif($pathstrOrgn);
-			imageAlphaBlending($src, false);
-			imageSaveAlpha($src, true);
+			imagealphablending($src, false);
+			imagesavealpha($src, true);
 			$this->imginfo['newmime']='image/jpeg';
 		}		
 		else throw new Exception('imgr_wrong_mime');
@@ -203,7 +203,7 @@ class ImgResizer {
 			$this->res_width = $tn_width;
 			$this->res_height = $tn_height;
 		}
-		if ($dst!==$src) ImageDestroy($src);
+		if ($dst!==$src) imagedestroy($src);
 
 		#effect
 		if ($effector!=null) {
@@ -231,7 +231,7 @@ class ImgResizer {
 			header('Content-type: '.$this->imginfo['mime']); 
 			header('X-Powered-By: itTeka.ru');
 			imageinterlace($dst,1);
-			ImageJpeg($dst,null,90);
+			imagejpeg($dst,null,90);
 			exit();
 			//return '';
 		}		
@@ -244,7 +244,7 @@ class ImgResizer {
 				if ($pathstrOrgn==$pathstr) $result = true;
 				else $result = copy($pathstrOrgn,$pathstr);#
 			}
-			else $result = ImageJpeg($dst,$pathstr,90);#
+			else $result = imagejpeg($dst,$pathstr,90);#
 		}
 		elseif ($this->imginfo['newmime']=='image/png') 
 		{
@@ -267,7 +267,7 @@ class ImgResizer {
 			#ImageJpeg($dst,null,90);#
 			exit();
 		}
-		ImageDestroy($dst);
+		imagedestroy($dst);
 		return $result;
 	}
 }

@@ -78,17 +78,50 @@ class VisualThemeAbstract
      */
     public static function _ph_tmpl(&$pageData,$editMode,$text,$template){
         $html = file_get_contents($template.'.shtm',true);
-        return '';
+        self::replacementsEditable($html,$pageData,$editMode);
+        return $html;
     }
+
+    /** Обработчик плейсхолдера. Применение шаблона для прямых потомков
+     * @param $pageData
+     * Обязательный. массив с данными
+     * @param $editMode
+     * Обязательный. режим редактирования
+     * @param $text
+     * Обязательный. Заменяемый в шаблоне текст
+     * @param $template
+     * Обязательный. Шаблон
+     * @return false|string
+     */
+    public static function _ph_tmpl_children(&$pageData,$editMode,$text,$template){
+        /* @var $sql pgdb */
+        global $sql;
+        $html = '';
+
+        $query = sprintf ('select * from cms_sections where sec_parent_id=%d '.($editMode?'':'and sec_enabled and now()>sec_from').' order by sec_sort',
+            $pageData['section_id']);
+        $sections = $sql->query_all($query);
+        if ($sections!==false) foreach ($sections as $section) {
+
+        }
+
+
+        var_log($sections,$query);
+        $html = file_get_contents($template.'.shtm',true);
+        self::replacementsEditable($html,$pageData,$editMode);
+        return $html;
+    }
+
 
     /** Обрабатывает редактируемые поля в шаблоне
      * @param $html
      * @param $pageData
-     * должен содержать массив с полями: section_id, sec_content, sec_namefull, sec_imgfile, sec_from
-     * @param $editMode
+     * должен содержать массив с полями: section_id, sec_url_full, sec_content, sec_namefull, sec_imgfile, sec_from
+     * @param $editMode bool
      * Режим редактирования, если не указан используется shp::$editMode
      */
     public static function replacementsEditable(&$html, &$pageData, $editMode = null){
+        $editMode = $editMode !== null ? $editMode : shp::$editMode;
         /* @var $sql pgdb */
         global $sql;
         $sectionIds = array(0);
@@ -139,8 +172,7 @@ class VisualThemeAbstract
             }
 
             $tag = $mult=='m'?'div':'span';
-            if ($editMode != null ? $editMode : shp::$editMode)
-                return "<$tag class=\"ss_edit\" data-code=\"$code\" data-mult=\"$mult\" ".($hint!=''?"data-hint=\"$hint\"":'').">$text</$tag>";
+            if ($editMode) return "<$tag class=\"ss_edit\" data-code=\"$code\" data-mult=\"$mult\" ".($hint!=''?"data-hint=\"$hint\"":'').">$text</$tag>";
             else return $text;
         },$html);
     }

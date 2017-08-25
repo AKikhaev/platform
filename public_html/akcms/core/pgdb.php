@@ -169,13 +169,13 @@ class pgdb {
 
     function pgf_array_int($v)
     {
-        foreach ($v as &$i) $i = @intval($i); # check it is digit
+        foreach ($v as &$i) $i = @(int)$i; # check it is digit
         return 'ARRAY['.implode(',',$v).']';
     }
 
     function pgf_array_float($v)
     {
-        foreach ($v as &$i) $i = @floatval($i); # check it is float
+        foreach ($v as &$i) $i = @(float)$i; # check it is float
         return 'ARRAY['.implode(',',$v).']';
     }
 
@@ -254,10 +254,10 @@ class pgdb {
     function t($v) {return $this->pgf_text($v);}
 
     /* digit */
-    function d($v) {return @intval($v);}
+    function d($v) {return @(int)$v;}
 
     /* float */
-    function f($v) {return @floatval($v);}
+    function f($v) {return @(float)$v;}
 
     /* boolean */
     function b($v) {return $this->pgf_boolean($v);}

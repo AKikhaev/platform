@@ -2,19 +2,19 @@
 
 class Pg_SubSecMinLst extends PgUnitAbstract {
 
-	function initAjx()
+	public function initAjx()
 	{
 		return array(
 		);
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 			'admin'=>true,
@@ -23,7 +23,7 @@ class Pg_SubSecMinLst extends PgUnitAbstract {
 		);
 	}
   
-	function render()
+	public function render()
 	{
 		global $sql,$page;
 		$editMode = $this->hasRight() && core::$inEdit;
@@ -53,7 +53,7 @@ class Pg_SubSecMinLst extends PgUnitAbstract {
 				margin-bottom: 22px;
 			}
 			.subsecmlstimtlst {
-				margin-right: 0px !important;
+				margin-right: 0 !important;
 			}
 			a.subsecmlstimt_h {
 				margin-top: -4px;
@@ -92,7 +92,7 @@ class Pg_SubSecMinLst extends PgUnitAbstract {
 			$pgNums = ceil($countRecords/$pgSize);
 			if ($countRecords==0 && $pgNum==1) return '';
 			if ($pgNum<1 || $pgNum>$pgNums)
-				throw new CmsException("page_not_found");
+				throw new CmsException('page_not_found');
 			
 			
 			$i = 0;
@@ -120,8 +120,7 @@ class Pg_SubSecMinLst extends PgUnitAbstract {
 			if ($pgNums>1)
 			$res .= '<div class="pager">'.makePager($countRecords, $pgSize, $pgNum, $pageLinkUri.'{pg}').'</div>';
 			
-		} else throw new CmsException("page_not_found");
+		} else throw new CmsException('page_not_found');
 		return $res;
 	}
 }
-?>

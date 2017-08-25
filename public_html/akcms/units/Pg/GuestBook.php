@@ -2,7 +2,7 @@
 
 class Pg_GuestBook extends PgUnitAbstract {
 
-	function initAjx()
+	public function initAjx()
 	{
 		global $page;
 		return array(
@@ -15,13 +15,13 @@ class Pg_GuestBook extends PgUnitAbstract {
 		);
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -30,7 +30,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 		);
 	}
   
-	function ajxIsve()
+	public function ajxIsve()
 	{
 		global $cfg,$sql,$page;
 		$checkRule = array();
@@ -82,7 +82,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));
 	}
   
-	function ajxIdrp()
+	public function ajxIdrp()
 	{
 		global $sql;
 		$checkRule = array();
@@ -106,7 +106,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));
 	}
 	
-	function getITags($id) // Теги привязанные к элементу
+	public function getITags($id) // Теги привязанные к элементу
 	{
 		global $sql;
 		$res = array();
@@ -117,7 +117,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 		return $res;
 	}
 
-	function getAllTags($str='') // Все теги
+	public function getAllTags($str='') // Все теги
 	{
 		global $sql;
 		$res = array();
@@ -129,7 +129,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 		return $res;
 	}
   
-	function render()
+	public function render()
 	{
 		global $cfg,$sql,$page;
 		$html = '';
@@ -199,7 +199,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 			$pgNums = ceil($countRecords/$pgSize);
 			if ($pgNums==0) $pgNums = 1;
 			if ($pgNum<1 || $pgNum>$pgNums)
-				throw new CmsException("page_not_found");
+				throw new CmsException('page_not_found');
 			
 			if ($editMode) ;
 			$tagsAll = $this->getAllTags();
@@ -247,9 +247,8 @@ class Pg_GuestBook extends PgUnitAbstract {
 				);
 				$html .= '<script type="text/javascript" src="/akcms/js/v1/pg_gb_ed.js"></script><script type="text/javascript">var gbi='.json_encode($u_data).';</script>';
 			}
-		} else throw new CmsException("page_not_found");
+		} else throw new CmsException('page_not_found');
 		return $html;
 	}
   
 }
-?>

@@ -2,20 +2,19 @@
 
 class FeedUnit extends CmsPage {
 
-	function initAjx()
+	public function initAjx()
 	{
-		$ajaxes = array(
-		);
-		return $ajaxes;
+        return array(
+        );
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -24,10 +23,10 @@ class FeedUnit extends CmsPage {
 		);
 	}
   
-	function __construct(&$pageTemplate)
+	public function __construct(&$pageTemplate)
 	{
 		global $sql,$cfg,$pathlen,$path;
-        if ($pathlen==2 && $path[0]=='feed') {
+        if ($pathlen===2 && $path[0]=='feed') {
 
             #<link rel="alternate" type="application/rss+xml" title="RSS" href="/feed/rss2/" />
             #<link rel="alternate" type="application/atom+xml" title="ATOM" href="/feed/atom/" />
@@ -40,7 +39,7 @@ class FeedUnit extends CmsPage {
             $dataset = $sql->query_all($query);
             if ($dataset !== false) {
 
-                include("akcms/classes/FeedWriter/FeedTypes.php");
+                include 'akcms/classes/FeedWriter/FeedTypes.php';
                 if ($pathstr_part == 'rss2') {
                     $feed = new RSS2FeedWriter();
 
@@ -93,7 +92,7 @@ class FeedUnit extends CmsPage {
                             $feed->addItem($newItem);
                         }
                         $feed->generateFeed();
-                    } else throw new CmsException("page_not_found");
+                    } else throw new CmsException('page_not_found');
             }
             die();
         } else {
@@ -102,7 +101,7 @@ class FeedUnit extends CmsPage {
 	}
 
   #Content
-	function getContent()
+	public function getContent()
 	{
 		return '';
 	}

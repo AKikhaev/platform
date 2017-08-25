@@ -60,7 +60,7 @@ abstract class modelAbstact implements SeekableIterator
     }
 
 
-    function __debugInfo(){return $this->data;}
+    private function __debugInfo(){return $this->data;}
 
     /*-------------------*/
 

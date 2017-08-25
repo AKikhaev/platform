@@ -3,7 +3,7 @@
 class Pg_News extends PgUnitAbstract {
 	public $imgnewspath = 'img/news/';
 	
-	function initAjx()
+	public function initAjx()
 	{
 		global $page;
 		return array(
@@ -25,13 +25,13 @@ class Pg_News extends PgUnitAbstract {
 		);
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -40,7 +40,7 @@ class Pg_News extends PgUnitAbstract {
 		);
 	}
   
-	function reindex($indxnews)
+	public function reindex($indxnews)
 	{
 		if (!$this->hasRight()) return false;
 		global $sql,$page;
@@ -55,7 +55,7 @@ class Pg_News extends PgUnitAbstract {
 	}
 
   
-	function ajxNewsins()
+	public function ajxNewsins()
 	{
 		global $sql;
 		$checkRule = array();
@@ -87,7 +87,7 @@ class Pg_News extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));
 	}    
   
-	function ajxNewssve()
+	public function ajxNewssve()
 	{
 		global $sql;
 		$checkRule = array();
@@ -117,11 +117,11 @@ class Pg_News extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));
 	}
 	
-	function ajxNewsIUpload() 
+	public function ajxNewsIUpload()
 	{
 		global $sql,$page;
 		$res_msg = ''; $res_stat = 0; $res_i_file = '';
-		$JsHttpRequest = new JsHttpRequest("UTF-8");
+		$JsHttpRequest = new JsHttpRequest('UTF-8');
 		$checkRule = array();
 		$checkRule[] = array('news_id', '/^\d+/');
 		$checkResult = checkForm($_POST,$checkRule,$this->hasRight());
@@ -165,7 +165,7 @@ class Pg_News extends PgUnitAbstract {
 										@unlink($this->imgnewspath.$i_file);
 										@unlink($this->imgnewspath.'s/'.$i_file);
 										@unlink($this->imgnewspath.'t/'.$i_file);
-										ImageJpeg($dst,$pathstr,90); 
+										imagejpeg($dst,$pathstr,90);
 
 										$query = sprintf ('UPDATE cms_news SET news_image = %s WHERE news_id = %d;', 
 											$sql->t($i_file),
@@ -194,7 +194,7 @@ class Pg_News extends PgUnitAbstract {
 		return $JsHttpRequest->_obHandler('');
 	}
 
-	function ajxNewsIDrp()
+	public function ajxNewsIDrp()
 	{
 		global $sql;
 		$checkRule = array();
@@ -217,7 +217,7 @@ class Pg_News extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));   
 	} 	
   
-	function ajxNewsdrp()
+	public function ajxNewsdrp()
 	{
 		global $sql;
 		$checkRule = array();
@@ -238,7 +238,7 @@ class Pg_News extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));
 	}  
   
-	function render()
+	public function render()
 	{
 		global $sql,$page;
 		$res = '';
@@ -250,7 +250,7 @@ class Pg_News extends PgUnitAbstract {
 			$query = sprintf ('select * from cms_news where '.($editMode?'':'news_enabled and').' news_id=%d;', 
 			$newsId);
 			$dataset = $sql->query_all($query);
-			if (count($dataset)==0 or $dataset==false) throw new CmsException("page_not_found");
+			if (count($dataset)==0 || $dataset==false) throw new CmsException('page_not_found');
 			$newsItem = $dataset[0];
 			$res .= '<div id="news"><div class="newsitem" id="newsi'.$newsItem['news_id'].'"><div class="newidate">'.DtDbFormatDate('d/m/Y',$newsItem['news_date']).'</div><div class="newicnt">'.$newsItem['news_content'].'</div></div></div>';  
 			$res .= '<div class="news_under"><a href="/'.$page->pageMainUri.'" title="Все новости">Все новости <img src="/img/arr_r.gif" border="0" alt="" height="7" width="8" /></a></div>'; 
@@ -269,7 +269,7 @@ class Pg_News extends PgUnitAbstract {
 			$dataset = $sql->query_all($query);
 			$pgNums = ceil($countRecords/$pgSize);
 			if ($pgNum<1 || $pgNum>$pgNums)
-				throw new CmsException("page_not_found");
+				throw new CmsException('page_not_found');
 			
 			if ($editMode) ;
 			$res .= '<div id="news">';
@@ -283,10 +283,8 @@ class Pg_News extends PgUnitAbstract {
 			if ($pgNums>1)
 			$res .= '<div class="pager">'.makePager($countRecords, $pgSize, $pgNum, '/'.$page->pageMainUri.'{pg}/').'</div>';
 			if ($editMode) $res .= '<script type="text/javascript" src="/akcms/js/v1/pg_news_ed.js"></script><script type="text/javascript">var newsi='.json_encode($news_items).';</script>';
-		} else throw new CmsException("page_not_found");
+		} else throw new CmsException('page_not_found');
 		return $res;
 	}
   
 }
-
-?>

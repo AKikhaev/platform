@@ -2,25 +2,25 @@
 
 class Pg_Search extends PgUnitAbstract {
 
-	function initAjx()
+	public function initAjx()
 	{
 		return array(
 		);
 	}
 
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		);
 	}
 
-	function render()
+	public function render()
 	{
 		global $sql,$shape,$page;
 		$html = '';
@@ -58,7 +58,7 @@ class Pg_Search extends PgUnitAbstract {
 			#$excldarr = $morphy->getBaseForm($excludeArray[0],false);
 			
 			$pageSize = 10;
-			$pageIndex = @intval($_GET['pg'])?intval($_GET['pg']):1;
+			$pageIndex = @(int)$_GET['pg'] ? (int)$_GET['pg'] :1;
 			
 			$query = sprintf ('begin;select * from __cms__search_v2(%s,%s,%d,%d);FETCH ALL IN totalset;', #
 				$sql->pgf_wordarrays_text($fndarr),
@@ -77,8 +77,8 @@ class Pg_Search extends PgUnitAbstract {
 					$snippet = mb_strlen($dataitem['desc'])>5?$dataitem['desc']:GetTruncText(strip_tags($dataitem['content']),300);
 					$html .= '<li>';
 						$shp = array();
-						$isEng = 0;;
-						$shp['ha_t_0'] = trim(str_ireplace('[eNg]','',$dataitem['title'],$isEng));
+						$isEng = 0;
+                    $shp['ha_t_0'] = trim(str_ireplace('[eNg]','',$dataitem['title'],$isEng));
 						$shp['ha_l_0'] = ($isEng>0?'<span class="lang-block">Eng</span>':'');
 						$shp['ha_u_0'] = $dataitem['url'];
 						$shp['ha_d_0'] = $snippet;

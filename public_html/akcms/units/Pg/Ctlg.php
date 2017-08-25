@@ -3,7 +3,7 @@
 class Pg_Ctlg extends PgUnitAbstract {
 	public $imgcatipath = 'img/cat/';
 
-	function initAjx()
+	public function initAjx()
 	{
 		global $page;
 		return array(
@@ -28,13 +28,13 @@ class Pg_Ctlg extends PgUnitAbstract {
 		);
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -43,7 +43,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 		);
 	}
   
-	function reindex($indxnews)
+	public function reindex($indxnews)
 	{
 		// if (!$this->hasRight()) return false;
 		// global $sql,$page;
@@ -58,7 +58,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 		return 't';
 	}
 
-	function ajxCatiSave()
+	public function ajxCatiSave()
 	{
 		global $sql,$page;
 		$fild_key = 'cati_id';
@@ -113,11 +113,11 @@ class Pg_Ctlg extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));
 	}    
   
-	function ajxCatiIUpload() 
+	public function ajxCatiIUpload()
 	{
 		global $sql,$page;
 		$res_msg = ''; $res_stat = 0; $res_i_file = '';
-		$JsHttpRequest = new JsHttpRequest("UTF-8");
+		$JsHttpRequest = new JsHttpRequest('UTF-8');
 		$checkRule = array();
 		$checkRule[] = array('cati_id', '/^\d+/');
 		$checkResult = checkForm($_POST,$checkRule,$this->hasRight());
@@ -159,7 +159,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 										$dirpath = dirname($pathstr);
 										if (!file_exists($dirpath)) mkdir($dirpath,0755,true); 
 										foreach (array('','s/','pl/','p/','pm/','h/') as $part) @unlink($this->imgcatipath.$part.$i_file);
-										ImageJpeg($dst,$pathstr,90); 
+										imagejpeg($dst,$pathstr,90);
 
 										$query = sprintf ('UPDATE cms_cat_gds SET cati_photofile = %s WHERE cati_id = %d;', 
 											$sql->t($i_file),
@@ -188,7 +188,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 		return $JsHttpRequest->_obHandler('');
 	}
 
-	function ajxCatiIDrp()
+	public function ajxCatiIDrp()
 	{
 		global $sql;
 		$checkRule = array();
@@ -209,7 +209,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));   
 	} 	
   
-	function ajxCatidrp()
+	public function ajxCatidrp()
 	{
 		global $sql;
 		$checkRule = array();
@@ -230,7 +230,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));
 	}
   
-	function ajxCatiList()
+	public function ajxCatiList()
 	{
 		global $sql,$page;
 		$checkRule = array();
@@ -244,7 +244,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));   
 	}
 	
-	function ajxCatiSetOrder()
+	public function ajxCatiSetOrder()
 	{
 		global $sql;
 		$checkRule = array();
@@ -256,7 +256,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 			foreach($_POST['itm_order'] as $id) {
 				$query = sprintf ('UPDATE cms_cat_gds SET cati_sort=%d WHERE cati_id = %d;', 
 					++$i,
-					@intval($id));
+					@(int)$id);
 				$f = $sql->command($query) && $f;
 			}
 			return json_encode($f>0?'t':'f');
@@ -264,7 +264,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));   
 	}
 	
-	function render()
+	public function render()
 	{
 		global $sql,$page,$shape;
 		$res = '';
@@ -278,7 +278,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 			$query = sprintf ('select * from cms_cat_gds where '.($editMode?'':'cati_show and').' cati_id=%d;', 
 			$catiId);
 			$item = $sql->query_first_assoc($query);
-			if ($item==false) throw new CmsException("page_not_found");
+			if ($item==false) throw new CmsException('page_not_found');
 			
 			if ($item['cati_photofile']=='') $item['cati_photofile'] = '0.jpg';#
 			$imgsrc = $this->imgcatipath.'p/'.$item['cati_photofile'];
@@ -293,7 +293,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 			<style>
 			.cati {
 				margin-right: 4px;
-				possition: relative;
+				position: relative;
 			}
 			.cati_h h1 {
 				font-size: 24px;
@@ -501,7 +501,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 		
 			if ($countRecords==0 && $pgNum==1) return $res.'<div id="ctlg"><div class="ctlgitms"></div></div>';
 			if ($pgNum<1 || $pgNum>$pgNums)
-				throw new CmsException("page_not_found");
+				throw new CmsException('page_not_found');
 			
 			$res .= '
 			<style>
@@ -514,10 +514,10 @@ class Pg_Ctlg extends PgUnitAbstract {
 				height: 282px;
 				float: left;
 				margin-right: 4px;
-				possition: relative;
+				position: relative;
 			}
 			.ctlgi_last {
-				margin-right: 0px !important;
+				margin-right: 0 !important;
 			}
 			.ctlgi_h {
 				background-color: #f3f3f3/* #212121 */;
@@ -527,7 +527,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 				background-repeat: no-repeat;
 				background-position: left top;
 				height: 34px;
-				owerflow: hidden;
+				overflow hidden;
 				padding: 186px 6px 6px;
 				display: block;
 				font-size: 13px;
@@ -597,10 +597,8 @@ class Pg_Ctlg extends PgUnitAbstract {
 			
 			if ($pgNums>1)
 			$res .= '<div class="pager">'.makePager($countRecords, $pgSize, $pgNum, '/'.$pageLinkUri.'{pg}/').'</div>';
-		} else throw new CmsException("page_not_found");
+		} else throw new CmsException('page_not_found');
 		return $res;
 	}
   
 }
-
-?>

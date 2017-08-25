@@ -23,7 +23,7 @@ class DBException extends CmsException {
 	}
 }
 
-class AclProcessor { /* acl */
+abstract class AclProcessor { /* acl */
 	protected $thisOwner = false;
 	protected function initAcl() {return array();} // return array(); ...,owner,admin,idividual
 	protected function isOwner() {return $this->thisOwner;}  
@@ -63,7 +63,7 @@ class AclProcessor { /* acl */
 	}
 }
 
-class CmsPage extends AclProcessor { /* page */
+abstract class CmsPage extends AclProcessor { /* page */
     public $page = [];
 	protected $title;
 	protected $cacheWholePage = true;
@@ -73,7 +73,7 @@ class CmsPage extends AclProcessor { /* page */
 	public function getTitle() {return $this->title;}
 	function initAjx() {return array();}
 }
-class PgUnitAbstract extends AclProcessor { /* Pg_ untits */
+abstract class PgUnitAbstract extends AclProcessor { /* Pg_ untits */
 	public $unitParam = array();
 	function view($viewName) {
 		$viewUnit = str_replace('_','/',get_class($this));

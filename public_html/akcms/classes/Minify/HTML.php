@@ -59,8 +59,7 @@ class Minify_HTML {
      * 
      * 'xhtml' : (optional boolean) should content be treated as XHTML1.0? If
      * unset, minify will sniff for an XHTML doctype.
-     * 
-     * @return null
+     *
      */
     public function __construct($html, $options = array())
     {
@@ -199,8 +198,7 @@ class Minify_HTML {
         
         // minify
         $minifier = $this->_cssMinifier
-            ? $this->_cssMinifier
-            : 'trim';
+            ?: 'trim';
         $css = call_user_func($minifier, $css);
         
         return $this->_reservePlace($this->_needsCdata($css)
@@ -226,8 +224,7 @@ class Minify_HTML {
         
         // minify
         $minifier = $this->_jsMinifier
-            ? $this->_jsMinifier
-            : 'trim'; 
+            ?: 'trim';
         $js = call_user_func($minifier, $js);
         
         return $this->_reservePlace($this->_needsCdata($js)

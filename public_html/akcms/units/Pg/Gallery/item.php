@@ -5,5 +5,5 @@
 	if ($dataset!==false) foreach ($glrPhotos as $photo) {
 		$res .= 
 		'<a rel="g|'.$photo['cgp_glr_id'].'|'.$photo['id_cgp'].'" title="'.$photo['cgp_name'].'" href="/img/gallery/'.$photo['cgp_file'].'" class="_imgview"><img class="glripp" width="160" height="137" border="0" alt="'.$photo['cgp_name'].'" src="/img/gallery/p/'.$photo['cgp_file'].'"></a>';
-	};
-	$res .= '</div><div class="clrbth"></div></div>';  
+	}
+$res .= '</div><div class="clrbth"></div></div>';

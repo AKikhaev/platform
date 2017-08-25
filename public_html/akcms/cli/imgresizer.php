@@ -29,7 +29,7 @@ try {
 
 	}
 
-	$startFrom = isset($_SERVER["argv"][1])?intval($_SERVER["argv"][1]):0;
+	$startFrom = isset($_SERVER["argv"][1])? (int)$_SERVER["argv"][1] :0;
 
 	$query = 'SELECT section_id,sec_nameshort,sec_content,sec_url_full FROM cms_sections WHERE section_id>='.$sql->d($startFrom).' ORDER by 1'.($startFrom>0?'':' DESC');
     $itemObj = $sql->queryObj($query);
@@ -62,7 +62,7 @@ try {
 					if ($imginfo!=null? $img_width<$imginfo[0] || $img_height<$imginfo[1] :false) {
 						$f++;
 						if ($f==1) toLog($item['section_id'].': '.$item['sec_nameshort'].': '.count($imgList));
-						$ir = new ImgResizer($img_src,$img_src);
+						$ir = new ImgResizer();
 						$size = @filesize($img_src);
 						$ir->ResizeSave($img_src,$img_src,$img_width,$img_height,0);
 						clearstatcache();
@@ -89,7 +89,7 @@ try {
 			//,glob($folder.'*.[pP][nN][gG]')
 		) as $folderFile) if (!in_array(basename($folderFile),$inHtmlFiles)) {
 			$saved += @filesize($folderFile);
-			$removed += 1;
+			++$removed;
 			unlink($folderFile);
 			toLogError($folderFile);
 		}

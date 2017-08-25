@@ -2,19 +2,19 @@
 
 class Pg_Main_News extends PgUnitAbstract {
 
-	function initAjx()
+	public function initAjx()
 	{
 		return array(
 		);
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 			'admin'=>true,
@@ -23,7 +23,7 @@ class Pg_Main_News extends PgUnitAbstract {
 		);
 	}
   
-	function render()
+	public function render()
 	{
 		global $sql;
 		$section_id = 264;
@@ -48,7 +48,7 @@ class Pg_Main_News extends PgUnitAbstract {
 			margin-bottom: 3px;
 		}
 		.nwslstimtlst {
-			margin-right: 0px !important;
+			margin-right: 0 !important;
 		}
 		.nwslstimt_h {
 			padding-top: 160px;

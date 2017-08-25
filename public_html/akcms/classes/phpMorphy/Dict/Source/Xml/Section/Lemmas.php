@@ -50,11 +50,11 @@ class phpMorphy_Dict_Source_Xml_Section_Lemmas extends phpMorphy_Dict_Source_Xml
                 $prefix_id = $reader->getAttribute('prefix_id');
                 $ancode_id = $reader->getAttribute('ancode_id');
 
-                if(!is_null($prefix_id)) {
+                if(null !== $prefix_id) {
                     $this->current->setPrefixId($prefix_id);
                 }
 
-                if(!is_null($ancode_id)) {
+                if(null !== $ancode_id) {
                     $this->current->setAncodeId($ancode_id);
                 }
 

@@ -1,6 +1,5 @@
 <?php
 class PageUnit extends CmsPage {
-	public $page;						// Страницы из DB
 	public $pageUri;
 	public $pageMainUri;
 	public $imgpath;
@@ -10,14 +9,15 @@ class PageUnit extends CmsPage {
 	private $pageAllMenu = array();		// Полное меню
 	private $pageSections = array();	// массив разделов для ajax
 	public $pageUnits = array();
-	static $imgthmbpath = 'img/pages/';
+	public static $imgthmbpath = 'img/pages/';
     public $params = array();
 	private $imgthmb_w = 500;
 	private $imgthmb_h = 500;
 	private $imgthmb_m = 0;
 
-	function initAjx()
+	public function initAjx()
 	{
+	    $ajaxesUnits = [];
 		$ajaxes = array(
             '_cntsve' => array(
                 'func' => 'ajxCntsve'),
@@ -60,18 +60,19 @@ class PageUnit extends CmsPage {
 		);
 		foreach ($this->pageUnits as $pageUnit)
 		{
-			$ajaxes = array_merge($ajaxes, $pageUnit->initAjx());
+		    foreach ($pageUnit->initAjx() as $k=>$v)
+                $ajaxes[$k] = $v;
 		}
 		return $ajaxes;
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -80,14 +81,13 @@ class PageUnit extends CmsPage {
 		);
 	}
   
-	function __construct(&$pageTemplate)
+	public function __construct(&$pageTemplate)
 	{
 		global $sql,$cfg;
         $loadAnyway = core::$isAjax || core::$inEdit || $this->hasRight();
 		define('MENU_FIELDS','select section_id,sec_parent_id,sec_url_full,sec_url,sec_nameshort,sec_namefull,sec_imgfile,sec_showinmenu,sec_openfirst,sec_to_news,sec_enabled,sec_title,sec_keywords,sec_description,sec_units,sec_from,sec_howchild,sec_page,sec_page_child, not sec_enabled or not sec_showinmenu as sec_hidden ');
 
 		$pathstr_str = $GLOBALS['pathstr'];
-		$pathstr_path = $GLOBALS['path'];
 
 		$query = sprintf ('select * from cms_sections where %s ilike sec_url_full || %s '.($loadAnyway?'':'and sec_enabled and now()>sec_from').' order by length(sec_url_full) desc limit 1;', 
 			$sql->t($pathstr_str),
@@ -144,7 +144,7 @@ class PageUnit extends CmsPage {
 	}
 
     #Сохраняет все параметры в бд
-    function paramsSave() {
+    public function paramsSave() {
         global $sql;
         $query = sprintf ('update cms_sections set sec_params=%s where section_id=%d;',
             $sql->t(serialize($this->params)),
@@ -154,19 +154,19 @@ class PageUnit extends CmsPage {
     }
 
     #Получить параметры
-    function paramsGet($name,$default = array()) {
+    public function paramsGet($name, $default = array()) {
         return (isset($this->params[$name])?$this->params[$name]:$default);
     }
 
     #Сохранить параметры
-    function paramsSet($name,$value) {
-        if (count($value)==0 || is_null($value)) unset($this->params[$name]);
+    public function paramsSet($name, $value) {
+        if ($value === null || count($value)==0) unset($this->params[$name]);
         else $this->params[$name] = $value;
         $this->paramsSave();
     }
 
 	#Хлебные крошки  
-	function getBreadcrumbs($prefix=false)
+	public function getBreadcrumbs($prefix=false)
 	{
 		global $sql;
 		if (count($this->pagePath) != 0) return $this->pagePath;
@@ -179,7 +179,7 @@ class PageUnit extends CmsPage {
 			'sec_namefull' =>$this->page['sec_namefull'],
 			'sec_showinmenu'=>$this->page['sec_showinmenu'],
 			'sec_enabled'   =>$this->page['sec_enabled'],
-			'sec_hidden'	=>$this->page['sec_enabled']=='f' or $this->page['sec_showinmenu']=='f'?'t':'f',
+			'sec_hidden'	=>$this->page['sec_enabled']=='f' || $this->page['sec_showinmenu']=='f'?'t':'f',
 			'_current' => true
 		);
 
@@ -198,15 +198,19 @@ class PageUnit extends CmsPage {
 		$this->pagePath = array_reverse($this->pagePath);
 		return $this->pagePath;
 	}
-	
-	
-	private function _howchildToOrder($howchild){
+
+
+    /**
+     * @param $howchild
+     * @return bool|string
+     */
+    private function _howchildToOrder($howchild){
 		switch ($howchild) {
-			case 0: return false;
 			case 1:	return 'sec_sort';
 			case 2:	return 'sec_from DESC';
 			case 3:	return 'sec_from';
 		}
+		return false;
 	}
     private function _getMenuItemByUrl($urlFull,$showHidden = false,$prefix=false)
     {
@@ -254,7 +258,7 @@ class PageUnit extends CmsPage {
     private function _getAllMenuItems(&$putInto,$parentId, $howchild=1,
 			$showHidden = false, $prefix = false, $markSelected = false, $markCurrent = false, $expByPath = false, $deep = 999) {
 		global $sql;
-		if ($deep==0) return;
+		if ($deep==0) return false;
 		$order = $this->_howchildToOrder($howchild); if ($order==false) return false;
 		$mnulist = $this->_getMenuItems($parentId,$howchild,$showHidden,$prefix);
 		if ($mnulist!==false) {
@@ -265,7 +269,7 @@ class PageUnit extends CmsPage {
 					if ($markCurrent && isset($this->pagePath_ids[$menuAllItem['section_id']]['_current'])) $menuAllItem['_current'] = true;
 				}
 				$menuAllItem['_children'] = array();
-				if ($menuAllItem['sec_openfirst']=='t' && !$showHidden) // Подменяем url openfirst раздела первым подразделом
+				if (!$showHidden && $menuAllItem['sec_openfirst']=='t') // Подменяем url openfirst раздела первым подразделом
 				{
 					$query = sprintf ('select sec_url_full from cms_sections where sec_parent_id=%d and sec_enabled and now()>sec_from order by sec_sort limit 1;', 
 						$menuAllItem['section_id']);
@@ -278,14 +282,15 @@ class PageUnit extends CmsPage {
 					$this->_getAllMenuItems($menuAllItem['_children'],$menuAllItem['section_id'],$menuAllItem['sec_howchild'],
 						$showHidden,$prefix,$markSelected, $markCurrent,$expByPath, $deep-1);
 				if ($menuAllItem['sec_units']!='') foreach (explode(',',$menuAllItem['sec_units']) as $pgUnitClass) if (isset($cfg['pgunits'][$pgUnitClass]))
-					call_user_func_array(array($pgUnitClass,'buildLevelSiteMap'),array(&$menuAllItem['_children'],$menuAllItem['section_id'],$menuAllItem['sec_url_full']));			
-				if (count($menuAllItem['_children'])==0) unset($menuAllItem['_children']);
+                    call_user_func_array(array($pgUnitClass,'buildLevelSiteMap'),array(&$menuAllItem['_children'],$menuAllItem['section_id'],$menuAllItem['sec_url_full']));
+                if (count($menuAllItem['_children'])==0) unset($menuAllItem['_children']);
 			}
 		}
+		return true;
 	}
  
 	/* Вся структура меню для карты */
-	function getAllMenu($showHidden = false)
+	public function getAllMenu($showHidden = false)
 	{
 		if (count($this->pageAllMenu) != 0) return $this->pageAllMenu;
 		$showHidden = $this->hasRight() && $showHidden;
@@ -294,8 +299,8 @@ class PageUnit extends CmsPage {
 	}
 
 	/* структура, начиная от url */
-	function getMenuSubByPath(&$putInto, $menuPath='', $markSelected = false, $markCurrent = false, $expByPath = false, $deep = 999, $howchild = 1) {
-		if ($menuPath=='') {
+	public function getMenuSubByPath(&$putInto, $menuPath='', $markSelected = false, $markCurrent = false, $expByPath = false, $deep = 999, $howchild = 1) {
+		if ($menuPath==='') {
 			$parentId = 0;
 		} else {
 			$parentSec = $this->_getMenuItemByUrl($menuPath,true);
@@ -306,12 +311,12 @@ class PageUnit extends CmsPage {
 	}	
 	
 	/* структура, начиная от SpecId */
-	function getMenuSubBySpecId(&$putInto, $menuSpecId, $markSelected = false, $markCurrent = false, $expByPath = false, $deep = 999, $howchild = 1) {
+	public function getMenuSubBySpecId(&$putInto, $menuSpecId, $markSelected = false, $markCurrent = false, $expByPath = false, $deep = 999, $howchild = 1) {
 		$this->_getAllMenuItems($putInto,$menuSpecId,$howchild,false,false,$markSelected,$markCurrent,$expByPath,$deep);
 	}	
 	
 	/* полная структура, хорошо для админки*/
-	function getMenu()
+	public function getMenu()
 	{
         if (count($this->pageMenu) != 0) return $this->pageMenu;
 		$this->getBreadcrumbs();
@@ -382,7 +387,7 @@ class PageUnit extends CmsPage {
 		return $html;
 	}
 
-	static function makeSrchWords($indstr)
+	public static function makeSrchWords($indstr)
 	{
 		$indstr = str_replace(array(chr(10),chr(13)),array(' ',' '),$indstr);
 		$indstr = preg_replace('/&[a-zA-Zа-яА-Я0-9]+;/u', '', strUpCorr($indstr));
@@ -394,7 +399,7 @@ class PageUnit extends CmsPage {
 		return $base_forms;
 	}
 
-	function reindex($indxpage = false)
+	public function reindex($indxpage = false)
 	{
 	    return 't';//////
 		global $sql;
@@ -413,12 +418,13 @@ class PageUnit extends CmsPage {
 	}
 
 	//Gallery
-	function getRandomGallery()
+	public function getRandomGallery()
 	{
 		global $sql;
 		$res = array();
-		$query = sprintf ('select id_glr,glr_name,glr_file,glr_type from cms_galeries where glr_enabled and not glr_sys and glr_type=1 order by random() limit 1;', 
-		$this->page['section_id']);
+		$query = sprintf ('select id_glr,glr_name,glr_file,glr_type from cms_galeries where glr_enabled and not glr_sys and glr_type=1 order by random() limit 1;'
+		//$this->page['section_id']
+        );
 		$dataset = $sql->query_first($query);
 		if ($dataset!==false) {
 			$glr = $dataset; //id_glr glr_name
@@ -436,7 +442,7 @@ class PageUnit extends CmsPage {
 		return $res;
 	} 
 
-	function getGalleriesList() // Список всех несистемных галерей
+	public function getGalleriesList() // Список всех несистемных галерей
 	{
 		global $sql; // and not glr_sys
 		$query = sprintf ('select id_glr,glr_name,glr_file,glr_type from cms_galeries where glr_enabled and glr_type=1 order by id_glr desc;');
@@ -444,7 +450,7 @@ class PageUnit extends CmsPage {
 		return ($dataset===false?array():$dataset);
 	} 
 
-	function getSecGalleryPhotos() // Фото привязанной галлереи
+	public function getSecGalleryPhotos() // Фото привязанной галлереи
 	{
 		global $sql;
 		$res = array();
@@ -458,7 +464,7 @@ class PageUnit extends CmsPage {
 		return $res;
 	}    
 
-	function getSecTags() // Теги привязанные к странице
+	public function getSecTags() // Теги привязанные к странице
 	{
 		global $sql;
 		$res = array();
@@ -469,7 +475,7 @@ class PageUnit extends CmsPage {
 		return $res;
 	}
 
-	function getAllTags($str='') // Все теги
+	public function getAllTags($str='') // Все теги
 	{
 		global $sql;
 		$res = array();
@@ -483,7 +489,7 @@ class PageUnit extends CmsPage {
 
  	/*================ ajax =====================*/
 
-	function ajxSendMistake()
+	public function ajxSendMistake()
 	{
 		global $cfg;
 		$checkRule = array();
@@ -506,7 +512,7 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));
 	}
 
-	function ajxSecUp()
+	public function ajxSecUp()
 	{
 		global $sql;
 		$checkRule = array();
@@ -521,7 +527,7 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));
 	}
 
-	function ajxSecTop()
+	public function ajxSecTop()
 	{
 		global $sql;
 		$checkRule = array();
@@ -536,7 +542,7 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));
 	}
 
-	function ajxSecDown()
+	public function ajxSecDown()
 	{
 		global $sql;
 		$checkRule = array();
@@ -551,7 +557,7 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));
 	}
 	
-	function ajxSecBottom()
+	public function ajxSecBottom()
 	{
 		global $sql;
 		$checkRule = array();
@@ -566,7 +572,7 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));
 	}
 	
-	function dropCachesByBreadcrumbs()
+	public function dropCachesByBreadcrumbs()
 	{
 		global $Cacher;
 		foreach ($this->getBreadcrumbs() as $item) {
@@ -575,7 +581,7 @@ class PageUnit extends CmsPage {
 		$Cacher->cache_drop(''); //Главная
 	}
 	
-	function ajxCntsve()
+	public function ajxCntsve()
 	{
 		global $sql;
 		$checkRule = array();
@@ -599,7 +605,7 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));
 	}
   
-	function ajxOptSve()
+	public function ajxOptSve()
 	{
 		global $sql;
 		$checkRule = array();
@@ -640,14 +646,14 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));
 	}
   
-	static function _addClass($str,$needclass) {
+	public static function _addClass($str, $needclass) {
 		$clases = explode(' ',$str);
 		if (!in_array($needclass,$clases)) $clases[] = $needclass;
 		return implode(' ',$clases);
 	}
 	
 	// Добавляет указанный класс к текстовому представления hmtl элемента <a>
-	static function addClass($el,$needclass) {
+	public static function addClass($el, $needclass) {
 		$el=stripcslashes($el);
 		#toLogDie__($el);
 		if (mb_stripos($el,'class=')===false) return str_replace(array('/>','>'),array(' class="'.$needclass.'" />',' class="'.$needclass.'" >'),$el);
@@ -658,7 +664,7 @@ class PageUnit extends CmsPage {
 		return $el;
 	}  
   
-	static function _imgduplicate($pathold,$pathto,&$imggrabbed) { // Загружает изображения с других северов
+	public static function _imgduplicate($pathold, $pathto, &$imggrabbed) { // Загружает изображения с других северов
 		$dirpath = mb_substr($pathto, 0, -1);
 		if(!file_exists($dirpath)) mkdir($dirpath,0755,true);  
 		$result = '';
@@ -685,7 +691,7 @@ class PageUnit extends CmsPage {
 		return $result;
 	}
 
-	static function ImagesGrab($html,$urlfull)
+	public static function ImagesGrab($html, $urlfull)
 	{
 		$html = preg_replace('/(<img.*? src=")(\.\.\/){1,}([^\s]*?)"/ui','\1/\3',$html); // Заменяем любое количество начальных ../../../ на /
 		$html = preg_replace('/(<img.*? src=")(?!\/|http:|https:)([^\s]*?)"/ui','\1/\2',$html); // Если это наш сервер и нет / в начале - добавляем /
@@ -698,7 +704,7 @@ class PageUnit extends CmsPage {
 		return array('html'=>$html,'imggrbd'=>$imggrabbed);
 	}	
 	
-	function ajxImagesGrab()
+	public function ajxImagesGrab()
 	{
 		$checkRule = array();
 		$checkRule[] = array('html', '');
@@ -712,7 +718,7 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));
 	}
   
-	function ajxSecins()
+	public function ajxSecins()
 	{
 		global $sql;
 		$checkRule = array();
@@ -763,7 +769,7 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));
 	}
     
-	function ajxSecsve()
+	public function ajxSecsve()
 	{
 		global $sql;
 		$checkRule = array();
@@ -826,11 +832,11 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));
 	}
 
-	function ajxSecIUpload() # Загрузка изображения раздела
+	public function ajxSecIUpload() # Загрузка изображения раздела
 	{
 		global $sql,$page;
 		$res_msg = ''; $res_stat = 0; $res_i_file = '';
-		$JsHttpRequest = new JsHttpRequest("UTF-8");
+		$JsHttpRequest = new JsHttpRequest('UTF-8');
 		$checkRule = array();
 		$checkRule[] = array('section_id', '/^\d+$/');
 		$checkResult = checkForm($_POST,$checkRule,$this->hasRight());
@@ -871,7 +877,7 @@ class PageUnit extends CmsPage {
 									if (!file_exists($dirpath)) mkdir($dirpath,0755,true);       
 									@unlink(self::$imgthmbpath.$i_file);
 									@array_map('unlink',glob(self::$imgthmbpath.'*/'.$i_file));
-									ImageJpeg($dst,$pathstr,90); 
+									imagejpeg($dst,$pathstr,90);
 
 									$query = sprintf ('UPDATE cms_sections SET sec_imgfile = %s WHERE section_id = %d;', 
 										$sql->t($i_file),
@@ -898,7 +904,7 @@ class PageUnit extends CmsPage {
 		return $JsHttpRequest->_obHandler('');
 	}
 	
-	static function SecIUploadUrl($section_id,$url,$imgthmb_w,$imgthmb_h,$imgthmb_m) # Загрузка изображения раздела по URL
+	public static function SecIUploadUrl($section_id, $url, $imgthmb_w, $imgthmb_h, $imgthmb_m) # Загрузка изображения раздела по URL
 	{
 		global $sql,$page;
 		$res_msg = ''; $res_stat = false; $res_i_file = '';
@@ -929,7 +935,7 @@ class PageUnit extends CmsPage {
 					if (!file_exists($dirpath)) mkdir($dirpath,0755,true);
 					@unlink(self::$imgthmbpath.$i_file);
 					@array_map('unlink',glob(self::$imgthmbpath.'*/'.$i_file));
-					ImageJpeg($dst,$pathstr,90); 
+					imagejpeg($dst,$pathstr,90);
 
 					$query = sprintf ('UPDATE cms_sections SET sec_imgfile = %s WHERE section_id = %d;', 
 						$sql->t($i_file),
@@ -951,7 +957,7 @@ class PageUnit extends CmsPage {
 		);
 	}
 
-	function ajxSecIUploadUrl() # Загрузка изображения раздела по URL
+	public function ajxSecIUploadUrl() # Загрузка изображения раздела по URL
 	{
 		global $sql,$page;
 		$res = array(
@@ -972,7 +978,7 @@ class PageUnit extends CmsPage {
 		return json_encode($res);
 	}
 	
-	function ajxSecIDrp()
+	public function ajxSecIDrp()
 	{
 		global $sql;
 		$checkRule = array();
@@ -994,7 +1000,7 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));   
 	}
 	
-	function ajxSecdrp()
+	public function ajxSecdrp()
 	{
 		global $sql;
 		$checkRule = array();
@@ -1021,7 +1027,7 @@ class PageUnit extends CmsPage {
 			$query = sprintf ('SELECT sec_url_full FROM cms_sections WHERE section_id=(SELECT sec_parent_id FROM cms_sections i WHERE section_id=%d);', 
 				$_POST['section_id']);
 			$dataset = $sql->query_first_row($query);
-			$new_url=is_null($dataset[0])?'':$dataset[0];
+			$new_url= $dataset[0] === null ?'':$dataset[0];
 			$filename = $_POST['section_id'].'.jpg';
 			@unlink(self::$imgthmbpath.$filename);
 			@array_map('unlink',glob(self::$imgthmbpath.'*/'.$filename));
@@ -1034,7 +1040,7 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));
 	}
 	
-	function ajxFileList()
+	public function ajxFileList()
 	{
 		global $sql,$cfg;
 		$checkRule = array();
@@ -1052,7 +1058,7 @@ class PageUnit extends CmsPage {
 			if (file_exists($dirurl)) {
 				$i=0;
 				$files = array();
-				foreach (scandir($dirurl) as $file) if (!in_array($file,array('.','..')) && is_file($dirurl.$file)) 
+				foreach (scandir($dirurl,SCANDIR_SORT_NONE) as $file) if (!in_array($file,array('.','..')) && is_file($dirurl.$file))
 					$files[$file] = filemtime($dirurl.$file);
 				arsort($files);
 				$files = array_keys($files);
@@ -1069,7 +1075,7 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));
 	}	
 	
-	function ajxFileRemove()
+	public function ajxFileRemove()
 	{
 		global $sql,$cfg;
 		$checkRule = array();
@@ -1087,13 +1093,13 @@ class PageUnit extends CmsPage {
 			$res = false;
 			if (file_exists($filepath) && is_file($filepath)) {
 				$res = @unlink($filepath);
-			};
-			return json_encode($res?'t':'f');
+			}
+            return json_encode($res?'t':'f');
 		} 
 		return json_encode(array('error'=>$checkResult));
 	}
 	
-	function ajxFileUpload()
+	public function ajxFileUpload()
 	{
 		global $sql,$cfg;
 		$checkRule = array();
@@ -1108,9 +1114,9 @@ class PageUnit extends CmsPage {
 			if ($_POST['url']=='/') $_POST['url'] = '_';
 			$_POST['url'] = trim($_POST['url'],'/').'/';
 			#pluploader
-			$chunk = isset($_POST["chunk"]) ? intval($_POST["chunk"]) : 0;
-			$chunks = isset($_POST["chunks"]) ? intval($_POST["chunks"]) : 0;
-			$fileName = isset($_POST["name"]) ? $_POST["name"] : '';
+			$chunk = isset($_POST['chunk']) ? (int)$_POST['chunk'] : 0;
+			$chunks = isset($_POST['chunks']) ? (int)$_POST['chunks'] : 0;
+			$fileName = isset($_POST['name']) ? $_POST['name'] : '';
 			$dirurl = ($_POST['type']=='file'?$cfg['filespath']:$cfg['imagespath']).$_POST['url'];
 
 			$fileName = preg_replace('/[^\w\._0-9]+/', '_', Translit($fileName)); //security
@@ -1132,11 +1138,11 @@ class PageUnit extends CmsPage {
 			$filePathPart = $targetDir.'/'.$fileName.'part';
 			if (!file_exists($targetDir)) @mkdir($targetDir,0755,true);
 
-			$contentType = (isset($_SERVER["HTTP_CONTENT_TYPE"])?$_SERVER["HTTP_CONTENT_TYPE"]:'').
-						   (isset($_SERVER["CONTENT_TYPE"])?$_SERVER["CONTENT_TYPE"]:'');
+			$contentType = (isset($_SERVER['HTTP_CONTENT_TYPE'])?$_SERVER['HTTP_CONTENT_TYPE']:'').
+						   (isset($_SERVER['CONTENT_TYPE'])?$_SERVER['CONTENT_TYPE']:'');
 
 			if (isset($_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name'])) {
-				if ($in = fopen($_FILES['file']['tmp_name'], "rb")) {
+				if ($in = fopen($_FILES['file']['tmp_name'], 'rb')) {
 					if ($out = fopen($filePathPart, $chunk == 0 ? 'wb':'ab'))
 						while ($buff = fread($in, 4096)) fwrite($out, $buff);
 					else $res = '{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Failed to open output stream."}, "id" : "id"}';
@@ -1151,12 +1157,12 @@ class PageUnit extends CmsPage {
 
 			if ($res = '') $res = '{"jsonrpc" : "2.0", "result" : null, "id" : "id"}';			
 
-			return ($res);
+			return $res;
 		} 
 		return json_encode(array('error'=>$checkResult));
 	}
 
-	static function buildAdminMenu(&$subItems,$urlprefix='',$ul='',$li='')
+	public static function buildAdminMenu(&$subItems, $urlprefix='', $ul='', $li='')
 	{
 		$str = '<ul class="mnu_ul'.$ul.'">';
 		foreach($subItems as $subItem) {
@@ -1169,7 +1175,7 @@ class PageUnit extends CmsPage {
 		return $str;
 	}
 
-    function ajxSSELoad()
+    public function ajxSSELoad()
     {
         global $sql;
         $checkRule = array();
@@ -1181,7 +1187,7 @@ class PageUnit extends CmsPage {
         return json_encode(array('error'=>$checkResult));
     }
 
-    function ajxSSESave()
+    public function ajxSSESave()
     {
         global $sql;
         $checkRule = array();
@@ -1236,7 +1242,7 @@ class PageUnit extends CmsPage {
 
 
 	#Content
-	function getContent()
+	public function getContent()
 	{
 		global $shape,$cfg;
 
@@ -1274,11 +1280,11 @@ class PageUnit extends CmsPage {
 					new Element('img',{'src':'/img/adm/adm_logo.png','class':'admlogo','width':212,'height':19}).inject(usrcntrldiv);
 					new Element('img',{'src':'/img/edt/btnlgout.png','title':'Выход'}).inject(usrcntrldiv).addEvent('click',function() { if (confirm('Выйти из панели управления?')) document.location='/_logout/'; });
 					new Element('a',{'href':'/_/'}).inject(usrcntrldiv).grab(new Element('img',{'src':'/img/edt/btnhome.png','title':'На главную редактора'}));
-					".$vieweditLink."
+					".$vieweditLink. '
 				};
 				userControl();
 			});
-			</script>";
+			</script>';
 			$this->_buildPageSections($this->getMenu());
 			
             #Заполняем массивы модулей
@@ -1294,16 +1300,8 @@ class PageUnit extends CmsPage {
 			if ($this->page['section_id']!=1) {
 				$pageEdt = $this->page;
 				$pageEdt['_selected']=true;
-				unset($pageEdt['sec_content']);
-				unset($pageEdt['sec_sort']);
-				unset($pageEdt['sec_created']);
-				unset($pageEdt['sec_system']);
-				unset($pageEdt['sec_glr_id']);
-				unset($pageEdt['sec_contshort']);
-				unset($pageEdt['sec_lst_mofify']);
-				unset($pageEdt['sec_url_priority']);
-				unset($pageEdt['sec_params']);
-				$this->pageSections[$pageEdt['section_id']]=$pageEdt;
+                unset($pageEdt['sec_content'], $pageEdt['sec_sort'], $pageEdt['sec_created'], $pageEdt['sec_system'], $pageEdt['sec_glr_id'], $pageEdt['sec_contshort'], $pageEdt['sec_lst_mofify'], $pageEdt['sec_url_priority'], $pageEdt['sec_params']);
+                $this->pageSections[$pageEdt['section_id']]=$pageEdt;
 			}
 			$shape['jses']  .= '
 			<script type="text/javascript">currpage='.json_encode(array(

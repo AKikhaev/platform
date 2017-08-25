@@ -2,7 +2,7 @@
 
 class MngUnit extends CmsPage {
 
-	function initAjx()
+	public function initAjx()
 	{
 		$ajaxes = array(
 			'_mng' => array(
@@ -13,13 +13,13 @@ class MngUnit extends CmsPage {
 		return $ajaxes;
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -28,7 +28,7 @@ class MngUnit extends CmsPage {
 		);
 	}
 
-	function ajxAuth(){
+	public function ajxAuth(){
 		$checkRule = array();
 		$checkRule[] = array('l', '.');
 		$checkRule[] = array('p', '.');
@@ -40,7 +40,7 @@ class MngUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));		
 	}
 	
-	function ajxGenQR() {
+	public function ajxGenQR() {
 		global $cfg;
 		if (!isset($_COOKIE[$cfg['site_session_name_qr']])) 
 			$qr = mb_substr(md5(time()),0,10);
@@ -50,7 +50,7 @@ class MngUnit extends CmsPage {
 		return json_encode(mb_substr(md5($qr.'!'),1,11));
 	}
 
-	function __construct(&$pageTemplate)
+	public function __construct(&$pageTemplate)
 	{
 		global $cfg,$shape,$Cacher;
 
@@ -107,5 +107,5 @@ class MngUnit extends CmsPage {
 
 	}
 
-    static function getContent() {}
+    public static function getContent() {}
 }

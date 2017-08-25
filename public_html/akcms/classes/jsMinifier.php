@@ -172,7 +172,7 @@ class jsMinifier
 
 		$this->b = $this->getReal();
 
-		while($this->a !== false && !is_null($this->a) && $this->a !== '')
+		while($this->a !== false && null !== $this->a && $this->a !== '')
 		{
 
 			// now we give $b the same check for conditional comments we gave $a

@@ -3,7 +3,7 @@
 class SecStrEdit extends PgUnitAbstract {
 	public $imgglrpath = 'img/objph/';
 	
-	function initAjx()
+	public function initAjx()
 	{
 		global $page;
 		return array(		
@@ -16,13 +16,13 @@ class SecStrEdit extends PgUnitAbstract {
 		);
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -31,7 +31,7 @@ class SecStrEdit extends PgUnitAbstract {
 		);
 	}
 
-	function ajxLoad()
+	public function ajxLoad()
 	{
 		global $sql;
 		$checkRule = array();
@@ -49,7 +49,7 @@ class SecStrEdit extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));
 	}
 
-	function ajxSave()
+	public function ajxSave()
     {
         global $sql;
         $checkRule = array();

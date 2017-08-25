@@ -1,20 +1,20 @@
 <?php
 
 class Pg_CtlgPrce extends PgUnitAbstract {
-	function initAjx()
+	public function initAjx()
 	{
 		global $page;
 		return array(
 		);
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -23,7 +23,7 @@ class Pg_CtlgPrce extends PgUnitAbstract {
 		);
 	}
   
-	function render()
+	public function render()
 	{
 		global $sql,$page;
 		$html = '';
@@ -61,7 +61,7 @@ class Pg_CtlgPrce extends PgUnitAbstract {
 			$pgNums = ceil($countRecords/$pgSize);
 
 			if ($pgNum<1 || $pgNum>$pgNums)
-				throw new CmsException("page_not_found");
+				throw new CmsException('page_not_found');
 			
 			if ($editMode) ;
 			$html .= '<div id="gstbk">';
@@ -85,9 +85,9 @@ class Pg_CtlgPrce extends PgUnitAbstract {
 			if ($pgNums>1)
 			$html .= '<div class="pager">'.makePager($countRecords, $pgSize, $pgNum, '/'.$page->pageMainUri.'{pg}/').'</div>';
 
-		} else throw new CmsException("page_not_found");
+		} else throw new CmsException('page_not_found');
 		return $html;
 	}
   
 }
-?>
+

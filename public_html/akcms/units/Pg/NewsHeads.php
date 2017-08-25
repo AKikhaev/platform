@@ -1,19 +1,19 @@
 <?php
 class Pg_NewsHeads extends PgUnitAbstract {
 
-	function initAjx()
+	public function initAjx()
 	{
 		return array(
 		);
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 			'admin'=>true,
@@ -22,7 +22,7 @@ class Pg_NewsHeads extends PgUnitAbstract {
 		);
 	}
   
-	function render()
+	public function render()
 	{
 		global $sql;
 
@@ -62,5 +62,3 @@ class Pg_NewsHeads extends PgUnitAbstract {
 		';
 	}
 }
-
-?>

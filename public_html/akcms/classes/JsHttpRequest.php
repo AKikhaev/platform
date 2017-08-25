@@ -10,7 +10,7 @@
  * See http://www.gnu.org/copyleft/lesser.html
  *
  * Do not remove this comment if you want to use the script!
- * Не удаляйте данный комментарий, если вы хотите использовать скрипт!
+ * пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ!
  *
  * This backend library also supports POST requests additionally to GET.
  *
@@ -63,7 +63,7 @@ class JsHttpRequest
      * If an object is created WITHOUT an active AJAX query, it is simply marked as
      * non-active. Use statuc method isActive() to check.
      */
-    function JsHttpRequest($enc,$obstart=true)
+    function __construct($enc, $obstart=true)
     {
         global $JsHttpRequest_Active;
         
@@ -145,7 +145,7 @@ class JsHttpRequest
      */
     function getJsCode()
     {
-        return file_get_contents(dirname(__FILE__) . '/JsHttpRequest.js');
+        return file_get_contents(__DIR__ . '/JsHttpRequest.js');
     }
 
 
@@ -201,13 +201,13 @@ class JsHttpRequest
      */
     function php2js($a=false)
     {
-        if (is_null($a)) return 'null';
+        if (null === $a) return 'null';
         if ($a === false) return 'false';
         if ($a === true) return 'true';
         if (is_scalar($a)) {
             if (is_float($a)) {
                 // Always use "." for floats.
-                $a = str_replace(",", ".", strval($a));
+                $a = str_replace(",", ".", (string)$a);
             }
             // All scalars are converted to strings to avoid indeterminism.
             // PHP's "1" and 1 are equal for all PHP operators, but 
@@ -232,12 +232,12 @@ class JsHttpRequest
             foreach ($a as $v) {
                 $result[] = JsHttpRequest::php2js($v);
             }
-            return '[ ' . join(', ', $result) . ' ]';
+            return '[ ' . implode(', ', $result) . ' ]';
         } else {
             foreach ($a as $k => $v) {
                 $result[] = JsHttpRequest::php2js($k) . ': ' . JsHttpRequest::php2js($v);
             }
-            return '{ ' . join(', ', $result) . ' }';
+            return '{ ' . implode(', ', $result) . ' }';
         }
     }
     
@@ -339,7 +339,7 @@ class JsHttpRequest
         
         // Try to use very fast json_encode: 3-4 times faster than a manual encoding.
         if (function_exists('array_walk_recursive') && function_exists('json_encode') && $this->_unicodeConvMethod) {
-            $this->_nonAsciiChars = join("", array_map('chr', range(128, 255)));
+            $this->_nonAsciiChars = implode("", array_map('chr', range(128, 255)));
             $this->_toUtfFailed = false;
             $resultUtf8 = $result;
             array_walk_recursive($resultUtf8, array(&$this, '_toUtf8_callback'), $this->SCRIPT_ENCODING);

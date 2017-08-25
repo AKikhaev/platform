@@ -36,7 +36,7 @@ class phpMorphy_Dict_Ancode {
             $this->setGrammemsFromString($grammems);
         } elseif(is_array($grammems)) {
             $this->grammems->import(new ArrayIterator($grammems));
-        } elseif(!is_null($grammems)) {
+        } elseif(null !== $grammems) {
             throw new phpMorphy_Exception('Invalid grammems given');
         }
 

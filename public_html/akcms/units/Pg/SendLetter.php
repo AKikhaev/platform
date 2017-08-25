@@ -2,19 +2,19 @@
 
 class Pg_SendLetter extends PgUnitAbstract {
 
-	function initAjx()
+	public function initAjx()
 	{
 		global $page;
 		return array();
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -23,7 +23,7 @@ class Pg_SendLetter extends PgUnitAbstract {
 		);
 	}
   
-	function render()
+	public function render()
 	{
 		global $cfg,$page;
 		$html = '';
@@ -64,9 +64,8 @@ class Pg_SendLetter extends PgUnitAbstract {
 			}
 			$html .= GetShape('lttr_send', $uform);
 
-		} else throw new CmsException("page_not_found");
+		} else throw new CmsException('page_not_found');
 		return $html;
 	}
   
 }
-?>

@@ -3,20 +3,20 @@
 class Pg_AddrMap extends PgUnitAbstract {
 	public $imgnewspath = 'img/news/';
 
-	function initAjx()
+	public function initAjx()
 	{
 		global $page;
 		return array(
 		);
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -25,7 +25,7 @@ class Pg_AddrMap extends PgUnitAbstract {
 		);
 	}
 
-	function render()
+	public function render()
 	{
 		global $sql,$page,$shape;
         #http://api.yandex.ru/maps/tools/constructor/
@@ -41,7 +41,7 @@ class Pg_AddrMap extends PgUnitAbstract {
             });
             map.controls
                 .add("zoomControl")
-                .add("mapTools")
+                .add("mapTools");
                 //.add(new ymaps.control.TypeSelector(["yandex#map", "yandex#satellite", "yandex#hybrid", "yandex#publicMap"]));
             map.geoObjects
                 .add(new ymaps.Placemark([38.9758, 45.0434], {
@@ -50,8 +50,8 @@ class Pg_AddrMap extends PgUnitAbstract {
                 }, {
                     //preset: "twirl#darkorangeDotIcon"
                     preset: "twirl#darkorangeStretchyIcon"
-                }));
-        };
+                }))
+        }
         </script>
         <script type="text/javascript" src="http://api-maps.yandex.ru/2.0-stable/?lang=ru-RU&coordorder=longlat&load=package.full&wizard=constructor&onload=fid_ymaps"></script>
 		';
@@ -60,5 +60,3 @@ class Pg_AddrMap extends PgUnitAbstract {
 	}
   
 }
-
-?>

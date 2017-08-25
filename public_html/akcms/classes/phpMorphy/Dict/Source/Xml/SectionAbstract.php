@@ -81,7 +81,7 @@ abstract class phpMorphy_Dict_Source_Xml_SectionAbstract implements Iterator {
     }
 
     function rewind() {
-        if(!is_null($this->reader)) {
+        if(null !== $this->reader) {
             $this->reader->close();
         }
 
@@ -91,7 +91,7 @@ abstract class phpMorphy_Dict_Source_Xml_SectionAbstract implements Iterator {
     }
 
     function valid() {
-        return !is_null($this->reader);
+        return null !== $this->reader;
     }
 
     protected function read() {

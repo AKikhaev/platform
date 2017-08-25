@@ -3,7 +3,7 @@
 class Pg_Gallery extends PgUnitAbstract {
 	public $imgglrpath = 'img/gallery/';
 	
-	function initAjx()
+	public function initAjx()
 	{
 		global $page;
 		return array(
@@ -46,13 +46,13 @@ class Pg_Gallery extends PgUnitAbstract {
         );
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 		'admin'=>true,
@@ -61,15 +61,15 @@ class Pg_Gallery extends PgUnitAbstract {
 		);
 	}
 
-	static function getGalleryPhotos($glr_id){
+	public static function getGalleryPhotos($glr_id){
 		global $sql;
 		$query = sprintf ('select id_cgp,cgp_name,cgp_file from cms_gallery_photos where cgp_enabled and cgp_glr_id=%d order by id_cgp', 
 		$glr_id);
         $res = $sql->query_all($query);
-		return $res?$res:array();
+		return $res?:array();
 	}
 
-	static function getLastGalleryPhotos() // Фото последней галлереи, в которой >3 фото
+	public static function getLastGalleryPhotos() // Фото последней галлереи, в которой >3 фото
 	{
 		global $sql;
 		$res = array('p'=>array());
@@ -85,7 +85,7 @@ class Pg_Gallery extends PgUnitAbstract {
 		return $res;
 	}
 
-	static function getSecGalleries() // Фото привязанной галлереи
+	public static function getSecGalleries() // Фото привязанной галлереи
 	{
 		global $sql,$page;
 		$res = array('g'=>array(),'p'=>array());
@@ -105,7 +105,7 @@ class Pg_Gallery extends PgUnitAbstract {
 		return $res;
 	}
 
-	function ajxGlrDrp()
+	public function ajxGlrDrp()
 	{
 		global $sql;
 		$checkRule = array();
@@ -139,7 +139,7 @@ class Pg_Gallery extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));
 	}
 
-	function ajxGlrChHdr()
+	public function ajxGlrChHdr()
 	{
 		global $sql;
 		$checkRule = array();
@@ -157,7 +157,7 @@ class Pg_Gallery extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));   
 	}
 
-	function ajxGlrList()
+	public function ajxGlrList()
 	{
 		global $sql;
 		$checkRule = array();
@@ -171,7 +171,7 @@ class Pg_Gallery extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));   
 	}
 	
-	function ajxGlrSetOrder()
+	public function ajxGlrSetOrder()
 	{
 		global $sql;
 		$checkRule = array();
@@ -183,7 +183,7 @@ class Pg_Gallery extends PgUnitAbstract {
 			foreach($_POST['glr_order'] as $id_glr) {
 				$query = sprintf ('UPDATE cms_galeries SET glr_sort=%d WHERE id_glr = %d;', 
 					++$i,
-					@intval($id_glr));
+					@(int)$id_glr);
 				$f = $sql->command($query) && $f;
 			}
 			return json_encode($f>0?'t':'f');
@@ -191,7 +191,7 @@ class Pg_Gallery extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));   
 	}	
 	
-	function ajxGlrNew()
+	public function ajxGlrNew()
 	{
 		global $sql;
 		$checkRule = array();
@@ -210,7 +210,7 @@ class Pg_Gallery extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));   
 	}
 	
-	function ajxGlrNameUpd()
+	public function ajxGlrNameUpd()
 	{
 		global $sql;
 		$checkRule = array();
@@ -230,7 +230,7 @@ class Pg_Gallery extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));   
 	}
 
-    function ajxGlrDescUpd()
+    public function ajxGlrDescUpd()
     {
         global $sql;
         $checkRule = array();
@@ -248,7 +248,7 @@ class Pg_Gallery extends PgUnitAbstract {
         return json_encode(array('error'=>$checkResult));
     }
 
-	function ajxGlrCpgNameUpd()
+	public function ajxGlrCpgNameUpd()
 	{
 		global $sql;
 		$checkRule = array();
@@ -266,7 +266,7 @@ class Pg_Gallery extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));   
 	}	
 
-	function ajxGlrCpgDrp()
+	public function ajxGlrCpgDrp()
 	{
 		global $sql;
 		$checkRule = array();
@@ -291,7 +291,7 @@ class Pg_Gallery extends PgUnitAbstract {
 		return json_encode(array('error'=>$checkResult));   
 	}  
 	
-	function ajxTst() {
+	public function ajxTst() {
 		if (!$this->hasRight()) exit;
 		// $srcdir = '/home/p/parablru/sf/public_html/tmp/';
 		// $num = 0;
@@ -302,7 +302,7 @@ class Pg_Gallery extends PgUnitAbstract {
 		// }
 	}
 	
-	function FileToGallery($id_glr,$filepath) {
+	public function FileToGallery($id_glr, $filepath) {
 		global $sql;
 		$rstat = false; $res_msg = '';
 
@@ -335,7 +335,7 @@ class Pg_Gallery extends PgUnitAbstract {
 					$pathstr = $this->imgglrpath.$cgpfile;
 					$dirpath = dirname($pathstr);
 					if (!file_exists($dirpath)) mkdir($dirpath,0755,true);        
-					ImageJpeg($dst,$pathstr,90); 
+					imagejpeg($dst,$pathstr,90);
 
 					$query = sprintf ('UPDATE cms_gallery_photos SET cgp_file = %s WHERE id_cgp = %d;', 
 						$sql->t($cgpfile),
@@ -354,7 +354,7 @@ class Pg_Gallery extends PgUnitAbstract {
 		return $rstat;	
 	}
 	
-	function ajxGlrIUpload() 
+	public function ajxGlrIUpload()
 	{
 		global $sql,$page;
 		$res_msg = ''; $res_stat = 0; $res_id_glr = 0; $res_id_cgp = 0; $res_cgp_file = '';
@@ -408,7 +408,7 @@ class Pg_Gallery extends PgUnitAbstract {
 											$pathstr = $this->imgglrpath.$cgpfile;
 											$dirpath = dirname($pathstr);
 											if (!file_exists($dirpath)) mkdir($dirpath,0755,true);    
-											ImageJpeg($dst,$pathstr,90); 
+											imagejpeg($dst,$pathstr,90);
 
 											$query = sprintf ('UPDATE cms_gallery_photos SET cgp_file = %s WHERE id_cgp = %d;', 
 												$sql->t($cgpfile),
@@ -484,11 +484,11 @@ class Pg_Gallery extends PgUnitAbstract {
 		));
 	}
 	
-	function ajxGlrUpload() 
+	public function ajxGlrUpload()
 	{
 		global $sql,$page;
 		$res_msg = ''; $res_stat = 0; $res_id_glr = 0; $res_id_cgp = 0; $res_cgp_file = '';
-		$JsHttpRequest = new JsHttpRequest("UTF-8");
+		$JsHttpRequest = new JsHttpRequest('UTF-8');
 		$checkRule = array();
 		$checkRule[] = array('id_glr'  , '/^\d+/');
 		$checkRule[] = array('glr_type', '/^\d+/');
@@ -554,7 +554,7 @@ class Pg_Gallery extends PgUnitAbstract {
 											$dirpath = dirname($pathstr);
 											if (!file_exists($dirpath)) mkdir($dirpath,0755,true);    
 											#var_dump_($dirpath);     exit;    
-											ImageJpeg($dst,$pathstr,90); 
+											imagejpeg($dst,$pathstr,90);
 
 											$query = sprintf ('UPDATE cms_gallery_photos SET cgp_file = %s WHERE id_cgp = %d;', 
 												$sql->t($cgpfile),
@@ -662,7 +662,7 @@ class Pg_Gallery extends PgUnitAbstract {
 		if ($dataset!==false) foreach ($dataset as $dataitem) $putInto[] = $dataitem;
 	}
 	
-	function render()
+	public function render()
 	{
 		global $sql,$page;
 		$res = '';
@@ -676,13 +676,13 @@ class Pg_Gallery extends PgUnitAbstract {
 			$query = sprintf ('select * from cms_galeries where '.$query_where.' id_glr=%d;', 
 			$glrId);
 			$dataset = $sql->query_all($query);
-			if (count($dataset)==0 or $dataset===false) throw new CmsException("page_not_found");
+			if (count($dataset)==0 || $dataset===false) throw new CmsException('page_not_found');
 			$glrItem = $dataset[0];
 			$query = sprintf ('select * from cms_gallery_photos where '.($editMode?'':'cgp_enabled and').' cgp_glr_id=%d order by id_cgp;', 
 			$glrId);
 			$glrPhotos = $sql->query_all($query);
 			
-			require($this->view('item'));
+			require $this->view('item');
 			
 			if ($editMode) $res .= '<script type="text/javascript">var glra='.json_encode(array(
 				'glrs'=>array($glrItem),
@@ -702,9 +702,9 @@ class Pg_Gallery extends PgUnitAbstract {
 			$glrItms = $sql->query_all($query);
 			$pgNums = ceil($countRecords/$pgSize);
 			if ($glrItms!==false && ($pgNum<1 || $pgNum>$pgNums))
-				throw new CmsException("page_not_found");
+				throw new CmsException('page_not_found');
 				
-			require($this->view('list'));
+			require $this->view('list');
 
             /*
 			if ($pgNums>1)
@@ -723,7 +723,7 @@ class Pg_Gallery extends PgUnitAbstract {
             }
 
 			if ($editMode) $res .= '<script type="text/javascript">var glra={\'glrs\':[],\'glr_ph\':[]};</script><script type="text/javascript" src="/akcms/js/v1/pg_glr_ed.js"></script>';
-		} else throw new CmsException("page_not_found");
+		} else throw new CmsException('page_not_found');
 		return $res;
 	}
   

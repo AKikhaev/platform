@@ -26,7 +26,7 @@ class phpMorphy_Fsa_State {
 		$transes,
 		$raw_transes;
 
-	function phpMorphy_Fsa_State(phpMorphy_Fsa_FsaInterface $fsa, $index) {
+	function __construct(phpMorphy_Fsa_FsaInterface $fsa, $index) {
 		$this->fsa = $fsa;
 
 		$this->raw_transes = $fsa->readState($index);

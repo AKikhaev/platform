@@ -2,19 +2,19 @@
 
 class Pg_Media extends PgUnitAbstract {
 
-	function initAjx()
+	public function initAjx()
 	{
 		return array(
 		);
 	}
   
-	function _rigthList()
+	public function _rigthList()
 	{
 		return array(
 		);
 	}
 
-	function initAcl()
+	public function initAcl()
 	{
 		return array(
 			'admin'=>true,
@@ -23,7 +23,7 @@ class Pg_Media extends PgUnitAbstract {
 		);
 	}
   
-	function render()
+	public function render()
 	{
 		global $shape;
 		$editMode = $this->hasRight() && core::$inEdit;
@@ -33,4 +33,3 @@ class Pg_Media extends PgUnitAbstract {
 		return '';
 	}
 }
-?>

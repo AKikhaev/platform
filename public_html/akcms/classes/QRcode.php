@@ -816,8 +816,8 @@
             if ($binary_mode) {
             
                     foreach ($frame as &$frameLine) {
-                        $frameLine = join('<span class="m">&nbsp;&nbsp;</span>', explode('0', $frameLine));
-                        $frameLine = join('&#9608;&#9608;', explode('1', $frameLine));
+                        $frameLine = implode('<span class="m">&nbsp;&nbsp;</span>', explode('0', $frameLine));
+                        $frameLine = implode('&#9608;&#9608;', explode('1', $frameLine));
                     }
                     
                     ?>
@@ -826,25 +826,25 @@
                 </style>
                 <?php
                     echo '<pre><tt><br/ ><br/ ><br/ >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-                    echo join("<br/ >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", $frame);
+                    echo implode("<br/ >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", $frame);
                     echo '</tt></pre><br/ ><br/ ><br/ ><br/ ><br/ ><br/ >';
             
             } else {
             
                 foreach ($frame as &$frameLine) {
-                    $frameLine = join('<span class="m">&nbsp;</span>',  explode("\xc0", $frameLine));
-                    $frameLine = join('<span class="m">&#9618;</span>', explode("\xc1", $frameLine));
-                    $frameLine = join('<span class="p">&nbsp;</span>',  explode("\xa0", $frameLine));
-                    $frameLine = join('<span class="p">&#9618;</span>', explode("\xa1", $frameLine));
-                    $frameLine = join('<span class="s">&#9671;</span>', explode("\x84", $frameLine)); //format 0
-                    $frameLine = join('<span class="s">&#9670;</span>', explode("\x85", $frameLine)); //format 1
-                    $frameLine = join('<span class="x">&#9762;</span>', explode("\x81", $frameLine)); //special bit
-                    $frameLine = join('<span class="c">&nbsp;</span>',  explode("\x90", $frameLine)); //clock 0
-                    $frameLine = join('<span class="c">&#9719;</span>', explode("\x91", $frameLine)); //clock 1
-                    $frameLine = join('<span class="f">&nbsp;</span>',  explode("\x88", $frameLine)); //version
-                    $frameLine = join('<span class="f">&#9618;</span>', explode("\x89", $frameLine)); //version
-                    $frameLine = join('&#9830;', explode("\x01", $frameLine));
-                    $frameLine = join('&#8901;', explode("\0", $frameLine));
+                    $frameLine = implode('<span class="m">&nbsp;</span>',  explode("\xc0", $frameLine));
+                    $frameLine = implode('<span class="m">&#9618;</span>', explode("\xc1", $frameLine));
+                    $frameLine = implode('<span class="p">&nbsp;</span>',  explode("\xa0", $frameLine));
+                    $frameLine = implode('<span class="p">&#9618;</span>', explode("\xa1", $frameLine));
+                    $frameLine = implode('<span class="s">&#9671;</span>', explode("\x84", $frameLine)); //format 0
+                    $frameLine = implode('<span class="s">&#9670;</span>', explode("\x85", $frameLine)); //format 1
+                    $frameLine = implode('<span class="x">&#9762;</span>', explode("\x81", $frameLine)); //special bit
+                    $frameLine = implode('<span class="c">&nbsp;</span>',  explode("\x90", $frameLine)); //clock 0
+                    $frameLine = implode('<span class="c">&#9719;</span>', explode("\x91", $frameLine)); //clock 1
+                    $frameLine = implode('<span class="f">&nbsp;</span>',  explode("\x88", $frameLine)); //version
+                    $frameLine = implode('<span class="f">&#9618;</span>', explode("\x89", $frameLine)); //version
+                    $frameLine = implode('&#9830;', explode("\x01", $frameLine));
+                    $frameLine = implode('&#8901;', explode("\0", $frameLine));
                 }
                 
                 ?>
@@ -858,7 +858,7 @@
                 </style>
                 <?php
                 echo "<pre><tt>";
-                echo join("<br/ >", $frame);
+                echo implode("<br/ >", $frame);
                 echo "</tt></pre>";
             
             }
@@ -867,7 +867,7 @@
         //----------------------------------------------------------------------
         public static function serial($frame)
         {
-            return gzcompress(join("\n", $frame), 9);
+            return gzcompress(implode("\n", $frame), 9);
         }
         
         //----------------------------------------------------------------------
@@ -898,7 +898,7 @@
                 }
             }
             
-            if(is_null(self::$frames[$version]))
+            if(null === self::$frames[$version])
                 return null;
 
             return self::$frames[$version];
@@ -957,19 +957,19 @@
             $image = self::image($frame, $pixelPerPoint, $outerFrame, $back_color, $fore_color);
             
             if ($filename === false) {
-                Header("Content-type: image/png");
-                ImagePng($image);
+                header("Content-type: image/png");
+                imagepng($image);
             } else {
                 if($saveandprint===TRUE){
-                    ImagePng($image, $filename);
+                    imagepng($image, $filename);
                     header("Content-type: image/png");
-                    ImagePng($image);
+                    imagepng($image);
                 }else{
-                    ImagePng($image, $filename);
+                    imagepng($image, $filename);
                 }
             }
             
-            ImageDestroy($image);
+            imagedestroy($image);
         }
     
         //----------------------------------------------------------------------
@@ -978,13 +978,13 @@
             $image = self::image($frame, $pixelPerPoint, $outerFrame, $back_color, $fore_color);
             
             if ($filename === false) {
-                Header("Content-type: image/jpeg");
-                ImageJpeg($image, null, $q);
+                header("Content-type: image/jpeg");
+                imagejpeg($image, null, $q);
             } else {
-                ImageJpeg($image, $filename, $q);            
+                imagejpeg($image, $filename, $q);
             }
             
-            ImageDestroy($image);
+            imagedestroy($image);
         }
     
         //----------------------------------------------------------------------
@@ -996,7 +996,7 @@
             $imgW = $w + 2*$outerFrame;
             $imgH = $h + 2*$outerFrame;
             
-            $base_image =ImageCreate($imgW, $imgH);
+            $base_image =imagecreate($imgW, $imgH);
             
             // convert a hexadecimal color code into decimal eps format (green = 0 1 0, blue = 0 0 1, ...)
             $r1 = round((($fore_color & 0xFF0000) >> 16), 5);
@@ -1010,22 +1010,22 @@
 
 
             
-            $col[0] = ImageColorAllocate($base_image,$r2,$b2,$g2);
-            $col[1] = ImageColorAllocate($base_image,$r1,$b1,$g1);
+            $col[0] = imagecolorallocate($base_image,$r2,$b2,$g2);
+            $col[1] = imagecolorallocate($base_image,$r1,$b1,$g1);
 
             imagefill($base_image, 0, 0, $col[0]);
 
             for($y=0; $y<$h; $y++) {
                 for($x=0; $x<$w; $x++) {
                     if ($frame[$y][$x] == '1') {
-                        ImageSetPixel($base_image,$x+$outerFrame,$y+$outerFrame,$col[1]); 
+                        imagesetpixel($base_image,$x+$outerFrame,$y+$outerFrame,$col[1]);
                     }
                 }
             }
             
-            $target_image =ImageCreate($imgW * $pixelPerPoint, $imgH * $pixelPerPoint);
-            ImageCopyResized($target_image, $base_image, 0, 0, 0, 0, $imgW * $pixelPerPoint, $imgH * $pixelPerPoint, $imgW, $imgH);
-            ImageDestroy($base_image);
+            $target_image =imagecreate($imgW * $pixelPerPoint, $imgH * $pixelPerPoint);
+            imagecopyresized($target_image, $base_image, 0, 0, 0, 0, $imgW * $pixelPerPoint, $imgH * $pixelPerPoint, $imgW, $imgH);
+            imagedestroy($base_image);
             
             return $target_image;
         }
@@ -1083,7 +1083,7 @@
             }
         
             if(!QRinput::check($mode, $size, $setData)) {
-                throw new Exception('Error m:'.$mode.',s:'.$size.',d:'.join(',',$setData));
+                throw new Exception('Error m:'.$mode.',s:'.$size.',d:'.implode(',',$setData));
                 return null;
             }
             
@@ -1594,7 +1594,7 @@
                     if($remain >= 7) {
                         $size += 2;
                     } else if($remain >= 4) {
-                        $size += 1;
+                        ++$size;
                     }
                     break;
                 case QR_MODE_AN:
@@ -1862,7 +1862,7 @@
         //----------------------------------------------------------------------
         public function append(QRbitstream $arg)
         {
-            if (is_null($arg)) {
+            if (null === $arg) {
                 return -1;
             }
             
@@ -1888,7 +1888,7 @@
 
             $b = QRbitstream::newFromNum($bits, $num);
             
-            if(is_null($b))
+            if(null === $b)
                 return -1;
 
             $ret = $this->append($b);
@@ -1905,7 +1905,7 @@
 
             $b = QRbitstream::newFromBytes($size, $data);
             
-            if(is_null($b))
+            if(null === $b)
                 return -1;
 
             $ret = $this->append($b);
@@ -2243,7 +2243,7 @@
             $p = 0;
             
             while ($p<$stringLen) {
-                $mode = self::identifyMode(substr($this->dataStr, $p), $this->modeHint);
+                $mode = $this->identifyMode(substr($this->dataStr, $p), $this->modeHint);
                 if($mode == QR_MODE_KANJI) {
                     $p += 2;
                 } else {
@@ -2260,7 +2260,7 @@
         //----------------------------------------------------------------------
         public static function splitStringToQRinput($string, QRinput $input, $modeHint, $casesensitive = true)
         {
-            if(is_null($string) || $string == '\0' || $string == '') {
+            if(null === $string || $string == '\0' || $string == '') {
                 throw new Exception('empty string!!!');
             }
 
@@ -2618,9 +2618,9 @@
             $codeArr = array();
             
             foreach ($bitFrame as $line)
-                $codeArr[] = join('', $line);
+                $codeArr[] = implode('', $line);
                 
-            return gzcompress(join("\n", $codeArr), 9);
+            return gzcompress(implode("\n", $codeArr), 9);
         }
         
         //----------------------------------------------------------------------
@@ -2895,7 +2895,7 @@
             $spec = array(0,0,0,0,0);
             
             $this->datacode = $input->getByteStream();
-            if(is_null($this->datacode)) {
+            if(null === $this->datacode) {
                 throw new Exception('null imput string');
             }
 
@@ -3012,7 +3012,7 @@
             $frame = QRspec::newFrame($version);
             
             $filler = new FrameFiller($width, $frame);
-            if(is_null($filler)) {
+            if(null === $filler) {
                 return NULL;
             }
 
@@ -3049,7 +3049,7 @@
                 if (QR_FIND_BEST_MASK) {
                     $masked = $maskObj->mask($width, $frame, $input->getErrorCorrectionLevel());
                 } else {
-                    $masked = $maskObj->makeMask($width, $frame, (intval(QR_DEFAULT_MASK) % 8), $input->getErrorCorrectionLevel());
+                    $masked = $maskObj->makeMask($width, $frame, ((int)QR_DEFAULT_MASK % 8), $input->getErrorCorrectionLevel());
                 }
             } else {
                 $masked = $maskObj->makeMask($width, $frame, $mask, $input->getErrorCorrectionLevel());
@@ -3322,7 +3322,7 @@
             QRtools::markTime('after_encode');
             
             if ($outfile!== false) {
-                file_put_contents($outfile, join("\n", QRtools::binarize($code->data)));
+                file_put_contents($outfile, implode("\n", QRtools::binarize($code->data)));
             } else {
                 return QRtools::binarize($code->data);
             }

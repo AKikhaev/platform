@@ -26,7 +26,7 @@ abstract class phpMorphy_Fsa_LinkAbstract {
 		$trans,
 		$raw_trans;
 
-	function phpMorphy_Fsa_LinkAbstract(phpMorphy_Fsa_FsaInterface $fsa, $trans, $rawTrans) {
+	function __construct(phpMorphy_Fsa_FsaInterface $fsa, $trans, $rawTrans) {
 		$this->fsa = $fsa;
 		$this->trans = $trans;
 		$this->raw_trans = $rawTrans;

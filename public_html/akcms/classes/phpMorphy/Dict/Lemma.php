@@ -56,7 +56,7 @@ class phpMorphy_Dict_Lemma {
     }
 
     function setPrefixId($prefixId) {
-        if(is_null($prefixId)) {
+        if(null === $prefixId) {
             throw new phpMorphy_Exception("NULL prefix_id specified");
         }
 
@@ -68,7 +68,7 @@ class phpMorphy_Dict_Lemma {
     }
 
     function setAncodeId($ancodeId) {
-        if(is_null($ancodeId)) {
+        if(null === $ancodeId) {
             throw new phpMorphy_Exception("NULL id specified");
         }
 

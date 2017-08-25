@@ -57,9 +57,9 @@ var ModalBox = new Class({
 		bar.inject(this.handle);
 
 		// Собственно содержимое блока
-		var СontentBox = new Element('div', {'class':'handle'});
-		СontentBox.adopt(content);
-		СontentBox.inject(this.handle);
+		var ContentBox = new Element('div', {'class':'handle'});
+		ContentBox.adopt(content);
+		ContentBox.inject(this.handle);
 
 		// Имитируем нижнее скругление
 		var bar1 = new Element('div', {'class':'topBar'});
@@ -71,7 +71,7 @@ var ModalBox = new Class({
 
 		this.overlay.inject(target);
 		this.handle.inject(target);
-		this.contentbox = СontentBox;
+		this.contentbox = ContentBox;
 
 		if (this.options.allowManualClose)
 			this.overlay.addEvent('click', this.close.bind(this));
@@ -82,8 +82,8 @@ var ModalBox = new Class({
 	},
 
 	_destroy : function(){
-		if ($type(this.handle) == 'element') this.handle.destroy();
-		if ($type(this.overlay) == 'element') this.overlay.destroy();
+		if ($type(this.handle) === 'element') this.handle.destroy();
+		if ($type(this.overlay) === 'element') this.overlay.destroy();
 	}
 
 });

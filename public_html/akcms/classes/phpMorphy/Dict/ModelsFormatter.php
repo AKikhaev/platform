@@ -28,7 +28,7 @@ class phpMorphy_Dict_ModelsFormatter {
     static function create() {
         static $instance;
 
-        if(is_null($instance)) {
+        if(null === $instance) {
             $instance = new phpMorphy_Dict_ModelsFormatter();
         }
 
@@ -162,7 +162,7 @@ class phpMorphy_Dict_ModelsFormatter {
      * @return string
      */
     protected function formatValue($value) {
-        if(is_null($value)) {
+        if(null === $value) {
             return 'null';
         }
 
