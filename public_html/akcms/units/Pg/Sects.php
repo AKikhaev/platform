@@ -73,7 +73,6 @@ class Pg_Sects extends PgUnitAbstract {
 			if ($pgNum<1 || $pgNum>$pgNums)
 				throw new CmsException('page_not_found');
 			
-			if ($editMode) ;
 			$res .= '<div id="news">';
 			$news_items = array();
 			if ($dataset!==false) foreach ($dataset as $secItem)
@@ -84,8 +83,8 @@ class Pg_Sects extends PgUnitAbstract {
 																'sec_to_news' =>$secItem['sec_to_news'],
 																'sec_created' =>$secItem['sec_created'],
 															);
-				$text = GetTruncText(strip_tags(str_replace('// <![CDATA[','<![CDATA[',$secItem['sec_contshort']!=''?$secItem['sec_contshort']:$secItem['sec_content'])),327);
-				$res .= '<div class="newsitem'.(($secItem['sec_enabled']=='f'||$secItem['sec_to_news']=='f')?' imtdsbl':'').'" id="newsi'.$secItem['section_id'].'"><div class="newidate">'.DtTmToDtStr($secItem['sec_created']).'</div><div class="newihead"><a href="/'.$secItem['sec_url_full'].'" title="'.$secItem['sec_namefull'].'">'.$secItem['sec_namefull'].'</a></div><div class="newicnt">'.$text.'</div></div>';
+				$text = GetTruncText(strip_tags(str_replace('// <![CDATA[','<![CDATA[',$secItem['sec_contshort'] !== ''?$secItem['sec_contshort']:$secItem['sec_content'])),327);
+				$res .= '<div class="newsitem'.(($secItem['sec_enabled'] === 'f'||$secItem['sec_to_news'] === 'f')?' imtdsbl':'').'" id="newsi'.$secItem['section_id'].'"><div class="newidate">'.DtTmToDtStr($secItem['sec_created']).'</div><div class="newihead"><a href="/'.$secItem['sec_url_full'].'" title="'.$secItem['sec_namefull'].'">'.$secItem['sec_namefull'].'</a></div><div class="newicnt">'.$text.'</div></div>';
 			}
 			$res .= '</div>';
 			if ($pgNums>1)

@@ -92,14 +92,14 @@ class Pg_Main_News extends PgUnitAbstract {
 		if ($dataset!==false) foreach ($dataset as $item)
 		{
 			$i++;
-			if ($item['sec_imgfile']=='') $item['sec_imgfile'] = '0.jpg';#
-			if ($item['sec_contshort']!='') {
+			if ($item['sec_imgfile'] === '') $item['sec_imgfile'] = '0.jpg';#
+			if ($item['sec_contshort'] !== '') {
 				$text = strip_tags(str_replace('// <![CDATA[','<![CDATA[',$item['sec_contshort']));
 			} else {
 				$text = GetTruncText(strip_tags(str_replace('// <![CDATA[','<![CDATA[',$item['sec_content'])),95);
 			}
 			#$text = GetTruncText(strip_tags(str_replace('// <![CDATA[','<![CDATA[',$item['sec_contshort']!=''?$item['sec_contshort']:$item['sec_content'])),95);
-			$styleimg = $item['sec_imgfile']==''?'':'style="background-image: url(/img/pages/l/'.$item['sec_imgfile'].')"';
+			$styleimg = $item['sec_imgfile'] === ''?'':'style="background-image: url(/img/pages/l/'.$item['sec_imgfile'].')"';
 			$res .= '
 			<div class="nwslstimt'.($i%4==0?' nwslstimtlst':'').'" '.$styleimg.'>
 			<a class="nwslstimt_h" href="/'.$item['sec_url_full'].'">'.$item['sec_namefull'].'</a>

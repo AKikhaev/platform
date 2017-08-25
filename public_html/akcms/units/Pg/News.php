@@ -111,7 +111,7 @@ class Pg_News extends PgUnitAbstract {
 				$_POST['news_id']
 				);
 			$res = $sql->command($query)>0?'t':'f';
-			if ($res=='t') $this->reindex($_POST);
+			if ($res === 't') $this->reindex($_POST);
 			return json_encode($res);
 		} 
 		return json_encode(array('error'=>$checkResult));
@@ -137,7 +137,7 @@ class Pg_News extends PgUnitAbstract {
 						if ($this->hasRight()) {
 							$file_name = mb_strtolower($upl['name']);
 							$file_ext = str_replace('.','',mb_substr($file_name,mb_strrpos($file_name,'.')));
-							if ($file_ext=='jpg')
+							if ($file_ext === 'jpg')
 							{
 								$res_stat = 1;
 								$max_width = 85;
@@ -156,7 +156,7 @@ class Pg_News extends PgUnitAbstract {
 
 									if ($_POST['news_id']>0)
 									{
-										$res_stat = 3; 
+										//$res_stat = 3;
 										$res_stat = 4;
 										$i_file = $_POST['news_id'].'.jpg';
 										$pathstr = $this->imgnewspath.$i_file;
@@ -271,13 +271,12 @@ class Pg_News extends PgUnitAbstract {
 			if ($pgNum<1 || $pgNum>$pgNums)
 				throw new CmsException('page_not_found');
 			
-			if ($editMode) ;
 			$res .= '<div id="news">';
 			$news_items = array();
 			if ($dataset!==false) foreach ($dataset as $newsItem)
 			{
 				$news_items[$newsItem['news_id']] = $newsItem;
-				$res .= '<div class="newsitem'.($newsItem['news_enabled']=='f'?' imtdsbl':'').'" id="newsi'.$newsItem['news_id'].'"><div class="newidate">'.DtTmToDtStr($newsItem['news_date']).'</div><div class="newihead">'.$newsItem['news_head'].'</div><div class="newicnt">'.$newsItem['news_short'].($newsItem['news_detaillink']=='t'?' <a href="/'.$page->pageMainUri.'n'.$newsItem['news_id'].'/">Подробнее...</a>':'').'</div></div>';
+				$res .= '<div class="newsitem'.($newsItem['news_enabled'] === 'f'?' imtdsbl':'').'" id="newsi'.$newsItem['news_id'].'"><div class="newidate">'.DtTmToDtStr($newsItem['news_date']).'</div><div class="newihead">'.$newsItem['news_head'].'</div><div class="newicnt">'.$newsItem['news_short'].($newsItem['news_detaillink'] === 't'?' <a href="/'.$page->pageMainUri.'n'.$newsItem['news_id'].'/">Подробнее...</a>':'').'</div></div>';
 			}
 			$res .= '</div>';
 			if ($pgNums>1)

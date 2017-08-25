@@ -104,7 +104,7 @@ class Pg_RelSec extends PgUnitAbstract {
 			if ($galleries['p'][$gallery['id_glr']]!=false) {
 				$res .= '<div class="glrmini_p'.(count($galleries['p'][$gallery['id_glr']])>8?' glrmini_pi_alot':'').'">';
 				foreach ($galleries['p'][$gallery['id_glr']] as $photo) {
-					$res .= '<div class="glrmini_pi'.(++$i>8?' hidden glrmini_pi_oth':'').'"><a  class="_imgview" rel="g|'.$gallery['id_glr'].'|'.$photo['id_cgp'].'" title="'.($photo['cgp_name']!=''?$photo['cgp_name']:$gallery['glr_name']).'" href="/img/gallery/o/'.$photo['cgp_file'].'"><img width="173" height="173" border="0" alt="'.$photo['cgp_name'].'" src="/img/gallery/a/'.$photo['cgp_file'].'"></a></div>';
+					$res .= '<div class="glrmini_pi'.(++$i>8?' hidden glrmini_pi_oth':'').'"><a  class="_imgview" rel="g|'.$gallery['id_glr'].'|'.$photo['id_cgp'].'" title="'.($photo['cgp_name'] !== ''?$photo['cgp_name']:$gallery['glr_name']).'" href="/img/gallery/o/'.$photo['cgp_file'].'"><img width="173" height="173" border="0" alt="'.$photo['cgp_name'].'" src="/img/gallery/a/'.$photo['cgp_file'].'"></a></div>';
 				}
 				$res .= '<div class="clearfix"></div></div>';
 			}

@@ -13,7 +13,7 @@
                 e.stopPropagation();
                 $.fancybox.open({
                     'type':'iframe',
-                    'href':'/ajx/'+_akcms.uri+'_sse?code='+$(this).data('code')+'&mult='+$(this).data('mult'),
+                    'href':'/ajx/'+$(this).data('edt-uri')+'_sse?code='+$(this).data('code')+'&mult='+$(this).data('mult'),
                     'width': $(document).width()*.9,
                     'height': $(document).height()*.9,
                     'top':40,
@@ -30,7 +30,7 @@
             }
         });
         var update_editable_visible = function(state) {
-            if (state==editable_visible) return;
+            if (state===editable_visible) return;
             if (state) {
                 editable_visible = true;
                 ss_edits.addClass('ss_edithl');
@@ -40,9 +40,9 @@
             }
         };
         $(window).keydown(function(evt) {
-            if ((evt.which == 17 || evt.which == 145) && !editable_visible) update_editable_visible(true);
+            if ((evt.which === 17 || evt.which === 145) && !editable_visible) update_editable_visible(true);
         }).keyup(function(evt) {
-            if (evt.which == 17) update_editable_visible(false);
+            if (evt.which === 17) update_editable_visible(false);
         });
         //parent.jQuery.fancybox.close();
     });

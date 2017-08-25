@@ -176,7 +176,7 @@ class TmplMapperUnit extends CmsPage {
             } elseif (count($htmls)==1) $result['error'] = 'Родитель не найден! ';
             else $result['error'] = 'Более одного вхождения родителя! '.count($htmls);
 
-            if ($out!='') {
+            if ($out !== '') {
                 copy($data['template'],$data['template'].'.bak');
                 $written  = file_put_contents($data['template'],$out);
                 $result['status'] = 'Шаблон обновлен! Размер файла '.$written;
@@ -194,7 +194,7 @@ class TmplMapperUnit extends CmsPage {
 	{
 		global $pathlen;
 
-		if ($GLOBALS['path'][0]=='_tmpl') {
+		if ($GLOBALS['path'][0] === '_tmpl') {
             if (!core::$userAuth) throw new CmsException('login_needs');
             if (core::$isAjax) return;
             if ($pathlen==1) {

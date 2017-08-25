@@ -40,7 +40,7 @@ class Pg_Search extends PgUnitAbstract {
 			$shape['qsrch'] = mb_convert_encoding($_GET['qsrch'],mb_internal_encoding(),'CP-1251');
 		} else $shape['qsrch'] = isset($_GET['qsrch'])?$_GET['qsrch']:'';
 		#$shape['qsrch'] = strip_tags($shape['qsrch']);
-		if ($shape['qsrch']==' Поиск...') {
+		if ($shape['qsrch'] === ' Поиск...') {
 			unset($_GET['qsrch']);
 			$shape['qsrch'] = '';
 		}

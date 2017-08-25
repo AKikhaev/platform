@@ -56,7 +56,7 @@ class MngUnit extends CmsPage {
 
 		$pathstr_part = $GLOBALS['path'][0];
 
-		if ($pathstr_part=='_auth') {
+		if ($pathstr_part === '_auth') {
             core::$renderPage = true;
             $this->title = 'Добро пожаловать';
 
@@ -95,13 +95,13 @@ class MngUnit extends CmsPage {
 					else $shape['msg'] = 'Неверное имя или пароль!';
 				} else $shape['msg'] = 'Введите имя и пароль!';
 			}
-		} elseif ($pathstr_part=='_logout') {
+		} elseif ($pathstr_part === '_logout') {
             core::$renderPage = true;
 			$pageTemplate = 'logout';
 			CmsUser::logout();
             $shape['newurl'] = '/';
             //$shape['newurl'] = isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'/';
-		} elseif ($pathstr_part==':auth' && core::$isAjax) {
+		} elseif ($pathstr_part === ':auth' && core::$isAjax) {
         }
 		else throw new CmsException('page_not_found');
 

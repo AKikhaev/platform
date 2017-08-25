@@ -26,7 +26,7 @@ class FeedUnit extends CmsPage {
 	public function __construct(&$pageTemplate)
 	{
 		global $sql,$cfg,$pathlen,$path;
-        if ($pathlen===2 && $path[0]=='feed') {
+        if ($pathlen===2 && $path[0] === 'feed') {
 
             #<link rel="alternate" type="application/rss+xml" title="RSS" href="/feed/rss2/" />
             #<link rel="alternate" type="application/atom+xml" title="ATOM" href="/feed/atom/" />
@@ -40,7 +40,7 @@ class FeedUnit extends CmsPage {
             if ($dataset !== false) {
 
                 include 'akcms/classes/FeedWriter/FeedTypes.php';
-                if ($pathstr_part == 'rss2') {
+                if ($pathstr_part === 'rss2') {
                     $feed = new RSS2FeedWriter();
 
                     $feed->setTitle($cfg['feed_title']);
@@ -49,7 +49,7 @@ class FeedUnit extends CmsPage {
                     //$feed->setImage($cfg['feed_title'],$domain.'/feed_rss/',$domain.'/img/t/rssLogo.jpg');
 
                     foreach ($dataset as $idata) {
-                        if ($idata['sec_contshort'] != '') {
+                        if ($idata['sec_contshort'] !== '') {
                             $desc = strip_tags(str_replace('// <![CDATA[', '<![CDATA[', $idata['sec_contshort']));
                         } else {
                             $desc = GetTruncText(strip_tags(str_replace('// <![CDATA[', '<![CDATA[', $idata['sec_content'])), 200);
@@ -68,7 +68,7 @@ class FeedUnit extends CmsPage {
                     }
                     $feed->generateFeed();
                 } else
-                    if ($pathstr_part == 'atom') {
+                    if ($pathstr_part === 'atom') {
                         $feed = new ATOMFeedWriter();
 
                         $feed->setTitle($cfg['feed_title']);
@@ -77,7 +77,7 @@ class FeedUnit extends CmsPage {
                         //$feed->setImage($cfg['feed_title'],$domain.'/feed_rss/',$domain.'/img/t/rssLogo.jpg');
 
                         foreach ($dataset as $idata) {
-                            if ($idata['sec_contshort'] != '') {
+                            if ($idata['sec_contshort'] !== '') {
                                 $desc = strip_tags(str_replace('// <![CDATA[', '<![CDATA[', $idata['sec_contshort']));
                             } else {
                                 $desc = GetTruncText(strip_tags(str_replace('// <![CDATA[', '<![CDATA[', $idata['sec_content'])), 200);

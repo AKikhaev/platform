@@ -106,7 +106,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 					$_POST['cati_id']
 					);
 				$res = $sql->command($query)>0?'t':'f';
-				if ($res=='t') $this->reindex($_POST);
+				if ($res === 't') $this->reindex($_POST);
 				return json_encode($res);
 			}
 		} 
@@ -133,7 +133,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 						if ($this->hasRight()) {
 							$file_name = mb_strtolower($upl['name']);
 							$file_ext = str_replace('.','',mb_substr($file_name,mb_strrpos($file_name,'.')));
-							if ($file_ext=='jpg')
+							if ($file_ext === 'jpg')
 							{
 								$res_stat = 1;
 								$max_width = 800;
@@ -152,7 +152,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 
 									if ($_POST['cati_id']>0)
 									{
-										$res_stat = 3; 
+										//$res_stat = 3;
 										$res_stat = 4;
 										$i_file = $_POST['cati_id'].'.jpg';
 										$pathstr = $this->imgcatipath.$i_file;
@@ -280,7 +280,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 			$item = $sql->query_first_assoc($query);
 			if ($item==false) throw new CmsException('page_not_found');
 			
-			if ($item['cati_photofile']=='') $item['cati_photofile'] = '0.jpg';#
+			if ($item['cati_photofile'] === '') $item['cati_photofile'] = '0.jpg';#
 			$imgsrc = $this->imgcatipath.'p/'.$item['cati_photofile'];
 
 			$costStr = $item['cati_bcost'].($item['cati_cost']==='0'?'':(' <b>'.number_format($item['cati_cost'], 0, '.', ' ').'</b>р.'));
@@ -415,16 +415,16 @@ class Pg_Ctlg extends PgUnitAbstract {
 			$res .= '<div class="cati_d"><div class="cati_di"></div><div class="cati_dt"><div class="cati_bg">';
 			$res .= $item['cati_desc'];
 			
-			if ($item['cati_artcl']!='') $res .= '<div class="catiart"> Артикул: '.$item['cati_artcl'].'</div>';   
+			if ($item['cati_artcl'] !== '') $res .= '<div class="catiart"> Артикул: '.$item['cati_artcl'].'</div>';
 			
 			$res .= '<div class="cati_ask"><a href="/'.$href_ask.'"></a></div>';
 			
-			if ($costStr!='') $res .= '<div class="cati_c"><span>Цена</span>: '.$costStr.'</div>'; 
+			if ($costStr !== '') $res .= '<div class="cati_c"><span>Цена</span>: '.$costStr.'</div>';
 			
 			$res .= '</div></div></div><div class="clearfix"></div>';
 			$res .= '</div></div>'; #<div class="ctlg_under"><a href="/'.$pageLinkUri.'" title="К списку">К списку</a></div>
 
-			if ($item['cati_photofile']=='0.jpg') $item['cati_photofile'] = '';
+			if ($item['cati_photofile'] === '0.jpg') $item['cati_photofile'] = '';
 			if ($editMode) $res .= '<script type="text/javascript" src="/akcms/js/v1/pg_ctlg_ed.js"></script><script type="text/javascript">var cati='.json_encode(array($item['cati_id']=>$item,'noadd'=>true)).';</script>';
             /*
             $query_where = sprintf('from cms_cat_gds where cati_sec_id=%d and cati_id<>%d',$page->page['section_id'],$item['cati_id']);
@@ -580,11 +580,11 @@ class Pg_Ctlg extends PgUnitAbstract {
 				$i++;
 				$href = $pageLinkUri.'g'.$item['cati_id'];				
 				$href_ask = 'ask?'.http_build_query(array('url'=>'/'.$pageLinkUri.'g'.$item['cati_id'],'item'=>$item['cati_nameshort']));	
-				if ($item['cati_photofile']=='') $item['cati_photofile'] = '0.jpg';#
+				if ($item['cati_photofile'] === '') $item['cati_photofile'] = '0.jpg';#
 				$costStr = $item['cati_bcost'].($item['cati_cost']==='0'?'':(' <b>'.$item['cati_cost'].'</b>р.'));
 				$styleimg = 'style="background-image: url(/img/cat/pl/'.$item['cati_photofile'].')"';
 				$res .= '
-				<div class="ctlgi'.($i%4==0?' ctlgi_last':'').($item['cati_show']=='f'?' class="imtdsbl"':'').'">
+				<div class="ctlgi'.($i%4==0?' ctlgi_last':'').($item['cati_show'] === 'f'?' class="imtdsbl"':'').'">
 					<div class="ctlgi_brdr"></div>
 					<div class="ctlgi_h"><a href="/'.$href.'" title="'.$item['cati_namefull'].'" '.$styleimg.'>'.$item['cati_nameshort'].'</a></div>
 					<div class="ctlgi_cost">'.$costStr.'</div>

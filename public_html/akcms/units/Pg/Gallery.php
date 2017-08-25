@@ -116,7 +116,7 @@ class Pg_Gallery extends PgUnitAbstract {
 			$query = sprintf('SELECT glr_sys FROM cms_galeries WHERE id_glr = %d;',
 				$_POST['id_glr']);
 			$glrSys = $sql->query_first_assoc($query);
-			if ($glrSys===false || ($glrSys!==false?$glrSys['glr_sys']=='f':false)) {
+			if ($glrSys===false || ($glrSys!==false?$glrSys['glr_sys'] === 'f':false)) {
 				$query = sprintf ('SELECT cgp_file as file FROM cms_gallery_photos WHERE cgp_glr_id = %d;',
 				$_POST['id_glr']);
 				$photolist  = $sql->query_all($query);
@@ -128,7 +128,7 @@ class Pg_Gallery extends PgUnitAbstract {
 					$filename = $photo['file'];
 					$filenameext = '';
 					$path_parts = pathinfo($this->imgglrpath.$filename);
-					if ($path_parts['extension']!='jpg' && $path_parts['extension']!='png') $filenameext = '.jpg'; 
+					if ($path_parts['extension'] !== 'jpg' && $path_parts['extension'] !== 'png') $filenameext = '.jpg';
 					@unlink($this->imgglrpath.$filename);
 					@array_map('unlink',glob($this->imgglrpath.'*/'.$filename));
 				}
@@ -281,7 +281,7 @@ class Pg_Gallery extends PgUnitAbstract {
 				$filename = $result[0];
 				$filenameext = '';
 				$path_parts = pathinfo($this->imgglrpath.$filename);
-				if ($path_parts['extension']!='jpg' && $path_parts['extension']!='png') $filenameext = '.jpg';
+				if ($path_parts['extension'] !== 'jpg' && $path_parts['extension'] !== 'png') $filenameext = '.jpg';
 				@unlink($this->imgglrpath.$filename);
 				@array_map('unlink',glob($this->imgglrpath.'*/'.$filename.$filenameext));
 				$res = 't';
@@ -308,7 +308,7 @@ class Pg_Gallery extends PgUnitAbstract {
 
 		$file_name = mb_strtolower($filepath);
 		$file_ext = str_replace('.','',mb_substr($file_name,mb_strrpos($file_name,'.')));
-		if ($file_ext=='jpg')
+		if ($file_ext === 'jpg')
 		{
 			$res_stat = 1;
 			$max_width = 1200;
@@ -376,7 +376,7 @@ class Pg_Gallery extends PgUnitAbstract {
 							$file_ext = str_replace('.','',mb_substr($file_name,mb_strrpos($file_name,'.')));
 							$id_glr = $_GET['glr'];
 							
-							if ($file_ext=='jpg')
+							if ($file_ext === 'jpg')
 							{
 								$res_stat = 1;
 								$max_width = 1200;
@@ -429,7 +429,7 @@ class Pg_Gallery extends PgUnitAbstract {
 								}             
 
 							}
-							elseif ($file_ext=='flv' || $file_ext=='mp4' || $file_ext=='mp3')
+							elseif ($file_ext === 'flv' || $file_ext === 'mp4' || $file_ext === 'mp3')
 							{
 								#$res_stat = 1;
 								$res_stat = 2;
@@ -506,7 +506,7 @@ class Pg_Gallery extends PgUnitAbstract {
 						if ($this->hasRight()) {
 							$file_name = mb_strtolower($upl['name']);
 							$file_ext = str_replace('.','',mb_substr($file_name,mb_strrpos($file_name,'.')));
-							if ($file_ext=='jpg')
+							if ($file_ext === 'jpg')
 							{
 								$res_stat = 1;
 								$max_width = 1200;
@@ -581,7 +581,7 @@ class Pg_Gallery extends PgUnitAbstract {
 								}             
 
 							}
-							elseif ($file_ext=='flv' || $file_ext=='mp4' || $file_ext=='mp3')
+							elseif ($file_ext === 'flv' || $file_ext === 'mp4' || $file_ext === 'mp3')
 							{
 								#$res_stat = 1;
 								$res_stat = 2;

@@ -97,7 +97,7 @@ class PageUnit extends CmsPage {
 		if ($this->page===false)
 		throw new CmsException('page_not_found');
 
-		if ($this->page['sec_openfirst']=='t')
+		if ($this->page['sec_openfirst'] === 't')
 		{
 			$query = sprintf ('select * from cms_sections where sec_parent_id=%d '.($loadAnyway?'':'and sec_enabled and now()>sec_from').' order by sec_sort limit 1;', 
 			$this->page['section_id']);
@@ -108,21 +108,21 @@ class PageUnit extends CmsPage {
 		}
 		
 		$params_str = trim(mb_substr($pathstr_str,mb_strlen($this->page['sec_url_full'])),'/');
-		$params_arr = $params_str==''?array():explode('/',$params_str);
+		$params_arr = $params_str === ''?array():explode('/',$params_str);
 		 
 		$pageTemplate = (core::$inEdit?'editpage':$this->page['sec_page']);
-		$this->title = $this->page['sec_title'] != '' ? $this->page['sec_title'] : $this->page['sec_namefull'].' - '.$cfg['site_title'];
+		$this->title = $this->page['sec_title'] !== '' ? $this->page['sec_title'] : $this->page['sec_namefull'].' - '.$cfg['site_title'];
 		#if ($this->hasRight()) var_dump_($this->page['sec_title']);
 
-		$this->pageUri = $pathstr_str=='/'?'':$pathstr_str;
-		$this->pageMainUri = $this->page['sec_url_full']=='/'?'':$this->page['sec_url_full'];
-		$this->imgpath = '/'.self::$imgthmbpath.($this->pageUri=='/'?'/_/':'/'.$GLOBALS['pathstr']);
+		$this->pageUri = $pathstr_str === '/'?'':$pathstr_str;
+		$this->pageMainUri = $this->page['sec_url_full'] === '/'?'':$this->page['sec_url_full'];
+		$this->imgpath = '/'.self::$imgthmbpath.($this->pageUri === '/'?'/_/':'/'.$GLOBALS['pathstr']);
 		//$this->getMenu();
 		$this->getBreadcrumbs();
 		#var_dump($this->getMenu()); exit;
 		
 		$unitsCount = 0;
-		if (trim($this->page['sec_units'])!='') foreach (explode(',',$this->page['sec_units']) as $pgUnitClass)
+		if (trim($this->page['sec_units']) !== '') foreach (explode(',',$this->page['sec_units']) as $pgUnitClass)
 			if (isset($cfg['pgunits'][$pgUnitClass]))
 			{
 				$unitsCount++;
@@ -154,7 +154,7 @@ class PageUnit extends CmsPage {
     }
 
     #Получить параметры
-    public function paramsGet($name, $default = array()) {
+    public function paramsGet($name, array $default = array()) {
         return (isset($this->params[$name])?$this->params[$name]:$default);
     }
 
@@ -179,7 +179,7 @@ class PageUnit extends CmsPage {
 			'sec_namefull' =>$this->page['sec_namefull'],
 			'sec_showinmenu'=>$this->page['sec_showinmenu'],
 			'sec_enabled'   =>$this->page['sec_enabled'],
-			'sec_hidden'	=>$this->page['sec_enabled']=='f' || $this->page['sec_showinmenu']=='f'?'t':'f',
+			'sec_hidden'	=>$this->page['sec_enabled'] === 'f' || $this->page['sec_showinmenu'] === 'f'?'t':'f',
 			'_current' => true
 		);
 
@@ -269,7 +269,7 @@ class PageUnit extends CmsPage {
 					if ($markCurrent && isset($this->pagePath_ids[$menuAllItem['section_id']]['_current'])) $menuAllItem['_current'] = true;
 				}
 				$menuAllItem['_children'] = array();
-				if (!$showHidden && $menuAllItem['sec_openfirst']=='t') // Подменяем url openfirst раздела первым подразделом
+				if (!$showHidden && $menuAllItem['sec_openfirst'] === 't') // Подменяем url openfirst раздела первым подразделом
 				{
 					$query = sprintf ('select sec_url_full from cms_sections where sec_parent_id=%d and sec_enabled and now()>sec_from order by sec_sort limit 1;', 
 						$menuAllItem['section_id']);
@@ -278,10 +278,10 @@ class PageUnit extends CmsPage {
                         $menuAllItem['sec_url_full'] = ($prefix!==false?$prefix:'').$dataset['sec_url_full'];
 					}
 				}
-				if (!$expByPath || $expByPath && isset($this->pagePath_ids[$menuAllItem['section_id']])) // Раскрытие по крошкам
+				if (!$expByPath || ($expByPath && isset($this->pagePath_ids[$menuAllItem['section_id']]))) // Раскрытие по крошкам
 					$this->_getAllMenuItems($menuAllItem['_children'],$menuAllItem['section_id'],$menuAllItem['sec_howchild'],
 						$showHidden,$prefix,$markSelected, $markCurrent,$expByPath, $deep-1);
-				if ($menuAllItem['sec_units']!='') foreach (explode(',',$menuAllItem['sec_units']) as $pgUnitClass) if (isset($cfg['pgunits'][$pgUnitClass]))
+				if ($menuAllItem['sec_units'] !== '') foreach (explode(',',$menuAllItem['sec_units']) as $pgUnitClass) if (isset($cfg['pgunits'][$pgUnitClass]))
                     call_user_func_array(array($pgUnitClass,'buildLevelSiteMap'),array(&$menuAllItem['_children'],$menuAllItem['section_id'],$menuAllItem['sec_url_full']));
                 if (count($menuAllItem['_children'])==0) unset($menuAllItem['_children']);
 			}
@@ -340,21 +340,23 @@ class PageUnit extends CmsPage {
 						$putInto = &$mnuitem['_children'];
 					}
 				}
+				unset($mnuitem);
 			} else break;
 			$lastPathItem = $pathItem;
 		}
 		if ($lastPathItem !== false)
 		{
-			$mnulist = $this->_getMenuItems($pathItem['section_id'],$howchild,$showHidden);
+			$mnulist = $this->_getMenuItems($lastPathItem['section_id'],$howchild,$showHidden);
 			if ($mnulist!==false) { 
 				$putInto = $mnulist; $this->page['_children'] = &$mnulist; 
-				foreach ($putInto as &$mnuitem) $mnuitem['_p_hc'] = $howchild;
+				foreach ($putInto as &$mnuitem1) $mnuitem1['_p_hc'] = $howchild;
+                unset($mnuitem);
 			}
 		}
         if (core::$inEdit) {
             $root = $this->_getMenuItem(1);
             $root['sec_url_full'] = '';
-            if ($root != false) array_unshift($this->pageMenu,$root);
+            if ($root !== false) array_unshift($this->pageMenu,$root);
         }
 		return $this->pageMenu;
 	}
@@ -406,7 +408,7 @@ class PageUnit extends CmsPage {
 		if (!$this->hasRight()) return false;
 		if ($indxpage==false) $indxpage = &$this->page;#
 		global $sql;
-		$indstr = strip_tags($indxpage['sec_enabled']=='t'?$indxpage['sec_nameshort'].' '.$indxpage['sec_namefull'].' '.$indxpage['sec_title'].' '.$indxpage['sec_content'].' '.$indxpage['sec_keywords'].' '.$indxpage['sec_description']:'');
+		$indstr = strip_tags($indxpage['sec_enabled'] === 't'?$indxpage['sec_nameshort'].' '.$indxpage['sec_namefull'].' '.$indxpage['sec_title'].' '.$indxpage['sec_content'].' '.$indxpage['sec_keywords'].' '.$indxpage['sec_description']:'');
 		$base_forms = self::makeSrchWords($indstr);
 
 		$query = sprintf ('select __cms_srchwords_sections__assign(%d,%s);', 
@@ -623,7 +625,7 @@ class PageUnit extends CmsPage {
 			$_POST['sec_contshort'] = preg_replace('/(<img.*? src=")(?!\/|http:|https:)(.*?)"/ui','\1/\2',$_POST['sec_contshort']); // Если это наш сервер и нет / в начале - добавляем
             if (!isset($_POST['sec_units'])) $_POST['sec_units'] = array();
             $sec_units = array();
-            foreach ($_POST['sec_units'] as $unit) if (trim($unit)!='') $sec_units[] = $unit;
+            foreach ($_POST['sec_units'] as $unit) if (trim($unit) !== '') $sec_units[] = $unit;
 			$query = sprintf ('update cms_sections set sec_contshort=%s,sec_units=%s where section_id=%d;', #, sec_glr_id=%d
 				$sql->t($_POST['sec_contshort']),
                 $sql->t(implode(',',$sec_units)),
@@ -634,21 +636,21 @@ class PageUnit extends CmsPage {
 				$this->reindex();
 			}
 			
-			$tags = trim($_POST['sec_tags'])==''?array():explode(',',$_POST['sec_tags']);
+			$tags = trim($_POST['sec_tags']) === ''?array():explode(',',$_POST['sec_tags']);
 			$query = sprintf ('select __cms_tags_sections__assign(%d,%s);', 
 				$this->page['section_id'],
 				$sql->pgf_array_text($tags)
 			);			
 			$db_res = $sql->query_first_row($query);
 			
-			return json_encode(($res_count>0 && $db_res[0]=='t')?'t':'f');
+			return json_encode(($res_count>0 && $db_res[0] === 't')?'t':'f');
 		} 
 		return json_encode(array('error'=>$checkResult));
 	}
   
 	public static function _addClass($str, $needclass) {
 		$clases = explode(' ',$str);
-		if (!in_array($needclass,$clases)) $clases[] = $needclass;
+		if (!in_array($needclass, $clases, true)) $clases[] = $needclass;
 		return implode(' ',$clases);
 	}
 	
@@ -672,8 +674,8 @@ class PageUnit extends CmsPage {
 		$path_prts = pathinfo(mb_strtolower($pathold));
 		$path_prts['filename'] = basename(Title2Uri($path_prts['filename']),'.'.$path_prts['extension']);
 		
-		if ($path_prts['extension']=='jpeg') $path_prts['extension'] = 'jpg';
-		if ($path_prts['extension']=='png') $path_prts['extension'] = 'jpg';
+		if ($path_prts['extension'] === 'jpeg') $path_prts['extension'] = 'jpg';
+		if ($path_prts['extension'] === 'png') $path_prts['extension'] = 'jpg';
 		$pathnew = $pathto.$path_prts['filename'].'.'.$path_prts['extension'];
 		// Уникальное имя
 		for ($i=1;$i<=11;$i++) if (file_exists($pathnew)) {
@@ -851,7 +853,7 @@ class PageUnit extends CmsPage {
 					{
 						$path_parts = pathinfo(mb_strtolower($url));
 						$file_ext = $path_parts['extension'];
-						if (in_array($file_ext,array('jpg','jpeg','png')))
+						if (in_array($file_ext, array('jpg','jpeg','png'), true))
 						{
 							$res_stat = 1;
 							$imginfo = false;
@@ -911,7 +913,7 @@ class PageUnit extends CmsPage {
 
 		$path_parts = pathinfo(mb_strtolower($url));
 		$file_ext = $path_parts['extension'];
-		if (in_array($file_ext,array('jpg','jpeg','png')))
+		if (in_array($file_ext, array('jpg','jpeg','png'), true))
 		{
 			$imginfo = false;
 			$tmpfile = tempnam('/tmp','akimg');
@@ -1051,19 +1053,19 @@ class PageUnit extends CmsPage {
 			$checkResult[] = array('f'=>'url','s'=>'tryhack');
 		}
 		if (count($checkResult)==0) {
-			if ($_POST['url']=='/') $_POST['url'] = '_';
+			if ($_POST['url'] === '/') $_POST['url'] = '_';
 			$_POST['url'] = trim($_POST['url'],'/').'/';
-			$dirurl = ($_POST['type']=='file'?$cfg['filespath']:$cfg['imagespath']).$_POST['url'];
+			$dirurl = ($_POST['type'] === 'file'?$cfg['filespath']:$cfg['imagespath']).$_POST['url'];
 			$res = '';
 			if (file_exists($dirurl)) {
 				$i=0;
 				$files = array();
-				foreach (scandir($dirurl,SCANDIR_SORT_NONE) as $file) if (!in_array($file,array('.','..')) && is_file($dirurl.$file))
+				foreach (scandir($dirurl,SCANDIR_SORT_NONE) as $file) if (!in_array($file, array('.','..'), true) && is_file($dirurl.$file))
 					$files[$file] = filemtime($dirurl.$file);
 				arsort($files);
 				$files = array_keys($files);
 				foreach($files as $file) {
-					if ($_POST['type']=='image')
+					if ($_POST['type'] === 'image')
 						$img = '<img src="/img/resizer/?url='.urlencode('/'.$dirurl.$file).'&w=50&h=50&jo=1" style="padding:2px;" /> ';
 					else $img = '';
 					$res .= '<tr class="'.(++$i%2==0?'':'even').'"><td colspan=2><a onclick="selectURL(\'/'.$dirurl.$file.'\');" href="#">'.$img.$file.'</a><div class="fsize">'.
@@ -1087,9 +1089,9 @@ class PageUnit extends CmsPage {
 			$checkResult[] = array('f'=>'url','s'=>'tryhack');
 		}
 		if (count($checkResult)==0) {
-			if ($_POST['url']=='/') $_POST['url'] = '_';
+			if ($_POST['url'] === '/') $_POST['url'] = '_';
 			$_POST['url'] = trim($_POST['url'],'/').'/';
-			$filepath = ($_POST['type']=='file'?$cfg['filespath']:$cfg['imagespath']).$_POST['url'].$_POST['file'];
+			$filepath = ($_POST['type'] === 'file'?$cfg['filespath']:$cfg['imagespath']).$_POST['url'].$_POST['file'];
 			$res = false;
 			if (file_exists($filepath) && is_file($filepath)) {
 				$res = @unlink($filepath);
@@ -1111,13 +1113,13 @@ class PageUnit extends CmsPage {
 		}
 		if (count($checkResult)==0) {
 			$res = '';
-			if ($_POST['url']=='/') $_POST['url'] = '_';
+			if ($_POST['url'] === '/') $_POST['url'] = '_';
 			$_POST['url'] = trim($_POST['url'],'/').'/';
 			#pluploader
 			$chunk = isset($_POST['chunk']) ? (int)$_POST['chunk'] : 0;
 			$chunks = isset($_POST['chunks']) ? (int)$_POST['chunks'] : 0;
 			$fileName = isset($_POST['name']) ? $_POST['name'] : '';
-			$dirurl = ($_POST['type']=='file'?$cfg['filespath']:$cfg['imagespath']).$_POST['url'];
+			$dirurl = ($_POST['type'] === 'file'?$cfg['filespath']:$cfg['imagespath']).$_POST['url'];
 
 			$fileName = preg_replace('/[^\w\._0-9]+/', '_', Translit($fileName)); //security
 			$targetDir = $dirurl;
@@ -1168,7 +1170,7 @@ class PageUnit extends CmsPage {
 		foreach($subItems as $subItem) {
 			$str .= 
 			'<li class="mnu_li'.$li.' mnuitem" id="sec'.$subItem['section_id'].'">
-			<a href="/'.$urlprefix.$subItem['sec_url_full'].'" class="mnu_hc'.$subItem['sec_howchild'].(isset($subItem['_current'])?' mnu_curr':'').(isset($menuItem['_selected'])?' mnu_slct':'').($subItem['sec_hidden']=='t'?' mnu_hddn':'').'">'.$subItem['sec_nameshort'].'</a>'.
+			<a href="/'.$urlprefix.$subItem['sec_url_full'].'" class="mnu_hc'.$subItem['sec_howchild'].(isset($subItem['_current'])?' mnu_curr':'').(isset($menuItem['_selected'])?' mnu_slct':'').($subItem['sec_hidden'] === 't'?' mnu_hddn':'').'">'.$subItem['sec_nameshort'].'</a>'.
 			(isset($subItem['_children'])?(count($subItem['_children'])>0?self::buildAdminMenu($subItem['_children'],$urlprefix,$ul.'l',$li.'i'):''):'').'</li>';
 		}
 		$str .= '</ul>';
@@ -1197,20 +1199,22 @@ class PageUnit extends CmsPage {
         $checkResult = checkForm($_POST, $checkRule, $this->hasRight());
         if (count($checkResult) == 0) {
             $data = $_POST;
-            list($sec,$name) = explode('_',$data['code']);
+            $code_parts = explode('_',$data['code']);
+            $sec = $code_parts[0]; unset($code_parts[0]);
+            $name = implode('_',$code_parts); unset($code_parts);
             $secs = array(
                 'eg'=>0,
                 'ep'=>$this->page['section_id']
             );
             /* @var $sql pgdb */
-            if ($data['code']=='ep_content') {
+            if ($data['code'] === 'ep_content') {
 
                 $query = $sql->pr_u('cms_sections', array(
                     'sec_content' => $sql->t($data['data']),
                 ), 'section_id=' . $sql->d($secs[$sec]));
                 $res_count = $sql->command($query);
 
-            } elseif ($data['code']=='ep_namefull') {
+            } elseif ($data['code'] === 'ep_namefull') {
 
                 $query = $sql->pr_u('cms_sections', array(
                     'sec_namefull' => $sql->t($data['data']),
@@ -1221,7 +1225,7 @@ class PageUnit extends CmsPage {
 
                 $query = $sql->pr_u('cms_sections_string', array(
                     'secs_str' => $sql->t($data['data']),
-                    'secs_multiline' => $sql->b($data['mult'] == 'm'),
+                    'secs_multiline' => $sql->b($data['mult'] === 'm'),
                 ), 'sec_id=' . $sql->d($secs[$sec]) . ' AND secs_code=' . $sql->t($name));
                 $res_count = $sql->command($query);
                 if ($res_count === 0) {
@@ -1229,7 +1233,7 @@ class PageUnit extends CmsPage {
                         'sec_id' => $sql->d($secs[$sec]),
                         'secs_code' => $sql->t($name),
                         'secs_str' => $sql->t($data['data']),
-                        'secs_multiline' => $sql->b($data['mult'] == 'm'),
+                        'secs_multiline' => $sql->b($data['mult'] === 'm'),
                     ));
                     $res_count = $sql->command($query);
                 }
@@ -1291,10 +1295,10 @@ class PageUnit extends CmsPage {
             $sec_all_units = array();
             $sec_units_array = explode(',',$this->page['sec_units']);
             $sec_units = array();
-            if (trim($this->page['sec_units'])!='') foreach ($sec_units_array as $k)
+            if (trim($this->page['sec_units']) !== '') foreach ($sec_units_array as $k)
                 $sec_units[]=array('k'=>$k,'v'=>$cfg['pgunits'][$k]);
             foreach ($cfg['pgunits'] as $k=>$v)
-                if (!in_array($k,$sec_units_array)) $sec_all_units[]=array('k'=>$k,'v'=>$v);
+                if (!in_array($k, $sec_units_array, true)) $sec_all_units[]=array('k'=>$k,'v'=>$v);
 				
 			
 			if ($this->page['section_id']!=1) {

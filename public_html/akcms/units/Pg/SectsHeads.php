@@ -36,11 +36,11 @@ class Pg_SectsHeads extends PgUnitAbstract {
 		if ($dataset!==false) foreach ($dataset as $newsItem)
 		{
 			$i++;
-			$text = GetTruncText(strip_tags(str_replace('// <![CDATA[','<![CDATA[',$newsItem['sec_contshort']!=''?$newsItem['sec_contshort']:$newsItem['sec_content'])),127);
-			$styleimg = $newsItem['sec_imgfile']==''?'':'style="background-image: url(/img/pages/t/'.$newsItem['sec_imgfile'].')"';
+			$text = GetTruncText(strip_tags(str_replace('// <![CDATA[','<![CDATA[',$newsItem['sec_contshort'] !== ''?$newsItem['sec_contshort']:$newsItem['sec_content'])),127);
+			$styleimg = $newsItem['sec_imgfile'] === ''?'':'style="background-image: url(/img/pages/t/'.$newsItem['sec_imgfile'].')"';
 			$res[$i] = '
 			<div class="nwsb" '.$styleimg.'>
-			<div class="nwsb_h">'.($newsItem['sec_url_full']!=''?' <a href="/'.$newsItem['sec_url_full'].'">'.$newsItem['sec_namefull'].'</a>':$newsItem['sec_namefull']).'</div>
+			<div class="nwsb_h">'.($newsItem['sec_url_full'] !== ''?' <a href="/'.$newsItem['sec_url_full'].'">'.$newsItem['sec_namefull'].'</a>':$newsItem['sec_namefull']).'</div>
 			<div class="nwsb_s">'.$text.'</div></div>
 			'; #<div class="nwsb_d">'.DtTmToDtStr($newsItem['sec_created']).'</div>
 		}         

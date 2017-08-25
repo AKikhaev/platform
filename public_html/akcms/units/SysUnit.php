@@ -34,7 +34,7 @@ class SysUnit extends CmsPage {						// Страницы из DB
 	public function __construct(&$pageTemplate)
 	{
 		global $pathlen,$path;
-        if ($pathlen==2 && $path[0]=='_sys') {
+        if ($pathlen==2 && $path[0] === '_sys') {
             $this->pageUri = '_sys/';
             core::$renderPage = true;
             foreach ($this->units as $pgUnitClass)

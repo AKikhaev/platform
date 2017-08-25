@@ -62,6 +62,11 @@ div.ss_edit {
     min-height: 5px !important;
     min-width: 5px !important;
 }
+.ss_edithl.textNotFound,.ss_edithl.textNotFound>p,.ss_edithl.textNotFound>ul,.ss_edithl.textNotFound>table,.ss_edithl.textNotFound>h2,.ss_edithl.textNotFound>h3,.ss_edithl.textNotFound>h4,.ss_edithl.textNotFound>h5,.ss_edithl.textNotFound>h6{
+    background-color: #ffdeb9 !important;
+    text-decoration-color: #ffdeb9 !important;
+}
+
 .ss_edithl:empty:before,.ss_edithl:empty:after {
     content: "\00a0";
 }

@@ -1,6 +1,6 @@
 <?php
 
-class VisualThemeAbstract
+abstract class VisualThemeAbstract
 {
     const weekdays = array('Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота');
     const months = array('','января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря');
@@ -12,15 +12,23 @@ class VisualThemeAbstract
      * @return false|string
      */
     public static function dateRus($format,$dt) {
-        if (mb_strpos($format,'l')!==false) $format = str_replace('l',self::weekdays[date('w',$dt)],$format);
-        if (mb_strpos($format,'F')!==false) $format = str_replace('F',self::months[date('n',$dt)],$format);
+        if (mb_strpos($format,'l')!==false) {
+            $format = str_replace('l',self::weekdays[date('w',$dt)],$format);
+        }
+        if (mb_strpos($format,'F')!==false) {
+            $format = str_replace('F',self::months[date('n',$dt)],$format);
+        }
         return date($format,$dt);
     }
 
     public static function toTel($string) {
-        $string = preg_replace('/[^0-9]/iu','',$string);
-        if (mb_substr($string,0,1)=='8') $string = '7'.mb_substr($string,1);
-        if (mb_strlen($string)>10 && mb_substr($string,0,1)!='+') $string = '+'.$string;
+        $string = preg_replace('/\D/u','',$string);
+        if (mb_strpos($string, '8') === 0) {
+            $string = '7'.mb_substr($string,1);
+        }
+        if (mb_strlen($string)>10 && mb_strpos($string, '+') !== 0) {
+            $string = '+'.$string;
+        }
         return $string;
     }
 
@@ -59,10 +67,10 @@ class VisualThemeAbstract
      */
     public static function _ph_text(&$pageData,$editMode,$text,$field,$quote = 0){
         switch ($quote) {
-            case 0: return $pageData[$field];
             case 1: return str_replace('\'','&apos;',$pageData[$field]); //&#039;
             case 2: return str_replace('"','&quot;',$pageData[$field]); //&#034;
         }
+        return $pageData[$field];
     }
 
     /** Обработчик плейсхолдера. Другой шаблон
@@ -97,18 +105,14 @@ class VisualThemeAbstract
         /* @var $sql pgdb */
         global $sql;
         $html = '';
-
         $query = sprintf ('select * from cms_sections where sec_parent_id=%d '.($editMode?'':'and sec_enabled and now()>sec_from').' order by sec_sort',
             $pageData['section_id']);
         $sections = $sql->query_all($query);
-        if ($sections!==false) foreach ($sections as $section) {
-
+        if ($sections!==false) foreach ($sections as $secData) {
+            $childHtml = file_get_contents($template.'.shtm',true);
+            self::replacementsEditable($childHtml,$secData,$editMode);
+            $html .= $childHtml;
         }
-
-
-        var_log($sections,$query);
-        $html = file_get_contents($template.'.shtm',true);
-        self::replacementsEditable($html,$pageData,$editMode);
         return $html;
     }
 
@@ -137,7 +141,7 @@ class VisualThemeAbstract
          * 3 - параметры
          * 5 - контент
          */
-        $html=preg_replace_callback('~\{#_(\w+):(.+)(:.+)*#\}~usU',function($matches) use (&$repls,&$pageData,$editMode){
+        $html=preg_replace_callback('~\{#_(\w+):([^:#]+)(:[^#]+)*#\}~usU',function($matches) use (&$repls,&$pageData,$editMode){
             $text = ''; if (isset($matches[4])) $text = $matches[4];
             $funct = $matches[1];
             $field = $matches[2];
@@ -153,26 +157,36 @@ class VisualThemeAbstract
          * 3_1 - hint
          * 5 - контент
          */
-        $html=preg_replace_callback('~\{#(ep|eg):(\w+)(:[^#]+)#(?|\/\}(.*)\{\/#\1:\2(?::[^#])?#\}|})~usU',function($matches) use (&$repls,&$pageData,$editMode){
+        $html=preg_replace_callback('~\{#(ep|eg):([^:#]+)(:[^#]+)#(?|\/\}(.*)\{\/#\1:\2(?::[^#])?#\}|})~usU',function($matches) use (&$repls,&$pageData,$editMode){
+            $textFound = false;
             $text = ''; if (isset($matches[4])) $text = $matches[4];
             $code = $matches[1].'_'.$matches[2];
             $params = explode(':',trim($matches[3],':'));
             $hint = ''; if (isset($params[1])) $hint = $params[1];
             $mult = 's'; if (isset($params[0])) $mult = $params[0];
             $stay_original = mb_stripos($matches[3],'!')!==false;
-            if (isset($repls[$code]) && !$stay_original) $text = $repls[$code]['secs_str'];
+            if (isset($repls[$code]) && !$stay_original) {
+                $text = $repls[$code]['secs_str'];
+                $textFound = true;
+            }
 
             if ($code=='ep_content' && !$stay_original) {
-                $textDB = $pageData['sec_content']; if (mb_strlen($textDB)!=0) $text = $textDB;
+                $textDB = $pageData['sec_content']; if (mb_strlen($textDB)!=0) {
+                    $text = $textDB;
+                    $textFound = true;
+                }
                 $hint = 'Основной текст';
             }
             if ($code=='ep_namefull' && !$stay_original) {
-                $textDB = $pageData['sec_namefull']; if (mb_strlen($textDB)!=0) $text = $textDB;
+                $textDB = $pageData['sec_namefull']; if (mb_strlen($textDB)!=0) {
+                    $text = $textDB;
+                    $textFound = true;
+                }
                 $hint = 'Основной заголовок';
             }
 
             $tag = $mult=='m'?'div':'span';
-            if ($editMode) return "<$tag class=\"ss_edit\" data-code=\"$code\" data-mult=\"$mult\" ".($hint!=''?"data-hint=\"$hint\"":'').">$text</$tag>";
+            if ($editMode) return "<$tag class=\"ss_edit ".($textFound?'':'textNotFound')."\" data-edt-uri=\"$pageData[sec_url_full]\" data-code=\"$code\" data-mult=\"$mult\" ".($hint!==''?"data-hint=\"$hint\"":'').">$text</$tag>";
             else return $text;
         },$html);
     }

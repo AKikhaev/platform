@@ -40,7 +40,7 @@ $glrs_items = array(); $glrnum = 0;
 			<div class="glritm_t">'.$glrItem['glr_desc'].'</div>
 		</div>
 		<!--
-		<div class="glritem'.($glrItem['glr_enabled']=='f'?' imtdsbl':'').'" id="glri'.$glrItem['id_glr'].'">
+		<div class="glritem'.($glrItem['glr_enabled'] === 'f'?' imtdsbl':'').'" id="glri'.$glrItem['id_glr'].'">
 				<div class="glrip"><a href="/'.$pageLinkUri.'g'.$glrItem['id_glr'].'/" title="'.$glrItem['glr_name'].'"><img class="glripi" src="/'.$this->imgglrpath.'t/'.$glrItem['glr_file'].'" alt="'.$glrItem['glr_name'].'" width="228" height="150"></a></div>
 				<div class="glrin"><a href="/'.$pageLinkUri.'g'.$glrItem['id_glr'].'/" title="'.$glrItem['glr_name'].'">'.$glrItem['glr_name'].'</a></div>
 				<div class="glrid">'.$glrItem['glr_desc'].'</div>

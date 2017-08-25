@@ -55,7 +55,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 			);
 			$res = $sql->command($query)>0;
 			
-			if ($_POST['gb_sendmail']=='t') {
+			if ($_POST['gb_sendmail'] === 't') {
 				$query = sprintf ('SELECT * FROM cms_gb WHERE gb_enabled AND gb_id=%d;',
 					$_POST['gb_id']
 				);
@@ -70,14 +70,14 @@ class Pg_GuestBook extends PgUnitAbstract {
 				}
 			}
 			
-			$tags = trim($_POST['gb_tags'])==''?array():explode(',',$_POST['gb_tags']);
+			$tags = trim($_POST['gb_tags']) === ''?array():explode(',',$_POST['gb_tags']);
 			$query = sprintf ('SELECT __cms_gb_tags__assign(%d,%s);',
 				$_POST['gb_id'],
 				$sql->pgf_array_text($tags)
 			);			
 			$db_res = $sql->query_first_row($query);
 			
-			return json_encode(($res && $db_res[0]=='t')?'t':'f');
+			return json_encode(($res && $db_res[0] === 't')?'t':'f');
 		} 
 		return json_encode(array('error'=>$checkResult));
 	}
@@ -154,7 +154,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 				$checkRule[] = array('text' , '.');
 				$checkResult = checkForm($_POST,$checkRule,$capcha==$orgcodeOrig);
 				if (count($checkResult)>0) {
-					if ($checkResult[0]['f']=='!') $uform['errmsg'] = 'Неверный проверочный код!';
+					if ($checkResult[0]['f'] === '!') $uform['errmsg'] = 'Неверный проверочный код!';
 					else $uform['errmsg'] = 'Заполнены не все поля!';
 				} else {
 					$query = sprintf ('INSERT INTO cms_gb(gb_name,gb_email,gb_phone,gb_message) VALUES (%s,%s,%s,%s) RETURNING gb_id;', 
@@ -186,7 +186,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 			
 			//if ()
 			$qpart = 'from cms_gb b LEFT JOIN cms_gallery_photos g ON(b.gb_answerer_id=g.id_cgp) WHERE (g.cgp_enabled=true OR g.cgp_enabled IS NULL)'
-			.($t==''?'':' AND b.gb_id in (SELECT gb_id FROM georghram.cms_gb_tags_gb tgb INNER JOIN georghram.cms_gb_tags bt ON (tgb.gbt_id=bt.gbt_id) WHERE gbt_text = '.$sql->t(strip_tags($t)).')')
+			.($t === ''?'':' AND b.gb_id in (SELECT gb_id FROM georghram.cms_gb_tags_gb tgb INNER JOIN georghram.cms_gb_tags bt ON (tgb.gbt_id=bt.gbt_id) WHERE gbt_text = '.$sql->t(strip_tags($t)).')')
 			.($editMode?'':' AND b.gb_enabled');
 			$query = 'select count(*) as totalrecords '.$qpart;
 			$totalset = $sql->query_first_assoc($query); $countRecords = $totalset['totalrecords'];
@@ -201,7 +201,6 @@ class Pg_GuestBook extends PgUnitAbstract {
 			if ($pgNum<1 || $pgNum>$pgNums)
 				throw new CmsException('page_not_found');
 			
-			if ($editMode) ;
 			$tagsAll = $this->getAllTags();
 			$tagsAllLinks = array();
 			foreach ($tagsAll as $tag) $tagsAllLinks[] = '<a href="'.$pageLinkUri.'?t='.urlencode($tag).'">'.$tag.'</a>';
@@ -215,8 +214,8 @@ class Pg_GuestBook extends PgUnitAbstract {
 				foreach ($this->getITags($dataItem['gb_id']) as $tag) $tagsArray[] = '<a href="'.$pageLinkUri.'?t='.urlencode($tag).'">'.$tag.'</a>';
 				$tags = implode(', ',$tagsArray);
 				$u_items[$dataItem['gb_id']] = $dataItem;
-				$html .= '<div class="gbitem'.($dataItem['gb_enabled']=='f'?' imtdsbl':'').'" id="gbi'.$dataItem['gb_id'].'"><a name="gbia'.$dataItem['gb_id'].'"></a><div><span class="gbidate">'.date('y.m.d',strtotime($dataItem['gb_date'])).'</span> <span class="gbiname">'.$dataItem['gb_name'].'</span></div><div class="gbimsg">'.str_replace("\n",'<br/>',$dataItem['gb_message']).'</div>';
-				if ($dataItem['gb_answer']!='') {				
+				$html .= '<div class="gbitem'.($dataItem['gb_enabled'] === 'f'?' imtdsbl':'').'" id="gbi'.$dataItem['gb_id'].'"><a name="gbia'.$dataItem['gb_id'].'"></a><div><span class="gbidate">'.date('y.m.d',strtotime($dataItem['gb_date'])).'</span> <span class="gbiname">'.$dataItem['gb_name'].'</span></div><div class="gbimsg">'.str_replace("\n",'<br/>',$dataItem['gb_message']).'</div>';
+				if ($dataItem['gb_answer'] !== '') {
 					if ($dataItem['answerer']==null)
 					$html .= '
 					<div class="gbianswr">Ответ:</div>

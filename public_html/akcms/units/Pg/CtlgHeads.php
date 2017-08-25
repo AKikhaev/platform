@@ -37,8 +37,8 @@ class Pg_CtlgHeads extends PgUnitAbstract {
 			if ($dataset!==false) foreach ($dataset as $ctlgItem)
 			{
 				$href = $ctlgItem['sec_url_full'].'g'.$ctlgItem['cati_id'];
-				$imgsrc = $ctlgItem['cati_photofile']!=''?'/img/catimgs/pl/'.$ctlgItem['cati_photofile']:'/img/e.gif';
-				$res .= '<div class="ctlgiteml'.($ctlgItem['cati_show']=='f'?' imtdsbl':'').'" id="ctlgi'.$ctlgItem['cati_id'].'">';
+				$imgsrc = $ctlgItem['cati_photofile'] !== ''?'/img/catimgs/pl/'.$ctlgItem['cati_photofile']:'/img/e.gif';
+				$res .= '<div class="ctlgiteml'.($ctlgItem['cati_show'] === 'f'?' imtdsbl':'').'" id="ctlgi'.$ctlgItem['cati_id'].'">';
 				$res .= '<div class="ctlgiteml_p"><a href="/'.$href.'" title="'.$ctlgItem['cati_namefull'].'"><img src="'.$imgsrc.'" border="0" width="161" height="141" title="'.$ctlgItem['cati_namefull'].'" alt="'.$ctlgItem['cati_namefull'].'"></a></div>';
 				$res .= '<div class="ctlgiteml_t"><a href="/'.$href.'" title="'.$ctlgItem['cati_namefull'].'">'.$ctlgItem['cati_nameshort'].'</a></div>';
 				//$ctlgItem['cati_cost'] = 49999; $ctlgItem['cati_costold'] = $ctlgItem['cati_cost']*1.09;

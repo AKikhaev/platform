@@ -98,17 +98,17 @@ class Pg_SubSecLst extends PgUnitAbstract {
 			if ($dataset!==false) foreach ($dataset as $item)
 			{
 				$i++;
-				if ($item['sec_imgfile']=='') $item['sec_imgfile'] = '0.jpg';#
-				if ($item['sec_contshort']!='') {
+				if ($item['sec_imgfile'] === '') $item['sec_imgfile'] = '0.jpg';#
+				if ($item['sec_contshort'] !== '') {
 					$text = strip_tags(str_replace('// <![CDATA[','<![CDATA[',$item['sec_contshort']));
 				} else {
 					$text = GetTruncText(strip_tags(str_replace('// <![CDATA[','<![CDATA[',$item['sec_content'])),95);
 				}
 				#$text = GetTruncText(strip_tags(str_replace('// <![CDATA[','<![CDATA[',$item['sec_contshort']!=''?$item['sec_contshort']:$item['sec_content'])),95);
-				$styleimg = $item['sec_imgfile']==''?'':'style="background-image: url(/img/pages/l/'.$item['sec_imgfile'].')"';
+				$styleimg = $item['sec_imgfile'] === ''?'':'style="background-image: url(/img/pages/l/'.$item['sec_imgfile'].')"';
 				$res .= '
 				<div class="subsecllstimt'.($i%4==0?' subsecllstimtlast':'').'" '.$styleimg.'>
-				<div'.($item['sec_enabled']=='f'||$item['sec_showinmenu']=='f'?' class="imtdsbl"':'').'><a class="subsecllstimt_h" href="/'.$item['sec_url_full'].'">'.$item['sec_namefull'].'</a></div>
+				<div'.($item['sec_enabled'] === 'f'||$item['sec_showinmenu'] === 'f'?' class="imtdsbl"':'').'><a class="subsecllstimt_h" href="/'.$item['sec_url_full'].'">'.$item['sec_namefull'].'</a></div>
 				<div class="subsecllstimt_t">'.$text.'</div></div>
 				'; #<div class="nwsb_d">'.DtTmToDtStr($item['sec_created']).'</div>
 				if ($i%4==0) $res .= '<div class="clearfix"></div>';

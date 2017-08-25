@@ -36,11 +36,11 @@ class Pg_NewsHeads extends PgUnitAbstract {
 		if ($dataset!==false) foreach ($dataset as $newsItem)
 		{
 			$i++;
-			$styleimg = $newsItem['news_image']==''?'':'style="background-image: url(/img/news/t/'.$newsItem['news_image'].')"';
+			$styleimg = $newsItem['news_image'] === ''?'':'style="background-image: url(/img/news/t/'.$newsItem['news_image'].')"';
 			$res[$i] = '
 			<div class="nwsb" '.$styleimg.'>
 			<div class="nwsb_d">'.DtTmToDtStr($newsItem['news_date']).'</div>
-			<div class="nwsb_h">'.($newsItem['news_detaillink']=='t'?' <a href="/news/n'.$newsItem['news_id'].'/">'.$newsItem['news_head'].'</a>':$newsItem['news_head']).'</div>
+			<div class="nwsb_h">'.($newsItem['news_detaillink'] === 't'?' <a href="/news/n'.$newsItem['news_id'].'/">'.$newsItem['news_head'].'</a>':$newsItem['news_head']).'</div>
 			<div class="nwsb_s">'.GetTruncText(strip_tags(str_replace('// <![CDATA[','<![CDATA[',$newsItem['news_short'])),100).'</div></div>
 			';
 		}         

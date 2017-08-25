@@ -63,7 +63,6 @@ class Pg_CtlgPrce extends PgUnitAbstract {
 			if ($pgNum<1 || $pgNum>$pgNums)
 				throw new CmsException('page_not_found');
 			
-			if ($editMode) ;
 			$html .= '<div id="gstbk">';
 			$gb_items = array();
 			if ($dataset!==false) {

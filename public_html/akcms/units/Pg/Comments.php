@@ -92,7 +92,7 @@ class Pg_Comments extends PgUnitAbstract {
 				$checkRule[] = array('text' , '.');
 				$checkResult = checkForm($_POST,$checkRule,$capcha==$orgcodeOrig);
 				if (count($checkResult)>0) {
-					if ($checkResult[0]['f']=='!') $uform['errmsg'] = 'Неверный проверочный код!';
+					if ($checkResult[0]['f'] === '!') $uform['errmsg'] = 'Неверный проверочный код!';
 					else $uform['errmsg'] = 'Заполнены не все поля!';
 				} else {
 					$query = sprintf ('INSERT INTO cms_comments(cmnt_name,cmnt_email,cmnt_message,cmnt_sec_id) VALUES (%s,%s,%s,%d) RETURNING cmnt_id;', 
@@ -136,13 +136,12 @@ class Pg_Comments extends PgUnitAbstract {
 			if ($pgNum<1 || $pgNum>$pgNums)
 				throw new CmsException('page_not_found');
 			
-			if ($editMode) ;
 			$html .= '<div class="cmtsupline"></div><div id="cmnts">';
 			$u_items = array();
 			if ($dataset!==false) foreach ($dataset as $dataItem)
 			{
 				$u_items[$dataItem['cmnt_id']] = $dataItem;
-				$html .= '<div class="cmntitem'.($dataItem['cmnt_enabled']=='f'?' imtdsbl':'').'" id="cmi'.$dataItem['cmnt_id'].'"><a name="cmnt'.$dataItem['cmnt_id'].'"></a><div class="cmntiname">'.$dataItem['cmnt_name'].'</div><div class="cmntidate">'.DtTmToDtStr($dataItem['cmnt_date']).'</div><div class="cmntimsg">'.str_replace("\n",'<br/>',$dataItem['cmnt_message']).'</div></div>';
+				$html .= '<div class="cmntitem'.($dataItem['cmnt_enabled'] === 'f'?' imtdsbl':'').'" id="cmi'.$dataItem['cmnt_id'].'"><a name="cmnt'.$dataItem['cmnt_id'].'"></a><div class="cmntiname">'.$dataItem['cmnt_name'].'</div><div class="cmntidate">'.DtTmToDtStr($dataItem['cmnt_date']).'</div><div class="cmntimsg">'.str_replace("\n",'<br/>',$dataItem['cmnt_message']).'</div></div>';
 			}
 			$html .= '</div>';
 			if ($dataset!==false) $html .= '<div class="cmtsdwnline"></div>';

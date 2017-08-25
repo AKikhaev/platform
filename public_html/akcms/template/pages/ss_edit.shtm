@@ -22,10 +22,10 @@
                 };
                 $.ajax({
                     type: 'POST',
-                    url: '/ajx/'+parent._akcms.uri+'_sse_save',
+                    url: '/ajx/'+parent.window['editdiv'].data('edt-uri')+'_sse_save',
                     data: arrPost,
                     success: function (sres) {
-                        if (sres === 't') parent.window['editdiv'].html(arrPost.data);
+                        if (sres === 't') parent.window['editdiv'].removeClass('textNotFound').html(arrPost.data);
                         if (callback !== undefined) callback(sres === 't');
                     },
                     dataType: 'json'
