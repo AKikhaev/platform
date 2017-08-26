@@ -5,16 +5,16 @@ define('CMS_ADMIN','admin');
 $cfg['debug']=true;
 
 set_include_path('akcms/u/units:akcms/u/models:akcms/units:akcms/classes:akcms/models:akcms/u/template:akcms/template:.');
-require_once('akcms/core/classes.php');
+require_once 'akcms/core/classes.php';
 error_reporting(-1);
 set_error_handler('core::GlobalErrorHandler',-1);
-set_exception_handler("core::GlobalExceptionHandler");
+set_exception_handler('core::GlobalExceptionHandler');
 register_shutdown_function('core::ShutdownHandler');
 spl_autoload_register('core::cms_autoload');
 
-require_once('akcms/core/functs.php');
-require_once('akcms/u/config/config.php');
-require_once('akcms/core/pgdb.php');
+require_once 'akcms/core/functs.php';
+require_once 'akcms/u/config/config.php';
+require_once 'akcms/core/pgdb.php';
 
 $sql = new pgdb();
 $Cacher = new CacheController();
@@ -53,6 +53,9 @@ function LOAD_CORE_CLI() {
 	echo (_ls(35)._ls(1).'ITteka CMS'._ls(36).'v'.CMS_VERSION._ls().' ('._ls(33)._ls(1).$cfg['site_domain']._ls().') '._ls(34)._ls(1).'CLI MODE'._ls()."\n");
 }
 /* Загрузка */
+/**
+ * @throws CmsException
+ */
 function LOAD_CORE() {
     LOAD_CORE_BASE();
 	GLOBAL $cfg,$path,$pathurl,$pathstr,$pathlen;
@@ -67,9 +70,9 @@ function LOAD_CORE() {
 	  exit;
 	}
 
-	if (!in_array(core::$serverName,$cfg['domains_approved'])) throw new CmsException('domain_not_approved');
-	if (in_array(core::$serverName,$cfg['server_test'])) core::$testServer = true;
-	if (in_array(core::$serverName,$cfg['server_prod'])) core::$prodServer = true;
+	if (!in_array(core::$serverName, $cfg['domains_approved'], true)) throw new CmsException('domain_not_approved');
+	if (in_array(core::$serverName, $cfg['server_test'], true)) core::$testServer = true;
+	if (in_array(core::$serverName, $cfg['server_prod'], true)) core::$prodServer = true;
 
 	// System variables
 	header('Content-type: text/html; charset=UTF-8');

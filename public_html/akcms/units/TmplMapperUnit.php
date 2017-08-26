@@ -118,7 +118,7 @@ class TmplMapperUnit extends CmsPage {
             if (file_exists($data['template'].'.bak')) {
                 $file = file_get_contents($data['template']);
                 $fileBak = file_get_contents($data['template'].'.bak');
-                if (strcmp($file,$fileBak)===0)
+                if (strcmp($file,$fileBak)!==0)
                     $result = copy($data['template'].'.bak',$data['template'])?'t':'f';
                 else $result = 'i';
             } else $result = 'nobackup';

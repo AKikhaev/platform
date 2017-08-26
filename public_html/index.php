@@ -6,7 +6,7 @@ try {
     /* @var $sql pgdb */
 
     #ob_start(); // Start output buffer
-
+    //profiler::showOverallTimeToTerminal();
     $pageClass = '';
     $pageTemplate = '';
     core::$renderPage = core::$userAuth || core::$inEdit || core::$isAjax;
@@ -35,15 +35,13 @@ try {
                 break;
             } catch (Exception $e) {
                 $page = null;
-                if ($e->getMessage() != 'page_not_found') {
+                if ($e->getMessage() !== 'page_not_found') {
                     throw $e;
                 }
             }
         }
-        if (is_null($page)) throw $e;
+        if ($page === null) throw $e;
     }
-
-    #if ($pageClass=='') throw new CmsException("page_not_found");
 
     if (core::$isAjax) {
         core::$outputData .= core::proceedAjax();
@@ -64,7 +62,7 @@ try {
                 $shape['title'] = $page->getTitle();
                 $html = shp::tmpl('pages/'.$pageTemplate,array('content'=>$pagecontent));
                 $html = shp::str($html, $shape, false);
-                VisualTheme::replacementsEditable($html, $page->page);
+                VisualTheme::replaceStaticHolders($html, $page->page);
                 //$html = Minify_HTML::minify($html);
                 //
                 //if (!core::$userAuth && $page->canCache()) $Cacher->cache_write($pathstr,$html,600);

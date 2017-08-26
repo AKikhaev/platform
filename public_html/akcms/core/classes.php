@@ -12,7 +12,7 @@ class DBException extends CmsException {
 	public $text = '';
 	public $isDuplicate = false;
 	public $field = '';
-	function __construct($message = "",$text = "") {
+	public function __construct($message = '', $text = '') {
 		$this->text = $text;
 		if (mb_stripos($text,'ERROR:  duplicate key value violates unique constraint')!==false) {
 			$this->isDuplicate = true;
@@ -59,7 +59,7 @@ abstract class AclProcessor { /* acl */
 			$method = $stacktrace[1]['function'];
 			return $this->checkRight($class,$rightName===null?$method:$rightName);
 		}
-		else throw new CmsException("core_error");
+		else throw new CmsException('core_error');
 	}
 }
 
@@ -67,29 +67,29 @@ abstract class CmsPage extends AclProcessor { /* page */
     public $page = [];
 	protected $title;
 	protected $cacheWholePage = true;
-	function canCache() { return $this->cacheWholePage;}
-	function noCache() { $this->cacheWholePage=false; }
-	function __construct(&$pageTemplate) {}
+	public function canCache() { return $this->cacheWholePage;}
+	public function noCache() { $this->cacheWholePage=false; }
+	public function __construct(&$pageTemplate) {}
 	public function getTitle() {return $this->title;}
-	function initAjx() {return array();}
+	public function initAjx() {return array();}
 }
 abstract class PgUnitAbstract extends AclProcessor { /* Pg_ untits */
 	public $unitParam = array();
-	function view($viewName) {
+	public function view($viewName) {
 		$viewUnit = str_replace('_','/',get_class($this));
 		return "$viewUnit/$viewName.php";
 	}
-	function view2($viewName) {
+	public function view2($viewName) {
         $viewUnit = str_replace('_','/',get_class($this));
 		return "$viewUnit/$viewName";
 	}
-	function __construct($pathParams = array()) { $this->unitParam = $pathParams; }
-	function initAjx() {return array();}
+	public function __construct($pathParams = array()) { $this->unitParam = $pathParams; }
+	public function initAjx() {return array();}
 	public static function buildLevelSiteMap(&$putInto,$parentId,$parentUrlFull,$showHidden = false) {} // Строит карту сайта
 }
 
 class CacheController { /* cache */
-	function getpath($key,$cd=false) {
+	public function getpath($key, $cd=false) {
 		global $cfg;
 		$key = md5($key);
 		$dirpath = $cfg['filecache']['path'].substr($key,0,1).'/';
@@ -97,7 +97,7 @@ class CacheController { /* cache */
 		return $dirpath.$key;
 	}
 	
-	function cache_read($key,&$val) {
+	public function cache_read($key, &$val) {
 		$ipath = $this->getpath($key);
 		$dump = file_exists($ipath)?file_get_contents($ipath):false;
 		if ($dump!==false) {
@@ -110,24 +110,24 @@ class CacheController { /* cache */
 		return false;
 	}
 	
-	function cache_read_drop($key,&$val) {
+	public function cache_read_drop($key, &$val) {
 		$f = $this->cache_read($key,$val);
 		if ($f) $this->cache_drop($key);
 		return $f;
 	}
 	
-	function cache_write($key,&$val,$life=86400,$until=0) {
+	public function cache_write($key, &$val, $life=86400, $until=0) {
 		$ipath = $this->getpath($key,true);
-		$c_obj = array('d'=>$val,'u'=>($until==0?time()+$life:$until));
+		$c_obj = array('d'=>$val,'u'=> $until==0?time()+$life:$until);
 		return file_put_contents($ipath,serialize($c_obj))>0;
 	}
 	
-	function cache_exists($key) {
+	public function cache_exists($key) {
 		$ipath = $this->getpath($key);
 		return file_exists($ipath);
 	}
 	
-	function cache_drop($key) {
+	public function cache_drop($key) {
 		$ipath = $this->getpath($key);
 		if (file_exists($ipath)) @unlink($ipath);
 	}
@@ -147,7 +147,7 @@ class CmsUser {
 			if (!isset($_COOKIE[session_name()])) session_start();
 			$_SESSION['u'] = $login;
 			$_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
-			CmsUser::$user = $datausr;
+			self::$user = $datausr;
 			return true;
 		} else return false;
 	}
@@ -161,7 +161,7 @@ class CmsUser {
 	}
 	
     public static function isLogin() {
-        return count(CmsUser::$user)>0;
+        return count(self::$user)>0;
     }
   
 	public static function logout() {
@@ -169,7 +169,7 @@ class CmsUser {
 		if (isset($_COOKIE[session_name()])) {
 			setcookie(session_name(), '', time()-42000, '/');
 			@session_destroy();
-			CmsUser::$user = array();
+			self::$user = array();
 		}
 	}
 	
@@ -234,27 +234,27 @@ class CmsUser {
 		global $sql;
 		if (isset($_COOKIE[session_name()])) {
 			session_start();
-			if (isset($_SESSION['u']) && isset($_SESSION['ip'])) {
-				if ($_SESSION['ip'] != $_SERVER['REMOTE_ADDR']) CmsUser::logout(); else {
+			if (isset($_SESSION['u'],$_SESSION['ip'])) {
+				if ($_SESSION['ip'] != $_SERVER['REMOTE_ADDR']) self::logout(); else {
 					$login = $_SESSION['u'];
 					$query = sprintf('select *,array(SELECT (__if(usrrght_mode,\'\',\'!\'::text)||usrrght_name) FROM cms_users_groups_rgth where usrrght_grpid=any(usr_grp)) as rights from cms_users where usr_login = %s and usr_enabled and usr_activated limit 1;', 
 						$sql->t($login));
 					$datausr = $sql->query_first_assoc($query);
 					if ($datausr!==false?$datausr['usr_login']==$login:false) {
-						CmsUser::$rights = array();
+						self::$rights = array();
 						foreach (explode(',',trim($datausr['rights'],'}{')) as $right) {
 							$mode = true;
-							if (substr($right,0,1)=='!') {
+							if (strpos($right, '!') === 0) {
 								$right = substr($right,1);
 								$mode = false;
 							}
-							if (!isset(CmsUser::$rights[$right]) || CmsUser::$rights[$right]===true) CmsUser::$rights[$right] = $mode;
+							if (!isset(self::$rights[$right]) || self::$rights[$right]===true) self::$rights[$right] = $mode;
 						}
-						CmsUser::$user = $datausr;
+						self::$user = $datausr;
 						#if ($datausr['usr_admin']=='t') CmsUser::$groups[] = 'admin';
-					} else CmsUser::logout();
-				};
-			} #else CmsUser::logout();
+					} else self::logout();
+				}
+            } #else CmsUser::logout();
 		}
 	}
 }
@@ -283,7 +283,7 @@ class core {
         if ($ipaddress==false) $ipaddress = getenv('REMOTE_ADDR');
         return $ipaddress;
     }
-    static function GlobalErrorHandler($errno, $errmsg, $filename, $linenum, $backtrace)
+    public static function GlobalErrorHandler($errno, $errmsg, $filename, $linenum, $backtrace)
     {
         Global $cfg;
         $errortype = array (
@@ -305,11 +305,11 @@ class core {
             E_USER_DEPRECATED    => 'User deprecated',
             -1					 => 'In try'
         );
-        if (error_reporting()!=0 && !in_array($errmsg,array('login_needs'))) {
+        if ($errmsg !== 'login_needs' && error_reporting()!==0) {
             $err = $errortype[$errno].': '. $errmsg . "\n";
             if (self::$ErrorFirstTitle=='') self::$ErrorFirstTitle = $errortype[$errno].': '.$errmsg.' '.$_SERVER['SERVER_NAME'].' '.$_SERVER['REQUEST_URI'];
             $filename = (strpos($filename,$_SERVER['DOCUMENT_ROOT'])!==false?substr($filename,strlen($_SERVER['DOCUMENT_ROOT'])):$filename);
-            $err .= "src: " . $filename.': '.$linenum . "\n";
+            $err .= 'src: ' . $filename.': '.$linenum . "\n";
             if (in_array($errno, array(E_USER_ERROR, E_USER_WARNING, E_USER_NOTICE, E_NOTICE, E_ERROR, E_WARNING, -1))) {#E_WARNING,
                 $tracedata = array();
                 if (!isset($backtrace[0])) $backtrace = debug_backtrace(0);
@@ -325,7 +325,7 @@ class core {
                 $err .= implode("\n",$tracedata) . "\n";
             }
             if (isset($cfg['debug']) && $cfg['debug']===true) {
-                if (core::$isAjax) {}//echo '/* '.$err.' */';
+                if (self::$isAjax) {}//echo '/* '.$err.' */';
                 else echo '<script>console.log('.json_encode($err).');</script>';
                 //else echo '<!--'.$err.'-->';
                 //echo ErrorsStringToHTML($err);
@@ -335,38 +335,38 @@ class core {
 
         return true;
     }
-    static function GlobalExceptionHandler($e){
+    public static function GlobalExceptionHandler($e){
         /* @var $e Exception */
         self::GlobalErrorHandler($e->getCode(),$e->getMessage(),$e->getFile(),$e->getLine(),$e->getTrace());
     }
-    static function InTryErrorHandler(Exception $e) {
+    public static function InTryErrorHandler(Exception $e) {
         self::GlobalErrorHandler(-1,$e->getMessage(),$e->getFile(),$e->getLine(),$e->getTrace());
         if (self::$isAjax) return; //json_encode(array('error'=>array(array('f'=>'system','s'=>'failure'))));
         $errorPageTemplate = 'error_page';
         $shape['title'] = 'Прозиошла ошибка';
         $shape['metas'] = '';
-        $shape['gajs'] = core::$prodServer?GetShape('parts/counters'):'';
+        $shape['gajs'] = self::$prodServer?GetShape('parts/counters'):'';
         if ($e->getMessage()=='page_not_found') {
-            header("HTTP/1.0 404 Not Found");
+            header('HTTP/1.0 404 Not Found');
             //header('Location: /',true,404);
             $errorPageTemplate = 'error_pagenotfound';
             $shape['title'] = 'Страница не найдена';
         } else
             if ($e->getMessage()=='login_needs') {
-                header("HTTP/1.0 401 Unauthorized");
+                header('HTTP/1.0 401 Unauthorized');
                 #var_dump__($e);
                 $shape['metas'] = '<meta http-equiv="Refresh" content="0; URL=/_auth/?url='.urlencode($GLOBALS['pathurl']).'">';
                 $errorPageTemplate = 'error_pageauthneeds';
                 $shape['title'] = 'Страница не найдена';
             } else
-                header("HTTP/1.0 500 Internal error");
+                header('HTTP/1.0 500 Internal error');
 
-        $shape['worktime'] = (microtime(true)-core::$time_start);
+        $shape['worktime'] = (microtime(true)- self::$time_start);
         $shape['reason'] = $e->getMessage();
         ob_end_flush();
         echo GetShape('errors/'.$errorPageTemplate, $shape);
     }
-    static function ShutdownHandler()
+    public static function ShutdownHandler()
     {
         Global $cfg;
         if (self::$GlobalErrors!='') {
@@ -375,43 +375,35 @@ class core {
             $emailTo = $cfg['email_error'];
             $inf = "sessioninfo:\n";
             //if (isset($_SERVER['SERVER_NAME'])) $inf .= " addr: " . $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] . "\n";
-            if (isset($_SERVER['HTTP_USER_AGENT'])) $inf .= " useragent: " . $_SERVER['HTTP_USER_AGENT'] . "\n";
-            if (isset($_SERVER['HTTP_REFERER'])) $inf .= " referer: " . $_SERVER['HTTP_REFERER'] . "\n";
-            if (isset($_SERVER['REMOTE_ADDR'])) $inf .= " ip: " . $_SERVER['REMOTE_ADDR'] . "\n";
+            if (isset($_SERVER['HTTP_USER_AGENT'])) $inf .= ' useragent: ' . $_SERVER['HTTP_USER_AGENT'] . "\n";
+            if (isset($_SERVER['HTTP_REFERER'])) $inf .= ' referer: ' . $_SERVER['HTTP_REFERER'] . "\n";
+            if (isset($_SERVER['REMOTE_ADDR'])) $inf .= ' ip: ' . $_SERVER['REMOTE_ADDR'] . "\n";
             $inf .= "\n";
             self::$GlobalErrors .= $inf;
 
             //$cfg['debug']===true
             $host = $_SERVER['HTTP_HOST'];
 
-            unset($GLOBALS['cfg']);
-            unset($GLOBALS['_SERVER']);
-            unset($GLOBALS['page']);
-            unset($GLOBALS['runObj']);
-            unset($GLOBALS['shapes']);
-            unset($GLOBALS['shape']);
-            unset($GLOBALS['Cacher']);
-            unset($GLOBALS['pagecontent']);
-            unset($GLOBALS['e']);
+            unset($GLOBALS['cfg'], $GLOBALS['_SERVER'], $GLOBALS['page'], $GLOBALS['runObj'], $GLOBALS['shapes'], $GLOBALS['shape'], $GLOBALS['Cacher'], $GLOBALS['pagecontent'], $GLOBALS['e'], $GLOBALS['html']);
             $GlobalVars = print_r($GLOBALS,true);
             $GlobalVars = preg_replace('/Array\n\s*/','Array',$GlobalVars);
             $GlobalVars = preg_replace('/\n\s+\(/','(',$GlobalVars);
             $GlobalVars = preg_replace('/\n\s+\)/',')',$GlobalVars);
             $GlobalVars = preg_replace('/\n\s*\n/',"\n",$GlobalVars);
 
-            $sent = core::terminalWrite(
+            $sent = self::terminalWrite(
                 "\x07\x1b[2J\x1b[H\x1b[3J" .
                 "\033]0;".date('M d H:i:s ').self::$ErrorFirstTitle."\007" .
                 '=> ' . date('M d H:i:s ').self::$ErrorFirstTitle . "\n" . self::$GlobalErrors . $GlobalVars . '<=='
             );
-            if (!$sent) $sent = sendTelegram(self::$ErrorFirstTitle.' '.core::get_client_ip());
+            if (!$sent) $sent = sendTelegram(self::$ErrorFirstTitle.' '. self::get_client_ip());
             if (!$sent) sendMailHTML($emailTo, 'ERROR '.self::$ErrorFirstTitle, self::ErrorsStringToHTML(self::$GlobalErrors).'<pre>'.$GlobalVars.'</pre>','',$cfg['email_from']);
         }
         //if (isset(core::$prodServer)) try { new LiveinternetSeTracker($cfg['liveinternet_account']); } catch(Exception $e) {}
     }
     private static function ErrorsStringToHTML($errStr)
     {
-        return str_replace(array("\n"," "),array("<br>\n",'&nbsp;'),$errStr);//
+        return str_replace(array("\n", ' '),array("<br>\n",'&nbsp;'),$errStr);//
     }
     private static function SendErrorMessage($errStr,$title='',$wrn='WARNING') {
         Global $cfg;
@@ -419,10 +411,10 @@ class core {
         sendMailHTML($emailTo, $wrn.' '.$_SERVER['HTTP_HOST'].' '.$title, $errStr,'',$cfg['email_from']);
     }
 
-    static function cms_autoload($class_name)
+    public static function cms_autoload($class_name)
     {
         $class_name = str_replace('_','/',$class_name);
-        $res = @include_once($class_name.'.php');
+        $res = @include_once $class_name.'.php';
         if ($res==false) {
             $bugtrace = debug_backtrace(0)[1];
             throw new CmsException('class_not_found: '.$class_name,0,E_USER_ERROR,
@@ -432,7 +424,7 @@ class core {
         }
         #if ($cfg['debug']) var_dump_(debug_backtrace());
     }
-    static function getSharedObj($obj_name)
+    public static function getSharedObj($obj_name)
     {
         if (isset(self::$sharedObj[$obj_name])) return self::$sharedObj[$obj_name];
         else return self::$sharedObj[$obj_name] = new $obj_name();
@@ -440,7 +432,7 @@ class core {
     public static function getTerminalsList(){
         $out = array();
         $currentUser = get_current_user();
-        $ip = core::get_client_ip();
+        $ip = self::get_client_ip();
         exec('who| grep '.$currentUser.' | grep '.$ip,$terminalsRaw);
         foreach ($terminalsRaw as $data) {
             if (preg_match('/([A-Za-z0-9_-]+)\s+([a-zA-Z0-9\/]+)\s+([\d-]+)\s+([\d:]+)\s+\(([\d.]+)\)/iu', $data, $terminalInfo)) {
@@ -459,12 +451,12 @@ class core {
     public static function terminalWrite($data, $terminal=null){
 
         if ($terminal==null) {
-            if (!isset(self::$terminals[0])) core::getTerminalsList();
+            if (!isset(self::$terminals[0])) self::getTerminalsList();
             if (isset(self::$terminals[0])) $terminal = self::$terminals[0]['terminal'];
             else return false;
         }
         //exec('who > /dev/pts/1');
-        $tty = fopen('/dev/'.$terminal, 'w');
+        $tty = fopen('/dev/'.$terminal, 'wb');
         $r = fwrite($tty, "\n$data\n");
         fclose($tty);
         return $r !== false;
@@ -472,13 +464,13 @@ class core {
     public static function terminalClear($terminal=null) { self::terminalWrite("\e[2J\e[H\e[3J",$terminal); }
     public static function terminalBeep($terminal=null) { self::terminalWrite("\x07",$terminal); }
     public static function proceedAjax(){
-        global $page,$pathstr;
+        global $page;
         /* @var $page CmsPage */
         $outputData = '';
         $f = false;
         foreach ($page->initAjx() as $k => $v) {
             //echo $pathstr.'=='.$k."<br>\n";
-            if (core::$ajaxAction==$k) {
+            if (self::$ajaxAction==$k) {
                 $runObj = &$page;
                 if (isset($v['object'])) $runObj = &$v['object'];
                 elseif (isset($v['class'])) $runObj = new $v['class']();
@@ -487,23 +479,23 @@ class core {
                 break;
             }
         }
-        if (!$f) throw new CmsException("page_not_found");
+        if (!$f) throw new CmsException('page_not_found');
         return $outputData;
     }
 }
 class shp{
-    static $editMode = false;
-    static function edtble(&$html, $vars=array()) //Возвращает готовый HTML код
+    public static $editMode = false;
+    public static function edtble(&$html, $vars=array()) //Возвращает готовый HTML код
     {
         $html=preg_replace_callback('/{#(e):(\w+)#}/u',function($matches){
             var_dump__($matches);
         },$html);
         return $html;
     }
-    static function str($html, &$vars, $replace_once = false) //Возвращает готовый HTML код
+    public static function str($html, &$vars, $replace_once = false) //Возвращает готовый HTML код
     {
         $html=preg_replace_callback('/{#tmpl:(.*?)#}/u',function($matches) use (&$vars,$replace_once){
-            return shp::tmpl($matches[1], $vars, $replace_once);
+            return self::tmpl($matches[1], $vars, $replace_once);
         },$html);
 
         foreach ($vars as $key => $val) if ($replace_once) {
@@ -514,7 +506,7 @@ class shp{
         }
         return $html;
     }
-    static function tmpl($shape, $vars=array(), $replace_once = false) //Возвращает готовый HTML код
+    public static function tmpl($shape, $vars=array(), $replace_once = false) //Возвращает готовый HTML код
     {
         global $shapes;
 

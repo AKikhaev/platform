@@ -200,11 +200,14 @@ class PageUnit extends CmsPage {
 	}
 
 
-    /**
+    /** Сортировка потомков
      * @param $howchild
+     * 1 - по созданию
+     * 2 - с новых
+     * 3 - со старых
      * @return bool|string
      */
-    private function _howchildToOrder($howchild){
+    public function _howchildToOrder($howchild){
 		switch ($howchild) {
 			case 1:	return 'sec_sort';
 			case 2:	return 'sec_from DESC';
@@ -258,8 +261,8 @@ class PageUnit extends CmsPage {
     private function _getAllMenuItems(&$putInto,$parentId, $howchild=1,
 			$showHidden = false, $prefix = false, $markSelected = false, $markCurrent = false, $expByPath = false, $deep = 999) {
 		global $sql;
-		if ($deep==0) return false;
-		$order = $this->_howchildToOrder($howchild); if ($order==false) return false;
+		if ($deep===0) return false;
+		$order = $this->_howchildToOrder($howchild); if ($order===false) return false;
 		$mnulist = $this->_getMenuItems($parentId,$howchild,$showHidden,$prefix);
 		if ($mnulist!==false) {
 			$putInto = $mnulist;

@@ -86,7 +86,7 @@ abstract class VisualThemeAbstract
      */
     public static function _ph_tmpl(&$pageData,$editMode,$text,$template){
         $html = file_get_contents($template.'.shtm',true);
-        self::replacementsEditable($html,$pageData,$editMode);
+        self::replaceStaticHolders($html,$pageData,$editMode);
         return $html;
     }
 
@@ -99,20 +99,93 @@ abstract class VisualThemeAbstract
      * Обязательный. Заменяемый в шаблоне текст
      * @param $template
      * Обязательный. Шаблон
+     * @param $howchild
+     * Как сортировать потомков
+     * 1 - по созданию
+     * 2 - с новых
+     * 3 - со старых
      * @return false|string
      */
-    public static function _ph_tmpl_children(&$pageData,$editMode,$text,$template){
+    public static function _ph_tmpl_children(&$pageData,$editMode,$text,$template,$howchild=3){
         /* @var $sql pgdb */
-        global $sql;
+        /* @var $page PageUnit */
+        global $sql,$page;
         $html = '';
-        $query = sprintf ('select * from cms_sections where sec_parent_id=%d '.($editMode?'':'and sec_enabled and now()>sec_from').' order by sec_sort',
+        $query = sprintf ('select * from cms_sections where sec_parent_id=%d '.($editMode?'':'and sec_enabled and now()>sec_from').' order by '.$page->_howchildToOrder($howchild),
             $pageData['section_id']);
         $sections = $sql->query_all($query);
         if ($sections!==false) foreach ($sections as $secData) {
             $childHtml = file_get_contents($template.'.shtm',true);
-            self::replacementsEditable($childHtml,$secData,$editMode);
+            self::replaceStaticHolders($childHtml,$secData,$editMode);
             $html .= $childHtml;
         }
+        return $html;
+    }
+
+    /** Обработчик плейсхолдера. Применение php-шаблона для прямых потомков
+     * @param $pageData
+     * Обязательный. массив с данными
+     * @param $editMode
+     * Обязательный. режим редактирования
+     * @param $text
+     * Обязательный. Заменяемый в шаблоне текст
+     * @param $template
+     * Обязательный. Шаблон
+     * @param int $howchild
+     * Как сортировать потомков
+     * 1 - по созданию
+     * 2 - с новых
+     * 3 - со старых
+     * @param string $mode
+     * Режим работы:
+     * a - один за одним, запуск для каждой сущности
+     * f - общий запуск, foreach необходимо выполнять вручную
+     * @return false|string
+     */
+    public static function _ph_tmpl_children_e(&$pageData,$editMode,$text,$template,$howchild=3,$mode = 'a'){
+        /* @var $sql pgdb */
+        /* @var $page PageUnit */
+        global $sql,$page;
+        $html = '';
+        $query = sprintf ('select * from cms_sections where sec_parent_id=%d '.($editMode?'':'and sec_enabled and now()>sec_from').' order by '.$page->_howchildToOrder($howchild),
+            $pageData['section_id']);
+        $sections = $sql->query_all($query);
+
+        $execIntoScope = function($template,$data){
+            extract($data,EXTR_PREFIX_SAME,'new_');
+            ob_start();
+            require('akcms/u/template/parts/' . $template . '.php');
+            return ob_get_clean();
+        };
+
+        if ($sections===false) {
+            $sections = [];
+        }
+        if ($mode==='f') {
+            $childHtml = $execIntoScope($template, array(
+                'pt' => &$pageData,
+                'lst' => &$sections,
+                'editMode' => $editMode,
+                'text' => $text,
+            ));
+            self::replaceStaticHolders($childHtml, $pageData, $editMode);
+            $html .= $childHtml;
+        } elseif ($mode==='a') {
+            $last = count($sections)-1;
+            $k = 0;
+            foreach ($sections as $secData) {
+                $childHtml = $execIntoScope($template, array(
+                    'pt' => &$pageData,
+                    'ct' => &$secData,
+                    'is_first' => $k === 0,
+                    'is_last' => $k === $last,
+                    'k' => $k++,
+                ));
+                self::replaceStaticHolders($childHtml, $secData, $editMode);
+                $html .= $childHtml;
+            }
+        }
+        if ($pageData['section_id']==37) var_log($pageData);
         return $html;
     }
 
@@ -124,7 +197,7 @@ abstract class VisualThemeAbstract
      * @param $editMode bool
      * Режим редактирования, если не указан используется shp::$editMode
      */
-    public static function replacementsEditable(&$html, &$pageData, $editMode = null){
+    public static function replaceStaticHolders(&$html, &$pageData, $editMode = null){
         $editMode = $editMode !== null ? $editMode : shp::$editMode;
         /* @var $sql pgdb */
         global $sql;
@@ -141,7 +214,7 @@ abstract class VisualThemeAbstract
          * 3 - параметры
          * 5 - контент
          */
-        $html=preg_replace_callback('~\{#_(\w+):([^:#]+)(:[^#]+)*#\}~usU',function($matches) use (&$repls,&$pageData,$editMode){
+        $html=preg_replace_callback('~\{#_(\w+):([^:#]+)(:[^#]*?)*#\}~usU',function($matches) use (&$pageData,$editMode){
             $text = ''; if (isset($matches[4])) $text = $matches[4];
             $funct = $matches[1];
             $field = $matches[2];
@@ -157,7 +230,7 @@ abstract class VisualThemeAbstract
          * 3_1 - hint
          * 5 - контент
          */
-        $html=preg_replace_callback('~\{#(ep|eg):([^:#]+)(:[^#]+)#(?|\/\}(.*)\{\/#\1:\2(?::[^#])?#\}|})~usU',function($matches) use (&$repls,&$pageData,$editMode){
+        $html=preg_replace_callback('~\{#(ep|eg):([^:#]+)(:[^#]+?)#(?|\/\}(.*)\{\/#\1:\2(?::[^#])?#\}|})~usU',function($matches) use (&$repls,&$pageData,$editMode){
             $textFound = false;
             $text = ''; if (isset($matches[4])) $text = $matches[4];
             $code = $matches[1].'_'.$matches[2];
@@ -170,15 +243,15 @@ abstract class VisualThemeAbstract
                 $textFound = true;
             }
 
-            if ($code=='ep_content' && !$stay_original) {
-                $textDB = $pageData['sec_content']; if (mb_strlen($textDB)!=0) {
+            if ($code==='ep_content' && !$stay_original) {
+                $textDB = $pageData['sec_content']; if ($textDB !== '') {
                     $text = $textDB;
                     $textFound = true;
                 }
                 $hint = 'Основной текст';
             }
-            if ($code=='ep_namefull' && !$stay_original) {
-                $textDB = $pageData['sec_namefull']; if (mb_strlen($textDB)!=0) {
+            if ($code==='ep_namefull' && !$stay_original) {
+                $textDB = $pageData['sec_namefull']; if ($textDB !== '') {
                     $text = $textDB;
                     $textFound = true;
                 }
