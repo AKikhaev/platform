@@ -1270,12 +1270,11 @@ class PageUnit extends CmsPage {
 		$shape['head'] = $this->page['sec_namefull'];
 		$shape['description'] = $this->page['sec_description'];
 		$shape['keywords'] = $this->page['sec_keywords'];
-		
-		#Теги
-		$secTagsArr = $this->getSecTags();
-		$secTags = implode(',',$secTagsArr);
-		
+
 		if ($adminPart) {
+            #Теги
+            $secTags = implode(',',$this->getSecTags());
+
 			$vieweditLink = "new Element('a',{'href':'/".$this->pageMainUri."'+'?'+new Date().getTime()}).inject(usrcntrldiv).grab(new Element('img',{'src':'/img/edt/btnview.png','title':'Просмотреть страницу'}));";
 
 			$shape['jses']  .= "

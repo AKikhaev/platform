@@ -457,7 +457,7 @@ class core {
         }
         //exec('who > /dev/pts/1');
         $tty = fopen('/dev/'.$terminal, 'wb');
-        $r = fwrite($tty, "\n$data\n");
+        $r = fwrite($tty, "$data\n");
         fclose($tty);
         return $r !== false;
     }

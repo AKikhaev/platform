@@ -2,16 +2,15 @@
 #core::$time_start = microtime(true);
 # error tracking
 try {
-    require_once('akcms/core/core.php'); LOAD_CORE(); # init core
+    require_once 'akcms/core/core.php'; LOAD_CORE(); # init core
     /* @var $sql pgdb */
 
     #ob_start(); // Start output buffer
     //profiler::showOverallTimeToTerminal();
     $pageClass = '';
     $pageTemplate = '';
-    core::$renderPage = core::$userAuth || core::$inEdit || core::$isAjax;
 
-    if($pathlen==1 && $path[0]=='bot_test') {
+    if($pathlen==1 && $path[0]==='bot_test') {
         $tb = new TelegramBot();
         $tb->webHook();
         die('.');

@@ -96,20 +96,20 @@ function LOAD_CORE() {
 	$pathurl = $pathstr;
 
 	$path = array_filter(explode('/',$pathstr));
-    if (@$path[1]=='ajx')
+    if (@$path[1]==='ajx')
     {
         core::$isAjax = true;
         unset($path[1]);
-        if (mb_substr(end($path),0,1)=='_') {
+        if (mb_strpos(end($path), '_') === 0) {
             core::$ajaxAction = current($path);
             unset($path[key($path)]);
         }
     }
-    elseif (@$path[1]=='_')
+    elseif (@$path[1]==='_')
     {
         core::$inEdit = true;
         unset($path[1]);
-        if (!core::$userAuth) throw new CmsException("login_needs");
+        if (!core::$userAuth) throw new CmsException('login_needs');
     }
     elseif (substr($_SERVER['SCRIPT_URL'],-1)!='/')
     {
@@ -117,12 +117,13 @@ function LOAD_CORE() {
         exit;
     }
 
+    core::$renderPage = core::$userAuth || core::$inEdit;
     $path = array_values($path);
     $pathlen = count($path);
     $pathstr = implode('/',$path).'/';
 
 	if (file_exists('akcms/u/config/redirect.php')) {#site redirect
-		require_once('akcms/u/config/redirect.php');
+		require_once 'akcms/u/config/redirect.php';
 		/*
 		$cfg['redirects']=array(
 			''=>'',
@@ -134,5 +135,5 @@ function LOAD_CORE() {
 		*/
 	}
 
-    require_once('akcms/u/VisualTheme.php');
+    require_once 'akcms/u/VisualTheme.php';
 }

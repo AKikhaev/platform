@@ -189,6 +189,78 @@ abstract class VisualThemeAbstract
         return $html;
     }
 
+    private static $sectionStrings = [];
+
+    /** Возвращает ассоцириированные сохраненные данные строк раздела
+     * @param int $secId
+     * @return mixed
+     */
+    protected static function &getSectionStrings($secId = 0) {
+        /* @var $sql pgdb */
+        global $sql;
+        if (isset(self::$sectionStrings[$secId])) return self::$sectionStrings[$secId];
+
+        $sectionIds = [0,$secId];
+
+        $repls = array();
+        $ss_data = $sql->query_all('SELECT sec_id,secs_id,secs_code,secs_str FROM cms_sections_string WHERE sec_id=ANY(' . $sql->a_d($sectionIds).')');
+        if ($ss_data!=false)
+            foreach ($ss_data as $item)
+                $repls[($item['sec_id']==0?'eg':'ep').'_'.$item['secs_code']] = $item;
+
+        self::$sectionStrings[$secId] = $repls;
+        return self::$sectionStrings[$secId];
+    }
+
+    /** Обработчик плейсхолдера. Вывод текста
+     * @param $pageData
+     * Обязательный. массив с данными
+     * @param $editMode
+     * Обязательный. режим редактирования
+     * @param $text
+     * Обязательный. Заменяемый в шаблоне текст
+     * @param $field
+     * Обязательный. поле из шаблоны
+     * @param string $mult
+     * Тип редактора
+     * s - однострочный полный html
+     * m - многострочный полный html
+     * l - простая строка без переносов
+     * @param string $hint
+     * Подсказка в режиме редактирования
+     * @param string $debug
+     * символ ! отлючает подстановнку данных из базы
+     * @return false|string
+     */
+    public static function _ph_editable(&$pageData,$editMode,$text,$field,$mult = 's',$hint = '',$debug = ''){
+        $stay_original = mb_stripos($debug,'!')!==false;
+
+        $textFound = false;
+        $repls = &self::getSectionStrings($pageData['section_id']);
+        if (!$stay_original && isset($repls[$field])) {
+            $text = $repls[$field]['secs_str'];
+            $textFound = true;
+        }
+
+        if ($field==='ep_content' && !$stay_original) {
+            $textDB = $pageData['sec_content']; if ($textDB !== '') {
+                $text = $textDB;
+                $textFound = true;
+            }
+            $hint = 'Основной текст';
+        }
+        if ($field==='ep_namefull' && !$stay_original) {
+            $textDB = $pageData['sec_namefull']; if ($textDB !== '') {
+                $text = $textDB;
+                $textFound = true;
+            }
+            $hint = 'Основной заголовок';
+        }
+
+        $tag = $mult==='m'?'div':'span';
+        if ($editMode) return "<$tag class=\"ss_edit ".($textFound?'':'textNotFound')."\" data-edt-uri=\"$pageData[sec_url_full]\" data-code=\"$field\" data-mult=\"$mult\" ".($hint!==''?"data-hint=\"$hint\"":'').">$text</$tag>";
+        else return $text;
+    }
 
     /** Обрабатывает редактируемые поля в шаблоне
      * @param $html
@@ -201,12 +273,6 @@ abstract class VisualThemeAbstract
         $editMode = $editMode !== null ? $editMode : shp::$editMode;
         /* @var $sql pgdb */
         global $sql;
-        $sectionIds = array(0);
-        if (isset($pageData['section_id'])) $sectionIds[] = $pageData['section_id'];
-
-        $repls = array();
-        $ss_data = $sql->query_all('SELECT sec_id,secs_id,secs_code,secs_str FROM cms_sections_string WHERE sec_id=ANY(' . $sql->a_d($sectionIds).')');
-        if ($ss_data!=false) foreach ($ss_data as $item) $repls[($item['sec_id']==0?'eg':'ep').'_'.$item['secs_code']] = $item;
 
         /* Вызывает функции из класса VisualTheme с префиксом _ph_
          * 1 - функция
@@ -230,37 +296,11 @@ abstract class VisualThemeAbstract
          * 3_1 - hint
          * 5 - контент
          */
-        $html=preg_replace_callback('~\{#(ep|eg):([^:#]+)(:[^#]+?)#(?|\/\}(.*)\{\/#\1:\2(?::[^#])?#\}|})~usU',function($matches) use (&$repls,&$pageData,$editMode){
-            $textFound = false;
+        $html=preg_replace_callback('~\{#(ep|eg):([^:#]+)(:[^#]+?)#(?|\/\}(.*)\{\/#\1:\2(?::[^#])?#\}|})~usU',function($matches) use (&$pageData,$editMode){
             $text = ''; if (isset($matches[4])) $text = $matches[4];
-            $code = $matches[1].'_'.$matches[2];
-            $params = explode(':',trim($matches[3],':'));
-            $hint = ''; if (isset($params[1])) $hint = $params[1];
-            $mult = 's'; if (isset($params[0])) $mult = $params[0];
-            $stay_original = mb_stripos($matches[3],'!')!==false;
-            if (isset($repls[$code]) && !$stay_original) {
-                $text = $repls[$code]['secs_str'];
-                $textFound = true;
-            }
-
-            if ($code==='ep_content' && !$stay_original) {
-                $textDB = $pageData['sec_content']; if ($textDB !== '') {
-                    $text = $textDB;
-                    $textFound = true;
-                }
-                $hint = 'Основной текст';
-            }
-            if ($code==='ep_namefull' && !$stay_original) {
-                $textDB = $pageData['sec_namefull']; if ($textDB !== '') {
-                    $text = $textDB;
-                    $textFound = true;
-                }
-                $hint = 'Основной заголовок';
-            }
-
-            $tag = $mult=='m'?'div':'span';
-            if ($editMode) return "<$tag class=\"ss_edit ".($textFound?'':'textNotFound')."\" data-edt-uri=\"$pageData[sec_url_full]\" data-code=\"$code\" data-mult=\"$mult\" ".($hint!==''?"data-hint=\"$hint\"":'').">$text</$tag>";
-            else return $text;
+            $field = $matches[1].'_'.$matches[2];
+            $params = isset($matches[3])?explode(':',trim($matches[3],':')):[];
+            return VisualTheme::_ph_editable(...array_merge(array(&$pageData, $editMode, &$text, $field), $params));
         },$html);
     }
 

@@ -604,49 +604,76 @@ function strUpCorr($str)
   return $findstring;
 }
 
-/*** Консоль ***/
-/* http://manpages.ubuntu.com/manpages/trusty/man4/console_codes.4.html
- * http://wiki.bash-hackers.org/scripting/terminalcodes
+/** Консоль. Цвет
+ *
  * 0 все атрибуты по умолчанию
+ *
  * 1 жирный шрифт (интенсивный цвет)
+ *
  * 2 полу яркий цвет (тёмно-серый, независимо от цвета)
+ *
  * 4 выделение (ярко-белый, независимо от цвета) или подчеркивание
+ *
  * 5 мигающий
+ *
  * 7 реверсия (знаки приобретают цвет фона, а фон -- цвет знаков)
- 
+ *
  * 22 установить нормальную интенсивность
+ *
  * 24 отменить подчеркивание
+ *
  * 25 отменить мигание
+ *
  * 27 отменить реверсию
- 
+ *
  * 30 чёрный цвет знаков
+ *
  * 31 красный цвет знаков
+ *
  * 32 зелёный цвет знаков
+ *
  * 33 коричневый цвет знаков
+ *
  * 34 синий цвет знаков
+ *
  * 35 фиолетовый цвет знаков
+ *
  * 36 цвет морской волны знаков
+ *
  * 37 серый цвет знаков
- 
+ *
+ * Фон:
+ *
  * 40 чёрный цвет фона
+ *
  * 41 красный цвет фона
+ *
  * 42 зелёный цвет фона
+ *
  * 43 коричневый цвет фона
+ *
  * 44 синий цвет фона
+ *
  * 45 фиолетовый цвет фона
+ *
  * 46 цвет морской волны фона
+ *
  * 47 серый цвет фона
  */
 function _ls($code = '0'){
-	return "\x1b[".$code."m";
+    //http://manpages.ubuntu.com/manpages/trusty/man4/console_codes.4.html
+    //http://wiki.bash-hackers.org/scripting/terminalcodes
+    //http://ascii-table.com/ansi-escape-sequences.php
+    //http://ascii-table.com/ansi-escape-sequences-vt-100.php
+	return "\x1b[".$code."m"; // \e = \x1b
 }
 function toTitle($msg){
 	echo("\033]0;$msg\007");
 }
-function toLog($msg){ echo "\r"._ls(35).date('H:i:s ')._ls().$msg._ls()."            ".PHP_EOL; }
-function toLogError($msg){ echo "\r"._ls(35).date('H:i:s ')._ls(31)._ls(1).$msg._ls()."            ".PHP_EOL; }
-function toLogDie__($msg){ die("\r"._ls(35).date('H:i:s ')._ls(31)._ls(1).$msg._ls(36).' DIE'._ls()."            ".PHP_EOL); }
-function toLogInfo($msg){ echo "\r"._ls(35).date('H:i:s ')._ls(32).$msg._ls()."            ".PHP_EOL; }
+function toLog($msg){ echo "\r\e[K"._ls(35).date('H:i:s ')._ls().$msg._ls().PHP_EOL; }
+function toLogError($msg){ echo "\r\e[K"._ls(35).date('H:i:s ')._ls(31)._ls(1).$msg._ls().PHP_EOL; }
+function toLogDie__($msg){ die("\r\e[K"._ls(35).date('H:i:s ')._ls(31)._ls(1).$msg._ls(36).' DIE'._ls().PHP_EOL); }
+function toLogInfo($msg){ echo "\r\e[K"._ls(35).date('H:i:s ')._ls(32).$msg._ls().PHP_EOL; }
 
 function getUrlContent($url) {
     $headers = array(
