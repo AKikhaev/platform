@@ -283,6 +283,13 @@ class core {
         if ($ipaddress==false) $ipaddress = getenv('REMOTE_ADDR');
         return $ipaddress;
     }
+    private static function hidePathForError($filename) {
+		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') $filename = str_replace('\\','/',$filename);
+		if (isset($_SERVER) && strpos($filename,$_SERVER['DOCUMENT_ROOT'])!==false)
+    		$filename = substr($filename,strlen($_SERVER['DOCUMENT_ROOT']));
+    	else $filename = basename($filename);
+		return $filename;
+	}
     public static function GlobalErrorHandler($errno, $errmsg, $filename, $linenum, $backtrace)
     {
         Global $cfg;
@@ -307,15 +314,16 @@ class core {
         );
         if ($errmsg !== 'login_needs' && error_reporting()!==0) {
             $err = $errortype[$errno].': '. $errmsg . "\n";
-            if (self::$ErrorFirstTitle=='') self::$ErrorFirstTitle = $errortype[$errno].': '.$errmsg.' '.$_SERVER['SERVER_NAME'].' '.$_SERVER['REQUEST_URI'];
-            $filename = (strpos($filename,$_SERVER['DOCUMENT_ROOT'])!==false?substr($filename,strlen($_SERVER['DOCUMENT_ROOT'])):$filename);
-            $err .= 'src: ' . $filename.': '.$linenum . "\n";
+            if (self::$ErrorFirstTitle=='')
+            	self::$ErrorFirstTitle = $errortype[$errno].': '.$errmsg.' '.
+					($_SERVER['SERVER_NAME']?:'').' '.($_SERVER['REQUEST_URI']?:'');
+            $err .= 'src: ' . self::hidePathForError($filename).': '.$linenum . "\n";
             if (in_array($errno, array(E_USER_ERROR, E_USER_WARNING, E_USER_NOTICE, E_NOTICE, E_ERROR, E_WARNING, -1))) {#E_WARNING,
                 $tracedata = array();
                 if (!isset($backtrace[0])) $backtrace = debug_backtrace(0);
                 foreach($backtrace as $k=>$d) if (is_array($d)) {
                     $i='  '.$k.': ';
-                    if (isset($d['file'])) $i  .= (strpos($d['file'],$_SERVER['DOCUMENT_ROOT'])!==false?substr($d['file'],strlen($_SERVER['DOCUMENT_ROOT'])):$d['file']);
+                    if (isset($d['file'])) $i  .= self::hidePathForError($d['file']);
                     if (isset($d['line'])) $i  .= ':'.$d['line'];
                     if (isset($d['class'])) $i .= ' {'.$d['class'].'}';
                     if (isset($d['type'])) $i  .= ' '.$d['type'];
@@ -363,7 +371,7 @@ class core {
 
         $shape['worktime'] = (microtime(true)- self::$time_start);
         $shape['reason'] = $e->getMessage();
-        ob_end_flush();
+        @ob_end_flush();
         echo GetShape('errors/'.$errorPageTemplate, $shape);
     }
     public static function ShutdownHandler()

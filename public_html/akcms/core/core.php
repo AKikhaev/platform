@@ -4,7 +4,15 @@ define('CMS_OBJOWNER','owner');
 define('CMS_ADMIN','admin');
 $cfg['debug']=true;
 
-set_include_path('akcms/u/units:akcms/u/models:akcms/units:akcms/classes:akcms/models:akcms/u/template:akcms/template:.');
+set_include_path(
+	'akcms/u/units'.PATH_SEPARATOR.
+	'akcms/u/models'.PATH_SEPARATOR.
+	'akcms/units'.PATH_SEPARATOR.
+	'akcms/classes'.PATH_SEPARATOR.
+	'akcms/models'.PATH_SEPARATOR.
+	'akcms/u/template'.PATH_SEPARATOR.
+	'akcms/template'.PATH_SEPARATOR.'.');
+
 require_once 'akcms/core/classes.php';
 error_reporting(-1);
 set_error_handler('core::GlobalErrorHandler',-1);
@@ -86,16 +94,15 @@ function LOAD_CORE() {
 	CmsUser::init();
 	core::$userAuth = CmsUser::isLogin();
 
-	if (isset($_SERVER['SCRIPT_URL']))  $pathstr = strtolower(urldecode($_SERVER['SCRIPT_URL']));
+	if (isset($_SERVER['SCRIPT_URL']))  $pathurl = strtolower(urldecode($_SERVER['SCRIPT_URL']));
 	else {
-        $pathstr = strtolower(urldecode($_SERVER['REQUEST_URI']));
+		$pathurl = strtolower(urldecode($_SERVER['REQUEST_URI']));
 		if (mb_strpos($pathstr,'?')!==false) $pathstr = mb_substr($pathstr,0,mb_strpos($pathstr,'?'));
 		if (mb_strpos($pathstr,'#')!==false) $pathstr = mb_substr($pathstr,0,mb_strpos($pathstr,'#'));
 		if (mb_strpos($pathstr,'&')!==false) $pathstr = mb_substr($pathstr,0,mb_strpos($pathstr,'&'));
 	}
-	$pathurl = $pathstr;
 
-	$path = array_filter(explode('/',$pathstr));
+	$path = array_filter(explode('/',$pathurl));
     if (@$path[1]==='ajx')
     {
         core::$isAjax = true;
@@ -111,7 +118,7 @@ function LOAD_CORE() {
         unset($path[1]);
         if (!core::$userAuth) throw new CmsException('login_needs');
     }
-    elseif (substr($_SERVER['SCRIPT_URL'],-1)!='/')
+    elseif (substr($pathurl,-1)!='/')
     {
         header('Location: http://'.core::$serverName.$_SERVER['SCRIPT_URL'].'/'.substr($_SERVER['REQUEST_URI'],strlen($_SERVER['SCRIPT_URL'])));
         exit;
