@@ -32,6 +32,60 @@ abstract class VisualThemeAbstract
         return $string;
     }
 
+    /*** Строит хлебные крошки внутри ul
+     * @param $pagePath
+     * массив $page->getBreadcrumbs()
+     * @param bool $showMain
+     * добавить первым <li><a href="/" title="Главная">Главная</a></li>
+     * @param int $showlast
+     * Отображать последний элемент
+     *
+     *  0 - не отображать
+     *
+     *  1 - активный li, внутри ссылка
+     *
+     *  2 - активный li, внутри текст
+     *
+     *  3 - активный li, внутри h1
+     *
+     * -2 - активный предпоследний, ссылкой. последний не отображается
+     *
+     * @return string
+     */
+    public static function buildBreadcrumbs_links($pagePath,$showMain=true,$showlast=1)
+    {
+        $path = array();
+        $i=0; $count = count($pagePath);
+        if ($showMain) $path[] = '<li><a href="/" title="Главная">Главная</a></li>';
+        foreach ($pagePath as $pageItem) {
+            if (isset($pageItem['_current'])) {
+                if ($showlast>0) {
+                    $link = $pageItem['sec_nameshort'];
+                    if ($showlast === 1) $link = sprintf('<li class="active"><a href="/%1$s" title="%2$s">%2$s</a></li>',
+                        $pageItem['sec_url_full'],
+                        $pageItem['sec_nameshort']
+                    );
+                    if ($showlast === 2) $link = '<li class="active">' . $pageItem['sec_nameshort'] . '</li>';
+                    if ($showlast === 3) $link = '<li class="active"><h1>' . $pageItem['sec_nameshort'] . '</h1></li>';
+                    $path[] = $link;
+                }
+            } elseif ($showlast===-1 && $i===$count-2) {
+                $path[] = sprintf('<li class="active"><a href="/%1$s">%2$s</a></li>',
+                    $pageItem['sec_url_full'],
+                    $pageItem['sec_nameshort']
+                );
+            } else {
+                $path[] = sprintf('<li><a href="/%1$s">%2$s</a></li>',
+                    $pageItem['sec_url_full'],
+                    $pageItem['sec_nameshort']
+                );
+            }
+            ++$i;
+        }
+        return implode($path);
+
+    }
+
     /** Обработчик плейсхолдера. Вывод даты
      * @param $pageData
      * Обязательный. массив с данными
@@ -106,13 +160,14 @@ abstract class VisualThemeAbstract
      * 3 - со старых
      * @return false|string
      */
-    public static function _ph_tmpl_children(&$pageData,$editMode,$text,$template,$howchild=3){
+    public static function _ph_tmpl_children(&$pageData,$editMode,$text,$template,$howchild=3,$limit=0,$sec_id=-1){
         /* @var $sql pgdb */
         /* @var $page PageUnit */
         global $sql,$page;
         $html = '';
         $query = sprintf ('select * from cms_sections where sec_parent_id=%d '.($editMode?'':'and sec_enabled and now()>sec_from').' order by '.$page->_howchildToOrder($howchild),
-            $pageData['section_id']);
+            $sql->d((int)$sec_id===-1?$pageData['section_id']:$sec_id));
+        if ($limit>0) $query.=' LIMIT '.$sql->d($limit);
         $sections = $sql->query_all($query);
         if ($sections!==false) foreach ($sections as $secData) {
             $childHtml = file_get_contents($template.'.shtm',true);
@@ -142,13 +197,14 @@ abstract class VisualThemeAbstract
      * f - общий запуск, foreach необходимо выполнять вручную
      * @return false|string
      */
-    public static function _ph_tmpl_children_e(&$pageData,$editMode,$text,$template,$howchild=3,$mode = 'a'){
+    public static function _ph_tmpl_children_e(&$pageData,$editMode,$text,$template,$howchild=3,$limit=0,$sec_id=-1,$mode = 'a'){
         /* @var $sql pgdb */
         /* @var $page PageUnit */
         global $sql,$page;
         $html = '';
         $query = sprintf ('select * from cms_sections where sec_parent_id=%d '.($editMode?'':'and sec_enabled and now()>sec_from').' order by '.$page->_howchildToOrder($howchild),
-            $pageData['section_id']);
+            $sql->d((int)$sec_id===-1?$pageData['section_id']:$sec_id));
+        if ($limit>0) $query.=' LIMIT '.$sql->d($limit);
         $sections = $sql->query_all($query);
 
         $execIntoScope = function($template,$data){

@@ -18,10 +18,6 @@ class ImgMetaData {
 
 /* Alexander Kikhaev, 2012
 Modes:
--1 - уменьшить и впихнуть
- 0 - Пропорционально масштабировать
- 1 - Пропорционально привести к размеру, излишки отрезать
- 2 - Не пропорционально масштабировать
 */
 class ImgResizer {
 	public $res_width;
@@ -29,8 +25,36 @@ class ImgResizer {
 	public $res_isoriginal;
 	public $rezip = false;
 	public $imginfo;
-	
-	function simpleResize($pathstrOrgn,$max_width,$max_height,$mode,$effector = null,$cntrX = -1,$cntrY = -1) {
+
+
+    /** Простое масштабирование
+     * @param $pathstrOrgn
+     * путь к оргиналу
+     * @param $max_width
+     * максимальная ширина
+     * @param $max_height
+     * максимальна высота
+     * @param $mode
+     * режим масштабирования:
+     *
+     * -1 - уменьшить и впихнуть
+     *
+     *  0 - Пропорционально масштабировать
+     *
+     *  1 - Пропорционально привести к размеру, излишки отрезать
+     *
+     *  2 - Не пропорционально масштабировать
+     * @param null $effector
+     * объект эффекта с методом ->apply($dst,$this->res_width,$this->res_height)
+     * @param int $cntrX
+     * центральная точка по x
+     * @param int $cntrY
+     * центральная точка по y
+     * @return resource
+     * Возвращает ссылку на изображение GD
+     * @throws Exception
+     */
+	public function simpleResize($pathstrOrgn,$max_width,$max_height,$mode,$effector = null,$cntrX = -1,$cntrY = -1) {
 		$this->res_isoriginal = false;
 		$isflv = strpos($pathstrOrgn,'.flv')==strlen($pathstrOrgn)-4;
 		$this->imginfo = array();
@@ -214,8 +238,44 @@ class ImgResizer {
 		
 		return $dst;		
 	}
-	
-	function ResizeSave($pathstrOrgn,$pathstr,$max_width,$max_height,$mode,$output=false,$effector=null,$cntrX = -1,$cntrY = -1) {
+
+    /**
+     * @param $pathstrOrgn
+     * путь к оргиналу
+     * @param $pathstr
+     * путь назначения
+     * @param $max_width
+     * максимальная ширина
+     * @param $max_height
+     * максимальна высота
+     * @param $mode
+     * режим масштабирования:
+     *
+     * -1 - уменьшить и впихнуть
+     *
+     *  0 - Пропорционально масштабировать
+     *
+     *  1 - Пропорционально привести к размеру, излишки отрезать
+     *
+     *  2 - Не пропорционально масштабировать
+     * @param bool $output
+     * вывод в браузер
+     *
+     * 1    - только вывод в браузер без сохранения. Прерывает работу после вывода
+     *
+     * true - сохранение в указанную директорию и вывод. Прерывает работу после вывода
+     *
+     * false - только сохранение без вывода
+     * @param null $effector
+     * объект эффекта с методом ->apply($dst,$this->res_width,$this->res_height)
+     * @param int $cntrX
+     * центральная точка по x
+     * @param int $cntrY
+     * центральная точка по y
+     * @return bool|null
+     * @throws Exception
+     */
+	public function ResizeSave($pathstrOrgn,$pathstr,$max_width,$max_height,$mode,$output=false,$effector=null,$cntrX = -1,$cntrY = -1) {
 		$result = null;
 		$dst = $this->simpleResize($pathstrOrgn,$max_width,$max_height,$mode,$effector,$cntrX,$cntrY);
 
@@ -233,9 +293,9 @@ class ImgResizer {
 			imageinterlace($dst,1);
 			imagejpeg($dst,null,90);
 			exit();
-			//return '';
-		}		
-		elseif ($this->imginfo['newmime']=='image/jpeg') 
+		}
+
+		if ($this->imginfo['newmime']=='image/jpeg')
 		{
 			imageinterlace($dst,1);
 			$dirpath = dirname($pathstr);
@@ -271,4 +331,3 @@ class ImgResizer {
 		return $result;
 	}
 }
-?>

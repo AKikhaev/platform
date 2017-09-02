@@ -10,7 +10,7 @@ try {
     $pageClass = '';
     $pageTemplate = '';
 
-    if($pathlen==1 && $path[0]==='bot_test') {
+    if($pathlen===1 && $path[0]==='bot_test') {
         $tb = new TelegramBot();
         $tb->webHook();
         die('.');
@@ -66,8 +66,11 @@ try {
                 //
                 //if (!core::$userAuth && $page->canCache()) $Cacher->cache_write($pathstr,$html,600);
             }
-            if (core::$testServer)
-                $html = str_replace('<head>','<head><meta name="robots" content="noindex, nofollow, noarchive"/>',$html);
+            if (core::$testServer) {
+                $html = str_replace('<head>', '<head><meta name="robots" content="noindex, nofollow, noarchive"/>', $html);
+                header('Cache-Control: no-store');
+                header('X-Robots-Tag: noindex, nofollow, noarchive');
+            }
             core::$outputData = $html;
             unset($html);
         }

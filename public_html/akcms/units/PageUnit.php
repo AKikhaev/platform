@@ -169,7 +169,7 @@ class PageUnit extends CmsPage {
 	public function getBreadcrumbs($prefix=false)
 	{
 		global $sql;
-		if (count($this->pagePath) != 0) return $this->pagePath;
+		if (count($this->pagePath) !== 0) return $this->pagePath;
 
 		$currNode = array(
 			'section_id'    =>$this->page['section_id'],
