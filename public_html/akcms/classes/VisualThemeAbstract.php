@@ -314,7 +314,7 @@ abstract class VisualThemeAbstract
         }
 
         $tag = $mult==='m'?'div':'span';
-        if ($editMode) return "<$tag class=\"ss_edit ".($textFound?'':'textNotFound')."\" data-edt-uri=\"$pageData[sec_url_full]\" data-code=\"$field\" data-mult=\"$mult\" ".($hint!==''?"data-hint=\"$hint\"":'').">$text</$tag>";
+        if ($editMode) return "<$tag class=\"ss_edit ss_edit_$mult ".($textFound?'':'textNotFound')."\" data-edt-uri=\"$pageData[sec_url_full]\" data-code=\"$field\" data-mult=\"$mult\" ".($hint!==''?"data-hint=\"$hint\"":'').">$text</$tag>";
         else return $text;
     }
 

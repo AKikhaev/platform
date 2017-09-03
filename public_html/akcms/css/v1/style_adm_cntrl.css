@@ -50,7 +50,7 @@ body {
 div.ss_edit {
    display: inline;
 }
-.ss_edithl,.ss_edithl>p,.ss_edithl>ul,.ss_edithl>table,.ss_edithl>h2,.ss_edithl>h3,.ss_edithl>h4,.ss_edithl>h5,.ss_edithl>h6,.ss_edithl>span{
+.ss_edithl,.ss_edithl>*{
     background-color: #fdffaf !important;
     color: #000000 !important;
     text-decoration: underline !important;
@@ -62,8 +62,7 @@ div.ss_edit {
     min-height: 5px !important;
     min-width: 5px !important;
 }
-.ss_edithl.textNotFound,.ss_edithl.textNotFound>p,.ss_edithl.textNotFound>ul,.ss_edithl.textNotFound>table,.ss_edithl.textNotFound>h2,
-.ss_edithl.textNotFound>h3,.ss_edithl.textNotFound>h4,.ss_edithl.textNotFound>h5,.ss_edithl.textNotFound>h6,.ss_edithl.textNotFound>span{
+.ss_edithl.textNotFound,.ss_edithl.textNotFound>*{
     background-color: #ffdeb9 !important;
     text-decoration-color: #ffdeb9 !important;
 }
@@ -91,3 +90,4 @@ div.ss_edit {
     z-index: 1000;
     cursor: default;
 }
+.fancybox-inner {border: 1px solid #d3d3d3 !important;}

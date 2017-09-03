@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="robots" content="noindex, nofollow, noarchive"/>
+	<title></title>
+    <link href="/akcms/css/v1/style_u.css" rel="stylesheet" type="text/css">
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/javascript" src="/akcms/js/v1/tiny_mce/tiny_mce.js"></script>
+    <script type="text/javascript">
+        var fullscreen_on = function myCustomInitInstance(ed) {
+            if(ed.editorId !== 'mce_fullscreen') ed.execCommand('mceFullScreen');
+        };
+        jQuery(document).ready(function() {
+            $('#valueedit').html(parent.window['editdiv'].html());
+            var savethis = function(callback){
+                var arrPost = {
+                    'data':tinyMCE.get('mce_fullscreen').getContent(),//valueedit
+                    'code':parent.window['editdiv'].data('code'),
+                    'mult':parent.window['editdiv'].data('mult')
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: '/ajx/'+parent.window['editdiv'].data('edt-uri')+'_sse_save',
+                    data: arrPost,
+                    success: function (sres) {
+                        if (sres === 't') parent.window['editdiv'].removeClass('textNotFound').html(arrPost.data);
+                        if (callback !== undefined) callback(sres === 't');
+                    },
+                    dataType: 'json'
+                });
+            };
+            var params = {
+                mode : "textareas",
+                theme : "advanced",
+                plugins : "safari,table,advimage,inlinepopups,searchreplace,print,contextmenu,paste,fullscreen,noneditable,nonbreaking,visualchars,autosave",
+                file_browser_callback : "tinyBrowser",
+                content_css : "/akcms/css/v1/txtstyle.css?",
+                theme_advanced_buttons1 : "btnsve,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,|,cleanup,|,forecolor,backcolor,restoredraft",//fullscreen,|,
+                theme_advanced_buttons2 : "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,grabimg,|,visualchars,code",
+                theme_advanced_buttons3 : "tablecontrols,|,removeformat,visualaid,|,sub,sup,|,charmap,nonbreaking,|,print",
+                theme_advanced_toolbar_location : "top",
+                //theme_advanced_toolbar_location : "external",
+                theme_advanced_toolbar_align : "left",
+                theme_advanced_statusbar_location : "bottom",
+                theme_advanced_resizing : true,
+                editor_selector : "_e_cnt_short",
+                invalid_elements : "", //,script
+                language : 'ru',
+                relative_urls : false,
+                theme_advanced_path : false,
+                width: '100%',
+                height: 1600,
+                forced_root_block : '',
+                init_instance_callback: 'fullscreen_on',
+                setup : function(ed) {
+                    var count_func = function(ed, e) {
+                        var strip = (tinyMCE.activeEditor.getContent()).replace(/(<([^>]+)>)/ig,"");
+                        var text =strip.length + " Символов. "; // strip.split(' ').length + " Слов, " +
+                        tinymce.DOM.setHTML(tinymce.DOM.get(tinyMCE.activeEditor.id + '_path_row'), text);
+                    };
+                    ed.onKeyUp.add(count_func);
+                    ed.onChange.add(count_func);
+                    ed.onInit.add(count_func);
+                    ed.addButton('btnsve', {
+                        title:'Сохранить',
+                        image:'/img/edt/btnsve.gif',
+                        onclick:function (e) {
+                            ed.controlManager.setActive('btnsve', true);
+                            ed.setProgressState(true);
+                            savethis(function(res){
+                                if (res) {
+                                    ed.controlManager.setActive('btnsve', false);
+                                    ed.setProgressState(false);
+                                    if (!e.ctrlKey) {parent.jQuery.fancybox.close();parent.window.focus();}
+                                }
+                                else alert('Не удалось сохранить данные.');
+                            });
+                        }
+                    });
+                }
+            };
+            if (parent.window['editdiv'].data('mult') !== 'm') {
+                params.force_br_newlines=true;
+                params.force_p_newlines=false;
+            }
+            tinyMCE.init(params);
+            tinyMCE.execCommand('mceAddControl', false, 'valueedit');
+        });
+    </script>
+    <style type="text/css">
+    </style>
+</head>
+
+<body>
+        <div style="text-align: right"><input class="btnsave" type="button" value="Сохранить"/></div>
+        <textarea id="valueedit"></textarea>
+</body>
+</html>

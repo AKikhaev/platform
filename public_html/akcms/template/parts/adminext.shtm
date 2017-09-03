@@ -6,7 +6,97 @@
         $(document.body).append($('<div class="admcntrl_cnt"><div id="admcntrl" class="admcntrl"><nobr><img class="admlogo" width="212" height="19" src="/img/adm/adm_logo.png" alt=""><img id="admexit" src="/img/edt/btnlgout.png" title="Выход"><a href="/_/"><img src="/img/edt/btnhome.png" title="На главную редактора"></a><a href="/_/{#pageMainUri#}"><img src="/img/edt/btnadm.gif" title="Редактировать страницу"></a></nobr></div></div>'));
         $('#admexit').click(function(){if (confirm('Выйти из панели управления?')) document.location='/_logout/';});
         //Редактор
-        var ss_edits=$('.ss_edit').click(function(e){
+
+        /*
+        var te_defparams = {
+            cache_suffix: '?v=2',
+            selector: '',
+            language: 'ru',
+
+            browser_spellcheck: true,
+            //spellchecker_languages: "Russian=ru,English=en", //spellchecker
+            //spellchecker_language: "ru",  // default language
+            //spellchecker_rpc_url: "//speller.yandex.net/services/tinyspell",
+
+            height: 500,
+            relative_urls: false,
+            theme: 'modern',
+            //theme: 'inlite',
+            menubar: false,
+            toolbar_items_size: 'small',
+            branding: false,
+            inline: true,
+            images_upload_url:'/uploader/',
+            //image_advtab: true,
+            paste_data_images: true,
+            //insertdatetime directionality toc imagetools
+            plugins: [
+                'advlist autolink autosave lists link image charmap hr anchor pagebreak',
+                'searchreplace wordcount visualblocks visualchars code fullscreen',
+                ' media nonbreaking save table contextmenu ',
+                'template paste textcolor colorpicker textpattern  codesample hr'
+            ],
+            //fontselect fontsizeselect forecolor backcolor fullscreen help
+            toolbar1: 'save | cut copy paste pastetext | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | visualblocks visualchars',
+            toolbar2: 'styleselect | formatselect | blockquote | removeformat | table | image link unlink anchor | charmap nonbreaking hr | subscript superscript | searchreplace | code | undo redo restoredraft |',
+
+            insert_toolbar: 'quickimage quicktable media codesample',
+            selection_toolbar: 'bold italic | quicklink h2 h3 blockquote',
+            content_css: [
+                '/assets/plugins/bootstrap/css/bootstrap.min.css',
+                '/assets/css/app.css',
+                '/assets/css/blocks.css',
+                '/assets/css/theme-colors/dark-blue.css'
+            ],
+
+            style_formats: [
+                {title: 'Абзац v1',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v1'},
+                {title: 'Абзац v2',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v2'},
+                {title: 'Абзац v3',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v3'},
+                {title: 'Абзац v4',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v4'},
+                {title: 'Абзац v5',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v5'},
+                {title: 'Абзац v6',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v6'},
+                {title: 'Абзац v7',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v7'},
+            ],
+
+            formats: {
+                //alignleft: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', classes: 'left' },
+                //aligncenter: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', classes: 'center' },
+                //alignright: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', classes: 'right' },
+                //alignfull: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', classes: 'full' },
+                //bold: { inline: 'span', 'classes': 'bold' },
+                //italic: { inline: 'span', 'classes': 'italic' },
+                //underline: { inline: 'span', 'classes': 'underline', exact: true },
+                //strikethrough: { inline: 'del' },
+                //customformat: { inline: 'span', styles: { color: '#00ff00', fontSize: '20px' }, attributes: { title: 'My custom format' }, classes: 'example1' },
+            },
+
+            templates: [{
+                title: 'Test template 1',
+                content: 'Test 1'
+            }, {
+                title: 'Test template 2',
+                content: 'Test 2'
+            }],
+
+            //forced_root_block:false,
+            //invalid_elements:'p,div,table,tr,td,th,ul,ol,li,blockquote'
+
+        };
+
+        var te_multi = te_defparams;
+        te_multi.selector = '.ss_edit_m';
+        tinymce.init(te_multi);
+
+//        var te_single = te_defparams;
+//        te_single.selector = '.ss_edit_s';
+//        te_single.forced_root_block = false;
+//        te_single.invalid_elements = 'p,div,table,tr,td,th,ul,ol,li,blockquote,img';
+//        tinymce.init(te_single);
+*/
+        var ss_edits=$('.ss_edit');
+
+        ss_edits.click(function(e){
             if (editable_visible) {
                 window['editdiv'] = $(this);
                 e.preventDefault();
@@ -29,6 +119,7 @@
                 });
             }
         });
+
         var update_editable_visible = function(state) {
             if (state===editable_visible) return;
             if (state) {
@@ -39,6 +130,7 @@
                 editable_visible = false;
             }
         };
+
         $(window).keydown(function(evt) {
             if ((evt.which === 17 || evt.which === 145) && !editable_visible) update_editable_visible(true);
         }).keyup(function(evt) {
@@ -48,4 +140,4 @@
         console.log('ITteka platforma: loaded');
     });
 </script>
-<link rel="stylesheet" type="text/css" href="/akcms/js/v1/fancybox/jquery.fancybox.css"><script src="/akcms/js/v1/fancybox/jquery.fancybox.js"></script>
+<link rel="stylesheet" type="text/css" href="/akcms/js/v1/fancybox/jquery.fancybox.css"><script src="/akcms/js/v1/fancybox/jquery.fancybox.js"></script><script src='/akcms/js/v2/tinymce/tinymce.min.js'></script>

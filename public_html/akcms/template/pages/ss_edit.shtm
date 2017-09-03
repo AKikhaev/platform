@@ -5,18 +5,18 @@
     <meta name="robots" content="noindex, nofollow, noarchive"/>
 	<title></title>
     <link href="/akcms/css/v1/style_u.css" rel="stylesheet" type="text/css">
-	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script type="text/javascript" src="/akcms/js/v1/tiny_mce/tiny_mce.js"></script>
+    </script><script src='/akcms/js/v2/tinymce/tinymce.min1.js'></script>
     <script type="text/javascript">
         var fullscreen_on = function myCustomInitInstance(ed) {
             if(ed.editorId !== 'mce_fullscreen') ed.execCommand('mceFullScreen');
         };
+
         jQuery(document).ready(function() {
             $('#valueedit').html(parent.window['editdiv'].html());
             var savethis = function(callback){
                 var arrPost = {
-                    'data':tinyMCE.get('mce_fullscreen').getContent(),//valueedit
+                    'data':tinymce.EditorManager.get('valueedit').getContent(),
                     'code':parent.window['editdiv'].data('code'),
                     'mult':parent.window['editdiv'].data('mult')
                 };
@@ -32,47 +32,140 @@
                 });
             };
             var params = {
-                mode : "textareas",
-                theme : "advanced",
-                plugins : "safari,table,advimage,inlinepopups,searchreplace,print,contextmenu,paste,fullscreen,noneditable,nonbreaking,visualchars,autosave",
-                file_browser_callback : "tinyBrowser",
-                content_css : "/akcms/css/v1/txtstyle.css?",
-                theme_advanced_buttons1 : "btnsve,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,|,cleanup,|,forecolor,backcolor,restoredraft",//fullscreen,|,
-                theme_advanced_buttons2 : "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,grabimg,|,visualchars,code",
-                theme_advanced_buttons3 : "tablecontrols,|,removeformat,visualaid,|,sub,sup,|,charmap,nonbreaking,|,print",
-                theme_advanced_toolbar_location : "top",
-                //theme_advanced_toolbar_location : "external",
-                theme_advanced_toolbar_align : "left",
-                theme_advanced_statusbar_location : "bottom",
-                theme_advanced_resizing : true,
-                editor_selector : "_e_cnt_short",
-                invalid_elements : "", //,script
-                language : 'ru',
-                relative_urls : false,
-                theme_advanced_path : false,
-                width: '100%',
-                height: 1600,
-                forced_root_block : '',
+                cache_suffix: '?v=2',
+                selector: '#valueedit1',
+                language: 'ru',
+
+                browser_spellcheck: true,
+                //spellchecker_languages: "Russian=ru,English=en", //spellchecker
+                //spellchecker_language: "ru",  // default language
+                //spellchecker_rpc_url: "//speller.yandex.net/services/tinyspell",
+
+                height: 800,
+                relative_urls: false,
+                theme: 'modern',
+                //theme: 'inlite',
+                menubar: false,
+                toolbar_items_size: 'small',
+                branding: false,
+                //inline: true,
+                //image_advtab: true,
+                //insertdatetime directionality toc imagetools
+                plugins: [
+                    'advlist autolink autosave lists link image charmap hr anchor pagebreak',
+                    'searchreplace wordcount visualblocks visualchars code fullscreen',
+                    ' media nonbreaking save table contextmenu ',
+                    'template paste textcolor colorpicker textpattern  codesample hr'
+                ],
+                //fontselect fontsizeselect forecolor backcolor fullscreen help save
+                toolbar1: 'btnsve | cut copy paste pastetext | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | visualblocks visualchars',
+                toolbar2: 'styleselect | formatselect | blockquote | removeformat | table | image link unlink anchor | charmap nonbreaking hr | subscript superscript | searchreplace | code | undo redo restoredraft |',
+
+                insert_toolbar: 'quickimage quicktable media codesample',
+                selection_toolbar: 'bold italic | quicklink h2 h3 blockquote',
+                content_css: [
+                    '/assets/plugins/bootstrap/css/bootstrap.min.css',
+                    '/assets/css/app.css',
+                    '/assets/css/blocks.css',
+                    '/assets/css/theme-colors/dark-blue.css'
+                ],
+
+                style_formats: [
+                    {title: 'Абзац v1',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v1'},
+                    {title: 'Абзац v2',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v2'},
+                    {title: 'Абзац v3',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v3'},
+                    {title: 'Абзац v4',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v4'},
+                    {title: 'Абзац v5',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v5'},
+                    {title: 'Абзац v6',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v6'},
+                    {title: 'Абзац v7',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v7'},
+                ],
+
+                formats: {
+                    //alignleft: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', classes: 'left' },
+                    //aligncenter: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', classes: 'center' },
+                    //alignright: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', classes: 'right' },
+                    //alignfull: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', classes: 'full' },
+                    //bold: { inline: 'span', 'classes': 'bold' },
+                    //italic: { inline: 'span', 'classes': 'italic' },
+                    //underline: { inline: 'span', 'classes': 'underline', exact: true },
+                    //strikethrough: { inline: 'del' },
+                    //customformat: { inline: 'span', styles: { color: '#00ff00', fontSize: '20px' }, attributes: { title: 'My custom format' }, classes: 'example1' },
+                },
+
+                templates: [{
+                    title: 'Test template 1',
+                    content: 'Test 1'
+                }, {
+                    title: 'Test template 2',
+                    content: 'Test 2'
+                }],
+
+                //forced_root_block:false,
+                //invalid_elements:'p,div,table,tr,td,th,ul,ol,li,blockquote'
+                file_browser_callback_types: 'file image media',
+                file_browser_callback : function(field_name, url, type, win) {
+                    var cmsURL = "/akcms/js/v2/plupload/_ub.html" + "?type=" + type + "&url="+parent.window['editdiv'].data('edt-uri')+"&rnd=" + Math.random(1,999999);
+                    tinyMCE.EditorManager.activeEditor.windowManager.open({
+                        file : cmsURL,
+                        title : "ITteka Browser",
+                        width : 470,
+                        height : 400,
+                        resizable : "yes",
+                        scrollbars : "yes",
+                        inline : "yes",
+                        close_previous : "no"
+                    }, {
+                        win : win,
+                        field_name : field_name,
+                        url : parent.window['editdiv'].data('edt-uri'),
+                        type : type
+                    });
+                    //win.document.getElementById(field_name).value = 'my browser value';
+                    return false;
+                },
                 init_instance_callback: 'fullscreen_on',
+                images_upload_credentials: true,
+                images_upload_url:'/ajx/'+parent.window['editdiv'].data('edt-uri')+'_fileupl',
+                images_reuse_filename: true,
+                automatic_uploads:true,
+                paste_data_images: true,
+
+                images_upload_handler: function (blobInfo, success, failure) {
+                    var fd = new FormData();
+                    fd.append('url', parent.window['editdiv'].data('edt-uri'));
+                    fd.append('type', 'image');
+                    fd.append('file', blobInfo.blob());
+                    fd.append('name', blobInfo.filename());
+                    $.ajax({
+                        type: 'POST',
+                        url: '/ajx/'+parent.window['editdiv'].data('edt-uri')+'_fileupl',
+                        data: fd,
+                        processData: false,
+                        contentType: false,
+                        dataType: 'json'
+                    }).done(function(data) {
+                        if (data.location != undefined) success(data.location);
+                        else {
+                            console.log(data);
+                            failure('HTTP Error: wrong answer');
+                        }
+                    }).fail(function(jqXHR, textStatus) {
+                        failure('HTTP Error: ' + textStatus)
+                    });
+                },
+
                 setup : function(ed) {
-                    var count_func = function(ed, e) {
-                        var strip = (tinyMCE.activeEditor.getContent()).replace(/(<([^>]+)>)/ig,"");
-                        var text =strip.length + " Символов. "; // strip.split(' ').length + " Слов, " +
-                        tinymce.DOM.setHTML(tinymce.DOM.get(tinyMCE.activeEditor.id + '_path_row'), text);
-                    };
-                    ed.onKeyUp.add(count_func);
-                    ed.onChange.add(count_func);
-                    ed.onInit.add(count_func);
                     ed.addButton('btnsve', {
                         title:'Сохранить',
                         image:'/img/edt/btnsve.gif',
                         onclick:function (e) {
-                            ed.controlManager.setActive('btnsve', true);
+                            //ed.controlManager.setActive('btnsve', true);
                             ed.setProgressState(true);
                             savethis(function(res){
                                 if (res) {
-                                    ed.controlManager.setActive('btnsve', false);
+                                    //ed.controlManager.setActive('btnsve', false);
                                     ed.setProgressState(false);
+                                    ed.setDirty(false);
                                     if (!e.ctrlKey) {parent.jQuery.fancybox.close();parent.window.focus();}
                                 }
                                 else alert('Не удалось сохранить данные.');
@@ -80,21 +173,33 @@
                         }
                     });
                 }
+
             };
-            if (parent.window['editdiv'].data('mult') !== 'm') {
+            if (parent.window['editdiv'].data('mult') === 's') {
+                params.forced_root_block = false;
+                params.invalid_elements = 'p,div,table,tr,td,th,ul,ol,li,blockquote,script';
                 params.force_br_newlines=true;
                 params.force_p_newlines=false;
+                params.height=400;
+            } else if (parent.window['editdiv'].data('mult') === 'm') {
+                params.invalid_elements = 'script';
+                params.height=800;
+            } else {
+                params.invalid_elements = 'script';
+                params.height=300;
             }
-            tinyMCE.init(params);
-            tinyMCE.execCommand('mceAddControl', false, 'valueedit');
+            //tinymce.init(params);
+
+            var ed = new tinymce.Editor('valueedit', params, tinymce.EditorManager);
+            ed.render();
+
+            //tinymce.execCommand('mceAddControl', false, 'valueedit');
         });
     </script>
-    <style type="text/css">
-    </style>
 </head>
 
 <body>
-        <div style="text-align: right"><input class="btnsave" type="button" value="Сохранить"/></div>
         <textarea id="valueedit"></textarea>
+        <div style="text-align: right"><input class="btnsave" type="button" value="Сохранить"/></div>
 </body>
 </html>

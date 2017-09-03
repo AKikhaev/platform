@@ -1122,7 +1122,7 @@ class PageUnit extends CmsPage {
 			$chunk = isset($_POST['chunk']) ? (int)$_POST['chunk'] : 0;
 			$chunks = isset($_POST['chunks']) ? (int)$_POST['chunks'] : 0;
 			$fileName = isset($_POST['name']) ? $_POST['name'] : '';
-			$dirurl = ($_POST['type'] === 'file'?$cfg['filespath']:$cfg['imagespath']).$_POST['url'];
+			$dirurl = trim(($_POST['type'] === 'file'?$cfg['filespath']:$cfg['imagespath']).$_POST['url'],'/ .');
 
 			$fileName = preg_replace('/[^\w\._0-9]+/', '_', Translit($fileName)); //security
 			$targetDir = $dirurl;
@@ -1160,7 +1160,7 @@ class PageUnit extends CmsPage {
 			if (!$chunks || $chunk == $chunks - 1) 
 				rename($filePathPart, $filePath);
 
-			if ($res = '') $res = '{"jsonrpc" : "2.0", "result" : null, "id" : "id"}';			
+			if ($res === '') $res = '{"jsonrpc" : "2.0", "result" : null, "id" : "id", "location":"/'.$filePath.'"}';
 
 			return $res;
 		} 
