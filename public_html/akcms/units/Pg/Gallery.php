@@ -375,7 +375,7 @@ class Pg_Gallery extends PgUnitAbstract {
 							$file_name = mb_strtolower($upl['name']);
 							$file_ext = str_replace('.','',mb_substr($file_name,mb_strrpos($file_name,'.')));
 							$id_glr = $_GET['glr'];
-							
+                            if ($file_ext === 'jpeg') $file_ext = 'jpg';
 							if ($file_ext === 'jpg')
 							{
 								$res_stat = 1;
@@ -506,7 +506,8 @@ class Pg_Gallery extends PgUnitAbstract {
 						if ($this->hasRight()) {
 							$file_name = mb_strtolower($upl['name']);
 							$file_ext = str_replace('.','',mb_substr($file_name,mb_strrpos($file_name,'.')));
-							if ($file_ext === 'jpg')
+                            if ($file_ext === 'jpeg') $file_ext = 'jpg';
+                            if ($file_ext === 'jpg')
 							{
 								$res_stat = 1;
 								$max_width = 1200;
@@ -682,7 +683,7 @@ class Pg_Gallery extends PgUnitAbstract {
 			$glrId);
 			$glrPhotos = $sql->query_all($query);
 			
-			require $this->view('item');
+			require $this->view('item'.($editMode?'_admin':''));
 			
 			if ($editMode) $res .= '<script type="text/javascript">var glra='.json_encode(array(
 				'glrs'=>array($glrItem),
@@ -704,7 +705,7 @@ class Pg_Gallery extends PgUnitAbstract {
 			if ($glrItms!==false && ($pgNum<1 || $pgNum>$pgNums))
 				throw new CmsException('page_not_found');
 				
-			require $this->view('list');
+			require $this->view('list'.($editMode?'_admin':''));
 
             /*
 			if ($pgNums>1)

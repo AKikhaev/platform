@@ -8,7 +8,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     </script><script src='/akcms/js/v2/tinymce/tinymce.min1.js'></script>
     <script type="text/javascript">
-        var fullscreen_on = function myCustomInitInstance(ed) {
+        var te_fullscreen_on = function myCustomInitInstance(ed) {
             if(ed.editorId !== 'mce_fullscreen') ed.execCommand('mceFullScreen');
         };
 
@@ -123,7 +123,7 @@
                     //win.document.getElementById(field_name).value = 'my browser value';
                     return false;
                 },
-                init_instance_callback: 'fullscreen_on',
+                init_instance_callback: 'te_fullscreen_on',
                 images_upload_credentials: true,
                 images_upload_url:'/ajx/'+parent.window['editdiv'].data('edt-uri')+'_fileupl',
                 images_reuse_filename: true,

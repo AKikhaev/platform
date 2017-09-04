@@ -48,17 +48,18 @@ abstract class VisualThemeAbstract
      *
      *  3 - активный li, внутри h1
      *
-     * -2 - активный предпоследний, ссылкой. последний не отображается
+     * -1 - активный предпоследний, ссылкой. последний не отображается
      *
      * @return string
      */
     public static function buildBreadcrumbs_links($pagePath,$showMain=true,$showlast=1)
     {
+//var_dump__($pagePath);
         $path = array();
         $i=0; $count = count($pagePath);
         if ($showMain) $path[] = '<li><a href="/" title="Главная">Главная</a></li>';
         foreach ($pagePath as $pageItem) {
-            if (isset($pageItem['_current'])) {
+            if ($i===$count-1) {
                 if ($showlast>0) {
                     $link = $pageItem['sec_nameshort'];
                     if ($showlast === 1) $link = sprintf('<li class="active"><a href="/%1$s" title="%2$s">%2$s</a></li>',

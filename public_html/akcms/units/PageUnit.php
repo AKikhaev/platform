@@ -166,7 +166,7 @@ class PageUnit extends CmsPage {
     }
 
 	#Хлебные крошки  
-	public function getBreadcrumbs($prefix=false)
+	public function &getBreadcrumbs($prefix=false)
 	{
 		global $sql;
 		if (count($this->pagePath) !== 0) return $this->pagePath;

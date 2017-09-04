@@ -1,4 +1,5 @@
 <?php
+    $shape['js_admin'] = (isset($shape['js_admin'])?$shape['js_admin']:'').(shp::$editMode?GetShape('parts/adminext',array('pageMainUri'=>$page->pageMainUri)):'');
 	$res .= '<div id="glrs">
 	<style>
 	.glritm {
@@ -7,7 +8,6 @@
 		float: left;
 		margin-right: 0;
 		margin-bottom: 10px;
-		background: url(/img/t/phfrm.jpg) top left no-repeat;
 	}
 	.glritm_i {
 		background-repeat: no-repeat;

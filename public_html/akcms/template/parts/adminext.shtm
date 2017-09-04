@@ -1,6 +1,9 @@
 <link href="/akcms/css/v1/style_adm_cntrl.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript">
     var _akcms = _akcms || {}; _akcms.uri = '{#pageMainUri#}';
+    var te_fullscreen_on = function myCustomInitInstance(ed) {
+        if(ed.editorId !== 'mce_fullscreen') ed.execCommand('mceFullScreen');
+    };
     jQuery(document).ready(function(){
         var editable_visible = false;
         $(document.body).append($('<div class="admcntrl_cnt"><div id="admcntrl" class="admcntrl"><nobr><img class="admlogo" width="212" height="19" src="/img/adm/adm_logo.png" alt=""><img id="admexit" src="/img/edt/btnlgout.png" title="Выход"><a href="/_/"><img src="/img/edt/btnhome.png" title="На главную редактора"></a><a href="/_/{#pageMainUri#}"><img src="/img/edt/btnadm.gif" title="Редактировать страницу"></a></nobr></div></div>'));
@@ -141,3 +144,4 @@
     });
 </script>
 <link rel="stylesheet" type="text/css" href="/akcms/js/v1/fancybox/jquery.fancybox.css"><script src="/akcms/js/v1/fancybox/jquery.fancybox.js"></script><script src='/akcms/js/v2/tinymce/tinymce.min.js'></script>
+<div id="te_editor_place" style="display: none"></div>
