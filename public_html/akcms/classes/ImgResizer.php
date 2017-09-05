@@ -37,13 +37,15 @@ class ImgResizer {
      * @param $mode
      * режим масштабирования:
      *
-     * -1 - уменьшить и впихнуть
+     *  0 - Пропорционально масштабировать. Изображение стрнет указанных размеров или меньше по одной из сторон.
      *
-     *  0 - Пропорционально масштабировать
-     *
-     *  1 - Пропорционально привести к размеру, излишки отрезать
+     *  1 - Пропорционально привести к размеру, излишки ОТРЕЗАТЬ. Изображение странет указанных размеров
+
+     * -1 - Пропорционально привести к размеру, изображение стрнет указанных размеров (ВНУТРИ). Излишки заполнены белым.
      *
      *  2 - Не пропорционально масштабировать
+     *
+     *  3 - Пропорционально масштабировать. Изображение станет указанных размеров или больше по одной из сторон
      * @param null $effector
      * объект эффекта с методом ->apply($dst,$this->res_width,$this->res_height)
      * @param int $cntrX
@@ -78,7 +80,7 @@ class ImgResizer {
 			$max_height = $height;
 		}
 		if (empty($width) or empty($height) or empty($max_width) or empty($max_height)) throw new Exception('imgr_wrong_sizes');
-		if ($this->imginfo['mime']=='image/jpeg') {
+		if ($this->imginfo['mime']==='image/jpeg') {
 			if ($isflv) {
 				$src0 = $frame->toGDImage();
 				if ($width>=119 && $height>=89) {
@@ -90,13 +92,13 @@ class ImgResizer {
 			else $src = @imagecreatefromjpeg($pathstrOrgn);
 			$this->imginfo['newmime']='image/jpeg';
 		}
-		elseif ($this->imginfo['mime']=='image/png') {
+		elseif ($this->imginfo['mime']==='image/png') {
 			$src = @imagecreatefrompng($pathstrOrgn);
 			imagealphablending($src, false);
 			imagesavealpha($src, true);
 			$this->imginfo['newmime']='image/jpeg';
 		}		
-		elseif ($this->imginfo['mime']=='image/gif') {
+		elseif ($this->imginfo['mime']==='image/gif') {
 			$src = @imagecreatefromgif($pathstrOrgn);
 			imagealphablending($src, false);
 			imagesavealpha($src, true);
@@ -104,10 +106,11 @@ class ImgResizer {
 		}		
 		else throw new Exception('imgr_wrong_mime');
 		$this->imginfo['newmime'] = $this->imginfo['mime'];
-  
-		if ($mode == 0) {
-			$x_ratio = $max_width / $width;
-			$y_ratio = $max_height / $height;
+
+        $x_ratio = $max_width / $width;
+        $y_ratio = $max_height / $height;
+
+		if ($mode === 0) {
 			if ( ($width <= $max_width) && ($height <= $max_height) ) {
 				$tn_width = $width;
 				$tn_height = $height;
@@ -120,18 +123,38 @@ class ImgResizer {
 				$tn_width = ceil($y_ratio * $width);
 				$tn_height = $max_height;
 			}  
-			if ($max_width==$width && $max_height==$height && $this->imginfo['newmime']==$this->imginfo['mime']) { $dst=$src; $this->res_isoriginal = true; }
+			if ($max_width===$width && $max_height===$height && $this->imginfo['newmime']===$this->imginfo['mime']) { $dst=$src; $this->res_isoriginal = true; }
 			else 
 			{
 				$dst = imagecreatetruecolor($tn_width,$tn_height);
-				imagefilledrectangle($dst,0,0,$max_width,$max_height,imagecolorallocate($dst, 255, 255, 255));
+				//imagefilledrectangle($dst,0,0,$tn_width,$tn_height,imagecolorallocate($dst, 255, 255, 255));
 				imagecopyresampled($dst,$src,0,0,0,0,$tn_width,$tn_height,$width,$height);
 			}
 			$this->res_width = $tn_width;
 			$this->res_height = $tn_height;
-		} elseif ($mode == -1) {
-			$x_ratio = $max_width / $width;
-			$y_ratio = $max_height / $height;
+		} elseif ($mode === 3) {
+            if ( ($width <= $max_width) && ($height <= $max_height) ) {
+                $tn_width = $width;
+                $tn_height = $height;
+            }
+            else if (($x_ratio * $height) >= $max_height) {
+                $tn_height = ceil($x_ratio * $height);
+                $tn_width = $max_width;
+            }
+            else {
+                $tn_width = ceil($y_ratio * $width);
+                $tn_height = $max_height;
+            }
+            if ($max_width===$width && $max_height===$height && $this->imginfo['newmime']===$this->imginfo['mime']) { $dst=$src; $this->res_isoriginal = true; }
+            else
+            {
+                $dst = imagecreatetruecolor($tn_width,$tn_height);
+                //imagefilledrectangle($dst,0,0,$tn_width,$tn_height,imagecolorallocate($dst, 255, 255, 255));
+                imagecopyresampled($dst,$src,0,0,0,0,$tn_width,$tn_height,$width,$height);
+            }
+            $this->res_width = $tn_width;
+            $this->res_height = $tn_height;
+        } elseif ($mode === -1) {
 			if ( ($width <= $max_width) && ($height <= $max_height) ) {
 				$tn_width = $width;
 				$tn_height = $height;
@@ -144,7 +167,7 @@ class ImgResizer {
 				$tn_width = ceil($y_ratio * $width);
 				$tn_height = $max_height;
 			}  
-			if ($max_width==$width && $max_height==$height && $this->imginfo['newmime']==$this->imginfo['mime']) { $dst=$src; $this->res_isoriginal = true; }
+			if ($max_width===$width && $max_height===$height && $this->imginfo['newmime']===$this->imginfo['mime']) { $dst=$src; $this->res_isoriginal = true; }
 			else 
 			{
 				$dst = imagecreatetruecolor($max_width, $max_height);
@@ -153,12 +176,9 @@ class ImgResizer {
 			}
 			$this->res_width = $tn_width;
 			$this->res_height = $tn_height;
-		} elseif ($mode == 1) {
-			if ($cntrX == -1) $cntrX = $width/2;
-			if ($cntrY == -1) $cntrY = $height/2;
-			
-			$x_ratio = $max_width / $width;
-			$y_ratio = $max_height / $height;
+		} elseif ($mode === 1) {
+			if ($cntrX === -1) $cntrX = $width/2;
+			if ($cntrY === -1) $cntrY = $height/2;
 
 			$tn_width = ceil($y_ratio * $width);
 			$tn_height = $max_height;
@@ -184,8 +204,8 @@ class ImgResizer {
 			
 			#$putX = ($max_width-$tn_width)/2;
 			#$putY = ($max_height-$tn_height)/2;
-			#$a=true;
-			if (@$a) {			
+            /*
+			{
 				echo '<pre>';
 				print_r(array(
 					'width'=>$width,
@@ -205,6 +225,7 @@ class ImgResizer {
 				echo '</pre>';			
 				exit();
 			}
+            */
 
 			//if ($max_width==$width && $max_height==$height && $this->imginfo['newmime']==$this->imginfo['mime']) { $dst=$src; $this->res_isoriginal = true; } else
 			{
@@ -215,7 +236,7 @@ class ImgResizer {
 			}
 			$this->res_width = $max_width;
 			$this->res_height = $max_height;
-		} elseif ($mode == 2) {
+		} elseif ($mode === 2) {
 			$tn_width = $max_width;
 			$tn_height = $max_height;  
 			
@@ -251,13 +272,15 @@ class ImgResizer {
      * @param $mode
      * режим масштабирования:
      *
-     * -1 - уменьшить и впихнуть
+     *  0 - Пропорционально масштабировать. Изображение стрнет указанных размеров или меньше по одной из сторон.
      *
-     *  0 - Пропорционально масштабировать
-     *
-     *  1 - Пропорционально привести к размеру, излишки отрезать
+     *  1 - Пропорционально привести к размеру, излишки ОТРЕЗАТЬ. Изображение странет указанных размеров
+
+     * -1 - Пропорционально привести к размеру, изображение стрнет указанных размеров (ВНУТРИ). Излишки заполнены белым.
      *
      *  2 - Не пропорционально масштабировать
+     *
+     *  3 - Пропорционально масштабировать. Изображение станет указанных размеров или больше по одной из сторон
      * @param bool $output
      * вывод в браузер
      *
@@ -295,7 +318,7 @@ class ImgResizer {
 			exit();
 		}
 
-		if ($this->imginfo['newmime']=='image/jpeg')
+		if ($this->imginfo['newmime']==='image/jpeg')
 		{
 			imageinterlace($dst,1);
 			$dirpath = dirname($pathstr);

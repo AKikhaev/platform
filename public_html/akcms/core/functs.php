@@ -1,4 +1,12 @@
 <?php
+function br2nl($string)
+{
+    return preg_replace('/\<br(\s*)?\/?\>/iu', "\n", $string);
+}
+
+function mb_trim($string, $trim_chars = '\s'){
+    return preg_replace('/^['.$trim_chars.']*(?U)(.*)['.$trim_chars.']*$/u', '\\1',$string);
+}
 
 function makePager($pager_Count, $pager_pgSize, $pager_pgNum, $urlstr, $NoFirstNum=true) {
 	$html = '<table cellspacing="0" cellpadding="0" align="center"><tbody><tr>'; 

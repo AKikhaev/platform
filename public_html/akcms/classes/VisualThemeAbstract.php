@@ -128,6 +128,19 @@ abstract class VisualThemeAbstract
         return $pageData[$field];
     }
 
+    public static function _ph_text_trunc(&$pageData,$editMode,$text,$field,$quote = 0,$cnt = 200){
+        $txt = mb_trim(strip_tags($pageData[$field]));
+        if ($text==='' && $field==='sec_contshort') {
+            $txt = mb_trim(strip_tags($pageData['sec_content']));
+        }
+        $txt = GetTruncText(html_entity_decode($txt),$cnt);
+        switch ($quote) {
+            case 1: return str_replace('\'','&apos;',$txt); //&#039;
+            case 2: return str_replace('"','&quot;',$txt); //&#034;
+        }
+        return $txt;
+    }
+
     /** Обработчик плейсхолдера. Другой шаблон
      * @param $pageData
      * Обязательный. массив с данными
@@ -161,14 +174,19 @@ abstract class VisualThemeAbstract
      * 3 - со старых
      * @return false|string
      */
-    public static function _ph_tmpl_children(&$pageData,$editMode,$text,$template,$howchild=3,$limit=0,$sec_id=-1){
+    public static function _ph_tmpl_children(&$pageData,$editMode,$text,$template,$howchild=3,$limit=0,$sec_id=-1,$skipthis='no'){
         /* @var $sql pgdb */
         /* @var $page PageUnit */
         global $sql,$page;
+
+
         $html = '';
-        $query = sprintf ('select * from cms_sections where sec_parent_id=%d '.($editMode?'':'and sec_enabled and now()>sec_from').' order by '.$page->_howchildToOrder($howchild),
+        $query = sprintf ('select * from cms_sections where sec_parent_id=%d '.($editMode?'':'and sec_enabled and now()>sec_from').
+            ($skipthis==='t'||$skipthis===true?' AND section_id<>'.$sql->d($pageData['section_id']):'').
+            ' order by '.$page->_howchildToOrder($howchild),
             $sql->d((int)$sec_id===-1?$pageData['section_id']:$sec_id));
         if ($limit>0) $query.=' LIMIT '.$sql->d($limit);
+
         $sections = $sql->query_all($query);
         if ($sections!==false) foreach ($sections as $secData) {
             $childHtml = file_get_contents($template.'.shtm',true);

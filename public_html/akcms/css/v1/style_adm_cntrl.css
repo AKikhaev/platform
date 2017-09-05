@@ -80,14 +80,18 @@ div.ss_edit {
     position: absolute;
     content: attr(data-hint);
     white-space: pre;
-    top: 90%;
-    left: 60%;
+    top: -20px;
+    left: 50%;
     border: 1px solid #999;
     border-radius: 3px;
     font: normal 11px Tahoma;
-    padding: 5px 5px 5px 5px;
+    padding: 2px 5px;
     box-shadow: 3px 3px 3px -2px rgba(0,0,0,0.5);
     z-index: 1000;
     cursor: default;
+    background-color: #fdffaf !important;
+    text-transform: none;
+    color: #323132 !important;
+
 }
 .fancybox-inner {border: 1px solid #d3d3d3 !important;}

@@ -12,8 +12,8 @@ class PageUnit extends CmsPage {
 	public static $imgthmbpath = 'img/pages/';
     public $params = array();
 	private $imgthmb_w = 500;
-	private $imgthmb_h = 500;
-	private $imgthmb_m = 0;
+	private $imgthmb_h = 300;
+	private $imgthmb_m = 3;
 
 	public function initAjx()
 	{
@@ -854,8 +854,7 @@ class PageUnit extends CmsPage {
 				{
 					if ($upl['size']>0)
 					{
-						$path_parts = pathinfo(mb_strtolower($url));
-						$file_ext = $path_parts['extension'];
+                        $file_ext = pathinfo(mb_strtolower($upl['name']),PATHINFO_EXTENSION);
 						if (in_array($file_ext, array('jpg','jpeg','png'), true))
 						{
 							$res_stat = 1;
@@ -1114,7 +1113,7 @@ class PageUnit extends CmsPage {
 		if (strpos($_POST['url'],'..')!==false || stripos($_POST['name'],'.htaccess')!==false) {
 			$checkResult[] = array('f'=>'url','s'=>'tryhack');
 		}
-		if (count($checkResult)==0) {
+		if (count($checkResult)===0) {
 			$res = '';
 			if ($_POST['url'] === '/') $_POST['url'] = '_';
 			$_POST['url'] = trim($_POST['url'],'/').'/';
