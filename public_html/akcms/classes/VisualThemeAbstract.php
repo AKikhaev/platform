@@ -349,33 +349,25 @@ abstract class VisualThemeAbstract
         /* @var $sql pgdb */
         global $sql;
 
-        /* Вызывает функции из класса VisualTheme с префиксом _ph_
-         * 1 - функция
-         * 2 - поле
-         * 3 - параметры
-         * 5 - контент
-         */
-        $html=preg_replace_callback('~\{#_(\w+):([^:#]+)(:[^#]*?)*#\}~usU',function($matches) use (&$pageData,$editMode){
-            $text = ''; if (isset($matches[4])) $text = $matches[4];
-            $funct = $matches[1];
-            $field = $matches[2];
-            $params = isset($matches[3])?explode(':',trim($matches[3],':')):[];
-            return call_user_func_array('VisualTheme::_ph_'.$funct,array_merge(array(&$pageData,$editMode,&$text,$field),$params));
-        },$html);
-
-        /* Редактор для полей ep_ и eg_ (локальные параметры и глобальные)
+        /* Вызывает функции из класса VisualTheme с префиксом _ph_,
+           а для полей ep_ и eg_ (локальные параметры и глобальные) - редактор _ph_editable
          * 1 - тип
          * 2 - ключ
          * 3 - параметры
          * 3_0 - mult
          * 3_1 - hint
-         * 5 - контент
+         * 4 - контент
          */
-        $html=preg_replace_callback('~\{#(ep|eg):([^:#]+)(:[^#]+?)#(?|\/\}(.*)\{\/#\1:\2(?::[^#])?#\}|})~usU',function($matches) use (&$pageData,$editMode){
+        $html=preg_replace_callback('~\{#(ep|eg|_\w+):([^:#]+)(:[^#]+?)?#(?|\/\}(.*)\{\/#\1:\2(?::[^#])?#\}|})~usU',function($matches) use (&$pageData,$editMode){
+            $funct = $matches[1];
+            $field = $matches[2];
+            $params = isset($matches[3]) && $matches[3]!==''?explode(':',trim($matches[3],':')):[];
             $text = ''; if (isset($matches[4])) $text = $matches[4];
-            $field = $matches[1].'_'.$matches[2];
-            $params = isset($matches[3])?explode(':',trim($matches[3],':')):[];
-            return VisualTheme::_ph_editable(...array_merge(array(&$pageData, $editMode, &$text, $field), $params));
+            if ($funct==='ep' || $funct==='eg') {
+                $field = $matches[1].'_'.$matches[2];
+                $funct = '_editable';
+            }
+            return call_user_func_array('VisualTheme::_ph'.$funct,array_merge(array(&$pageData,$editMode,&$text,$field),$params));
         },$html);
     }
 
