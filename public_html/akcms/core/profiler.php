@@ -5,6 +5,11 @@ class profiler {
     static private $timers = array();
     static public $sql_quries = 0;
     static public $sql_commands = 0;
+    private static function convert($size)
+    {
+        $unit=array('b','kb','mb','gb','tb','pb');
+        return @round($size/ (1024 ** $i = floor(log($size, 1024))),2).' '.$unit[$i];
+    }
     public static function start($name = 'Default') {
         self::$timers[$name] = microtime(true);
     }
@@ -14,14 +19,17 @@ class profiler {
     public static function toLog($name = 'Default') {
         toLogInfo($name.': '.self::time($name).' ms '._ls(31).self::convert(memory_get_peak_usage(true))._ls());
     }
-    private static function convert($size)
-    {
-        $unit=array('b','kb','mb','gb','tb','pb');
-        return @round($size/ (1024 ** $i = floor(log($size, 1024))),2).' '.$unit[$i];
-    }
     public static function showOverallTime(){
         register_shutdown_function(function(){ self::toLog('Overall'); });
         self::start('Overall');
+    }
+    public static function toLogTerminal($name = 'Default') {
+        core::terminalWrite(
+            _ls(32).str_pad(self::time($name).' '.$name,27,' ',STR_PAD_RIGHT)._ls(0).
+            "=== $_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI] "._ls(35)."$_SERVER[REMOTE_ADDR] "._ls(31).
+            self::convert(memory_get_peak_usage(true)).
+            _ls()
+        );
     }
     public static function showOverallTimeToTerminal($sqlDebug = false){
         /* @var  pgdb $sql */

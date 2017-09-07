@@ -275,13 +275,13 @@ class core {
     public static $renderPage;
 
     public static function get_client_ip() {
-        $ipaddress = getenv('HTTP_CLIENT_IP');
-        if ($ipaddress==false) $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
-        if ($ipaddress==false) $ipaddress = getenv('HTTP_X_FORWARDED');
-        if ($ipaddress==false) $ipaddress = getenv('HTTP_FORWARDED_FOR');
-        if ($ipaddress==false) $ipaddress = getenv('HTTP_FORWARDED');
-        if ($ipaddress==false) $ipaddress = getenv('REMOTE_ADDR');
-        return $ipaddress;
+        $ip = getenv('HTTP_CLIENT_IP');
+        if ($ip===false) $ip = getenv('HTTP_X_FORWARDED_FOR');
+        if ($ip===false) $ip = getenv('HTTP_X_FORWARDED');
+        if ($ip===false) $ip = getenv('HTTP_FORWARDED_FOR');
+        if ($ip===false) $ip = getenv('HTTP_FORWARDED');
+        if ($ip===false) $ip = getenv('REMOTE_ADDR');
+        return $ip;
     }
     private static function hidePathForError($filename) {
 		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') $filename = str_replace('\\','/',$filename);

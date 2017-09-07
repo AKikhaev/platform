@@ -4,8 +4,12 @@ class Pg_SendLetter extends PgUnitAbstract {
 
 	public function initAjx()
 	{
-		global $page;
-		return array();
+		return array(
+            '_send' => array(
+                'func' => 'ajxSendEmail',
+                'object' => $this
+			),
+		);
 	}
   
 	public function _rigthList()
@@ -22,50 +26,39 @@ class Pg_SendLetter extends PgUnitAbstract {
 		'default'=>null
 		);
 	}
+
+	public function ajxSendEmail()
+	{
+		$keys = array(
+            'name'=>'Имя',
+            'email'=>'Эл.почта',
+            'message'=>'Сообщение',
+            'ip_added'=>'IP адрес',
+            'url_added'=>'Страница',
+		);
+
+		global $cfg;
+		$data = $_POST;
+		if (count($data)>0) {
+            http_response_code(200);
+            $data['ip_added'] = core::get_client_ip();
+            $data['url_added'] = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+
+            $html = '<table>';
+            foreach ($data as $k => $v) {
+                $html .= '<tr><th style="text-align: left">'.(isset($keys[mb_strtolower($k)])?$keys[mb_strtolower($k)]:htmlentities($k)).'</th><td>'.htmlentities($v).'</td></tr>';
+            }
+            $html .= '</table>';
+            $email = isset($data['email']) ? $data['email'] : '';
+            $replyTo = $email!==''?'Reply-To:'.$data['email']:'';
+            if (!sendMailHTML($cfg['email_moderator'], 'Письмо с сайта '.$_SERVER['SERVER_NAME'], $html,$replyTo,$cfg['email_from']))
+				http_response_code(501);
+        } else http_response_code(500);
+	}
   
 	public function render()
 	{
-		global $cfg,$page;
-		$html = '';
-		$editMode = $this->hasRight() && core::$inEdit;
-		$pageLinkUri = '/'.($editMode?'_/':'').$page->pageMainUri;
-		
-		if ((count($this->unitParam)==0) || (count($this->unitParam)==1?preg_match('/^\d{1,3}$/',$this->unitParam[0])==1:false))
-		{
-			$uform['errmsg'] = ''; $uform['msg'] = '';
-			if (isset($_POST['submiteml'])) {
-				$uform['name'] = isset($_POST['name'])?htmlentities($_POST['name'],ENT_QUOTES,'UTF-8'):'';
-				$uform['email'] = isset($_POST['email'])?htmlentities($_POST['email'],ENT_QUOTES,'UTF-8'):'';
-				$uform['text'] = isset($_POST['text'])?htmlentities($_POST['text'],ENT_QUOTES,'UTF-8'):'';
-				$capcha = isset($_POST['capcha'])?$_POST['capcha']:'';	 
-				$orgcodeOrig = isset($_SESSION['securityCode'])?$_SESSION['securityCode']:'_';
-				$checkRule = array();
-				$checkRule[] = array('name' , '.');
-				$checkRule[] = array('email' , '/^[a-zA-Z0-9\._+-]+@[a-zA-Z0-9\._-]+\.[a-zA-Z]{2,4}$/');
-				$checkRule[] = array('text' , '.');
-				$checkResult = checkFormAssoc($_POST,$checkRule,$capcha==$orgcodeOrig);
-				if (count($checkResult)>0) {
-					if (isset($checkResult['!'])) $uform['errmsg'] = 'Неверный проверочный код!';
-					elseif (isset($checkResult['email'])) $uform['errmsg'] = 'Неверный адрес e-mail!';
-					else $uform['errmsg'] = 'Заполнены не все поля!';
-				} else {
-					$title=$_SERVER['HTTP_HOST'].' Письмо с сайта';
-					$uform['ip'] = $_SERVER['REMOTE_ADDR']; 
-					$uform['url'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-					$htmlform = GetShape('lttr_mail_send', $uform);
-					$replyTo = 'Reply-To:'.$uform['email'];
-					if (sendMailHTML($cfg['email_moderator'], $title, $htmlform,$replyTo,$cfg['email_from'])) {
-						$uform['name'] = ''; $uform['email'] = ''; $uform['text'] = ''; 
-						$uform['msg'] = 'Ваше сообщение отправлено.';
-					} else $uform['errmsg'] = 'Не удалось отправить сообщение. Попробуйте снова позднее.';
-				}
-			} else {
-				$uform['name'] = ''; $uform['email'] = ''; $uform['text'] = '';
-			}
-			$html .= GetShape('lttr_send', $uform);
-
-		} else throw new CmsException('page_not_found');
-		return $html;
+		return '';
 	}
   
 }

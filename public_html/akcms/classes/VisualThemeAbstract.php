@@ -311,11 +311,6 @@ abstract class VisualThemeAbstract
         $stay_original = mb_stripos($debug,'!')!==false;
 
         $textFound = false;
-        $repls = &self::getSectionStrings($pageData['section_id']);
-        if (!$stay_original && isset($repls[$field])) {
-            $text = $repls[$field]['secs_str'];
-            $textFound = true;
-        }
 
         if ($field==='ep_content' && !$stay_original) {
             $textDB = $pageData['sec_content']; if ($textDB !== '') {
@@ -324,12 +319,18 @@ abstract class VisualThemeAbstract
             }
             $hint = 'Основной текст';
         }
-        if ($field==='ep_namefull' && !$stay_original) {
+        elseif ($field==='ep_namefull' && !$stay_original) {
             $textDB = $pageData['sec_namefull']; if ($textDB !== '') {
                 $text = $textDB;
                 $textFound = true;
             }
             $hint = 'Основной заголовок';
+        } else {
+            $repls = &self::getSectionStrings($pageData['section_id']);
+            if (!$stay_original && isset($repls[$field])) {
+                $text = $repls[$field]['secs_str'];
+                $textFound = true;
+            }
         }
 
         $tag = $mult==='m'?'div':'span';

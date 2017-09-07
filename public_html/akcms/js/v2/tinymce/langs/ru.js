@@ -231,6 +231,8 @@ tinymce.addI18n('ru',{
 "Drop an image here" : "Перетащите изображение сюда",
 "Browse for an image" : "Выбрать изображение с диска",
 "Upload" : "Загрузить",
-"OR" : "ИЛИ"
+"OR" : "ИЛИ",
+"Image Title" : "Подсказка изображения",
+"Class" : "Клас"
 
 });
