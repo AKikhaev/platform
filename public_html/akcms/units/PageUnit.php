@@ -1046,32 +1046,41 @@ class PageUnit extends CmsPage {
 	
 	public function ajxFileList()
 	{
-		global $sql,$cfg;
+		global $cfg;
 		$checkRule = array();
-		$checkRule[] = array('url'     , '.');
 		$checkRule[] = array('type'    , '/^(file|image)$/');
 		$checkResult = checkForm($_POST,$checkRule,$this->hasRight());
 		if (strpos($_POST['url'],'..')!==false) {
 			$checkResult[] = array('f'=>'url','s'=>'tryhack');
 		}
 		if (count($checkResult)==0) {
-			if ($_POST['url'] === '/') $_POST['url'] = '_';
-			$_POST['url'] = trim($_POST['url'],'/').'/';
-			$dirurl = ($_POST['type'] === 'file'?$cfg['filespath']:$cfg['imagespath']).$_POST['url'];
+            $targetDir =
+                ($_POST['type'] === 'file'?$cfg['filespath']:$cfg['imagespath']).
+                floor($this->page['section_id']/1000).'/'.
+                ($this->page['section_id']%1000);
 			$res = '';
-			if (file_exists($dirurl)) {
+			if (file_exists($targetDir)) {
 				$i=0;
 				$files = array();
-				foreach (scandir($dirurl,SCANDIR_SORT_NONE) as $file) if (!in_array($file, array('.','..'), true) && is_file($dirurl.$file))
-					$files[$file] = filemtime($dirurl.$file);
-				arsort($files);
-				$files = array_keys($files);
+                foreach(new DirectoryIterator($targetDir) as $item)
+                {
+                    if (! $item->isDot() && $item->isFile())
+                    {
+                        $files[$item->getMTime()][] = [
+                            'file'=>$item->getFilename(),
+                            'size'=>$item->getSize()
+                        ];
+                    }
+                }
+                arsort($files);
+                $files = array_merge(...$files);
+
 				foreach($files as $file) {
 					if ($_POST['type'] === 'image')
-						$img = '<img src="/img/resizer/?url='.urlencode('/'.$dirurl.$file).'&w=50&h=50&jo=1" style="padding:2px;" /> ';
+						$img = '<img src="/img/resizer/?url='.urlencode('/'.$targetDir.'/'.$file['file']).'&w=50&h=50&jo=1" style="padding:2px;" /> ';
 					else $img = '';
-					$res .= '<tr class="'.(++$i%2==0?'':'even').'"><td colspan=2><a onclick="selectURL(\'/'.$dirurl.$file.'\');" href="#">'.$img.$file.'</a><div class="fsize">'.
-					number_format(filesize($dirurl.$file)/1024,2).' Кб.<br/><a onclick="removeFile(\''.$file.'\',this);" href="#">Удалить</a></div></td></tr>';
+					$res .= '<tr class="'.(++$i%2===0?'':'even').'"><td colspan=2><a onclick="selectURL(\'/'.$targetDir.'/'.$file['file'].'\');" href="#">'.$img.$file['file'].'</a><div class="fsize">'.
+                        prettySize($file['size']).'<br/><a onclick="removeFile(\''.$file['file'].'\',this);" href="#">Удалить</a></div></td></tr>';
 				}
 			} else $res .= '';
 			return json_encode($res);
@@ -1081,19 +1090,20 @@ class PageUnit extends CmsPage {
 	
 	public function ajxFileRemove()
 	{
-		global $sql,$cfg;
+		global $cfg;
 		$checkRule = array();
-		$checkRule[] = array('url'     , '.');
 		$checkRule[] = array('type'    , '/^(file|image)$/');
 		$checkRule[] = array('file'    , '.');
 		$checkResult = checkForm($_POST,$checkRule,$this->hasRight());
 		if ((strpos($_POST['url'],'..')!==false) || (strpos($_POST['file'],'..')!==false)) {
 			$checkResult[] = array('f'=>'url','s'=>'tryhack');
 		}
-		if (count($checkResult)==0) {
-			if ($_POST['url'] === '/') $_POST['url'] = '_';
-			$_POST['url'] = trim($_POST['url'],'/').'/';
-			$filepath = ($_POST['type'] === 'file'?$cfg['filespath']:$cfg['imagespath']).$_POST['url'].$_POST['file'];
+		if (count($checkResult)===0) {
+            $targetDir =
+                ($_POST['type'] === 'file'?$cfg['filespath']:$cfg['imagespath']).
+                floor($this->page['section_id']/1000).'/'.
+                ($this->page['section_id']%1000);
+            $filepath = $targetDir.'/'.$_POST['file'];
 			$res = false;
 			if (file_exists($filepath) && is_file($filepath)) {
 				$res = @unlink($filepath);
@@ -1105,9 +1115,8 @@ class PageUnit extends CmsPage {
 	
 	public function ajxFileUpload()
 	{
-		global $sql,$cfg;
+		global $cfg;
 		$checkRule = array();
-		$checkRule[] = array('url'     , '.');
 		$checkRule[] = array('type'    , '/^(file|image)$/');
 		$checkResult = checkForm($_POST,$checkRule,$this->hasRight());
 		if (strpos($_POST['url'],'..')!==false || stripos($_POST['name'],'.htaccess')!==false) {
@@ -1116,16 +1125,16 @@ class PageUnit extends CmsPage {
 		if (count($checkResult)===0) {
 			$res = '';
 			if ($_POST['url'] === '/') $_POST['url'] = '_';
-			$_POST['url'] = trim($_POST['url'],'/').'/';
 			#pluploader
 			$chunk = isset($_POST['chunk']) ? (int)$_POST['chunk'] : 0;
 			$chunks = isset($_POST['chunks']) ? (int)$_POST['chunks'] : 0;
 			$fileName = isset($_POST['name']) ? $_POST['name'] : '';
-			$dirurl = trim(($_POST['type'] === 'file'?$cfg['filespath']:$cfg['imagespath']).$_POST['url'],'/ .');
+            $targetDir =
+                ($_POST['type'] === 'file'?$cfg['filespath']:$cfg['imagespath']).
+                floor($this->page['section_id']/1000).'/'.
+                ($this->page['section_id']%1000);
 
 			$fileName = preg_replace('/[^\w\._0-9]+/', '_', Translit($fileName)); //security
-			$targetDir = $dirurl;
-			$maxFileAge = 5 * 3600; // Temp file age in seconds
 			@set_time_limit(5 * 60);
 
 			if ($chunks < 2 && file_exists($targetDir.$fileName)) { //unique name  if not chunking
@@ -1141,9 +1150,6 @@ class PageUnit extends CmsPage {
 			$filePath = $targetDir.'/'.$fileName;
 			$filePathPart = $targetDir.'/'.$fileName.'part';
 			if (!file_exists($targetDir)) @mkdir($targetDir,0755,true);
-
-			$contentType = (isset($_SERVER['HTTP_CONTENT_TYPE'])?$_SERVER['HTTP_CONTENT_TYPE']:'').
-						   (isset($_SERVER['CONTENT_TYPE'])?$_SERVER['CONTENT_TYPE']:'');
 
 			if (isset($_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name'])) {
 				if ($in = fopen($_FILES['file']['tmp_name'], 'rb')) {

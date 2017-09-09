@@ -8,6 +8,12 @@ function mb_trim($string, $trim_chars = '\s'){
     return preg_replace('/^['.$trim_chars.']*(?U)(.*)['.$trim_chars.']*$/u', '\\1',$string);
 }
 
+function prettySize($size,array $unit=array('б.','Кб.','Мб.','Гб.','Тб.','Пб.'))
+{
+    if ($size===0) return '0 '.$unit[0];
+    return round($size/ (1024 ** $i = floor(log($size, 1024))),2).' '.$unit[$i];
+}
+
 function makePager($pager_Count, $pager_pgSize, $pager_pgNum, $urlstr, $NoFirstNum=true) {
 	$html = '<table cellspacing="0" cellpadding="0" align="center"><tbody><tr>'; 
 	if ($pager_Count<=$pager_pgSize) return '';
