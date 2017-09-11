@@ -11,8 +11,8 @@ class PageUnit extends CmsPage {
 	public $pageUnits = array();
 	public static $imgthmbpath = 'img/pages/';
     public $params = array();
-	private $imgthmb_w = 500;
-	private $imgthmb_h = 300;
+	private $imgthmb_w = 973;
+	private $imgthmb_h = 615;
 	private $imgthmb_m = 3;
 
 	public function initAjx()

@@ -54,7 +54,7 @@
                     'advlist autolink autosave lists link image charmap hr anchor pagebreak',
                     'searchreplace wordcount visualblocks visualchars code fullscreen',
                     ' media nonbreaking save table contextmenu ',
-                    'template paste textcolor colorpicker textpattern  codesample hr'
+                    'template paste textcolor colorpicker textpattern  codesample hr imagetools'
                 ],
                 //fontselect fontsizeselect forecolor backcolor fullscreen help save
                 toolbar1: 'btnsve | cut copy paste pastetext | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | visualblocks visualchars',
@@ -66,6 +66,7 @@
                     '/assets/plugins/bootstrap/css/bootstrap.min.css',
                     '/assets/css/app.css',
                     '/assets/css/blocks.css',
+                    '/assets/css/custom.css',
                     '/assets/css/theme-colors/dark-blue.css'
                 ],
 
@@ -78,18 +79,18 @@
                     {title: 'Абзац v6',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v6'},
                     {title: 'Абзац v7',block: 'div',selector:'p,div',classes: 'tag-box tag-box-v7'},
                     {title:'Изображения',items:[
-                        {title:'влево',block:'div',selector:'p,div',classes:'col-sm-6 pull-left'},
-                        {title:'вправо',block:'div',selector:'p,div',classes:'col-sm-6 pull-right'},
-                        {title:'на всю ширину',block:'div',selector:'p,div',classes:'blog-img'}
+                        //{title:'влево',block:'div',selector:'p,div',classes:'col-sm-6 pull-left'},
+                        //{title:'вправо',block:'div',selector:'p,div',classes:'col-sm-6 pull-right'},
+                        {title:'Заголовок',block:'div',selector:'p,div',classes:'blog-img'}
                     ]}
 
                 ],
 
                 formats: {
-                    alignleft: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table', classes: 'text-left' },
-                    aligncenter: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table', classes: 'text-center' },
-                    alignright: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table', classes: 'text-right' },
-                    alignfull: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table', classes: 'text-justify' },
+                    alignleft: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', classes: 'text-left' },
+                    aligncenter: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', classes: 'text-center' },
+                    alignright: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', classes: 'text-right' },
+                    alignfull: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', classes: 'text-justify' },
                     //bold: { inline: 'span', 'classes': 'bold' },
                     //italic: { inline: 'span', 'classes': 'italic' },
                     //underline: { inline: 'span', 'classes': 'underline', exact: true },
@@ -138,6 +139,7 @@
                 image_description:true,
                 image_dimensions:true,
                 image_title:true, //Требуется превод Image Title
+                imagetools_toolbar: "editimage imageoptions",
                 image_class_list: [
                     {title: 'None', value: ''},
                     {title: 'Адаптивное', value: 'img-responsive'},
@@ -183,14 +185,17 @@
                         onclick:function (e) {
                             //ed.controlManager.setActive('btnsve', true);
                             ed.setProgressState(true);
-                            savethis(function(res){
-                                if (res) {
-                                    //ed.controlManager.setActive('btnsve', false);
-                                    ed.setProgressState(false);
-                                    ed.setDirty(false);
-                                    if (!e.ctrlKey) {parent.jQuery.fancybox.close();parent.window.focus();}
-                                }
-                                else alert('Не удалось сохранить данные.');
+                            ed.uploadImages(function () {
+                                savethis(function(res){
+                                    if (res) {
+                                        //ed.controlManager.setActive('btnsve', false);
+                                        ed.setProgressState(false);
+                                        ed.setDirty(false);
+                                        if (!e.ctrlKey) {parent.jQuery.fancybox.close();parent.window.focus();}
+                                    }
+                                    else alert('Не удалось сохранить данные.');
+                                });
+
                             });
                         }
                     });
