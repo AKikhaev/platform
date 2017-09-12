@@ -46,7 +46,7 @@ class MngUnit extends CmsPage {
 			$qr = mb_substr(md5(time()),0,10);
 		else 
 			$qr = $_COOKIE[$cfg['site_session_name_qr']];
-		setcookie($cfg['site_session_name_qr'], $qr, time()+600, '/');
+		setcookie($cfg['site_session_name_qr'], $qr, time()+300, '/');
 		return json_encode(mb_substr(md5($qr.'!'),1,11));
 	}
 
@@ -83,8 +83,8 @@ class MngUnit extends CmsPage {
 				$checkRule = array();
 				$checkRule[] = array('lval'     , '.');
 				$checkRule[] = array('pval'     , '.');
-				$checkResult = checkForm($_POST,$checkRule,$_POST['cval']==substr($shape['cval'],4,5).substr($shape['cval'],1,2));
-				if (count($checkResult)==0)
+				$checkResult = checkForm($_POST,$checkRule,$_POST['cval']===substr($shape['cval'],4,5).substr($shape['cval'],1,2));
+				if (count($checkResult)===0)
 				{
 					if (CmsUser::auth($_POST['lval'],$_POST['pval'])) {
 						if (isset($_GET['c'])) {

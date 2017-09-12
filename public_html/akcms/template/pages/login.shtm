@@ -62,14 +62,14 @@
 		</div>
 	</div>
 	<script>
-        var ax='{#cval#}',c='';
+        var ax='{#cval#}';
         document.getElementById('cvil').value = ax.substring(4,9)+ax.substring(1,3);
 		window.addEvent('domready', function() {
 			$('qrdiv').fade('hide').removeClass('hidden');
+            $('ar').addEvent('click',function(e){e.stop();window.location.reload();});
 			$('qrauth').addEvent('click',function(){
 				new Request.JSON({url:'/ajx/:auth/_mng', onComplete:function (c) {
 					$('qrdiv').fade('in');$('qr').empty().grab(new Element('img',{'src':'/img/qrauth/?c='+c}));
-					$('ar').addEvent('click',function(e){e.stop();window.location.reload();});
 					$('tbl').set('morph', {duration: 'long', transition: 'quart:out'}).morph({'padding-top': 50});
 					(function(){$('qrdiv').fade('out');$('tbl').morph({'padding-top': 150});}).delay(500000);
 				}}).post();
