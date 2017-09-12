@@ -54,7 +54,6 @@ abstract class VisualThemeAbstract
      */
     public static function buildBreadcrumbs_links($pagePath,$showMain=true,$showlast=1)
     {
-//var_dump__($pagePath);
         $path = array();
         $i=0; $count = count($pagePath);
         if ($showMain) $path[] = '<li><a href="/" title="Главная">Главная</a></li>';

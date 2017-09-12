@@ -204,15 +204,21 @@
             };
             if (parent.window['editdiv'].data('mult') === 's') {
                 params.forced_root_block = false;
-                params.invalid_elements = 'p,div,table,tr,td,th,ul,ol,li,blockquote,script';
+                params.invalid_elements = 'p,div,table,tr,td,th,ul,ol,li,blockquote,script,iframe';
                 params.force_br_newlines=true;
                 params.force_p_newlines=false;
                 params.height=400;
+            } else if (parent.window['editdiv'].data('mult') === 'l') {
+                params.forced_root_block = false;
+                params.invalid_elements = 'p,div,table,tr,td,th,ul,ol,li,blockquote,b,u,em,strong,font,center,strike,script,iframe';
+                params.force_br_newlines=true;
+                params.force_p_newlines=false;
+                params.height=300;
             } else if (parent.window['editdiv'].data('mult') === 'm') {
-                params.invalid_elements = 'script';
+                params.invalid_elements = 'script,iframe';
                 params.height=800;
             } else {
-                params.invalid_elements = 'script';
+                params.invalid_elements = 'script,iframe';
                 params.height=300;
             }
             //tinymce.init(params);
