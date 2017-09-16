@@ -24,7 +24,7 @@ class PageUnit extends CmsPage {
             '_optsve' => array(
                 'func' => 'ajxOptSve'),
             '_secsve' => array(
-                'func' => 'ajxSecsve'),
+                'func' => 'ajxSecInsSve'),
             '_secins' => array(
                 'func' => 'ajxSecins'),
             '_secdrp' => array(
@@ -723,61 +723,11 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));
 	}
   
-	public function ajxSecins()
+	public function ajxSecInsSve()
 	{
 		global $sql;
 		$checkRule = array();
-		$checkRule[] = array('sec_url'   	  , '/^[a-z0-9_-]+$/');
-		$checkRule[] = array('sec_enabled'    , '/^(t|f)$/');
-		$checkRule[] = array('sec_namefull'   , '.');
-		$checkRule[] = array('sec_nameshort'  , '.');
-		$checkRule[] = array('sec_title'      , '');
-		$checkRule[] = array('sec_description', '');
-		$checkRule[] = array('sec_keywords'   , '');
-		$checkRule[] = array('sec_openfirst'  , '/^(t|f)$/');
-		$checkRule[] = array('sec_to_news'    , '/^(t|f)$/');
-		$checkRule[] = array('sec_showinmenu' , '/^(t|f)$/');
-		$checkRule[] = array('section_id'     , '/^\\d{1,}$/');
-		$checkRule[] = array('sec_parent_id'  , '/^\\d{1,}$/');
-		$checkRule[] = array('sec_from'  , '/^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/');
-		$checkRule[] = array('sec_page'  , '/^[a-zA-Z0-9\-\_]+$/');
-		$checkRule[] = array('sec_howchild'  , '/^(0|1|2|3)$/');
-		$checkResult = checkForm($_POST,$checkRule,$this->hasRight());
-		if (count($checkResult)==0) {
-			$res = 0;
-			$query = sprintf ('INSERT INTO cms_sections(sec_url,sec_description,sec_enabled,sec_title,sec_keywords,sec_namefull,sec_nameshort,sec_openfirst,sec_to_news,sec_showinmenu,sec_from,sec_page,sec_howchild,sec_parent_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d,%d) RETURNING section_id,sec_url_full;', 
-				$sql->t($_POST['sec_url']),
-				$sql->t($_POST['sec_description']),
-				$sql->t($_POST['sec_enabled']),
-				$sql->t($_POST['sec_title']),
-				$sql->t($_POST['sec_keywords']),
-				$sql->t($_POST['sec_namefull']),
-				$sql->t($_POST['sec_nameshort']),
-				$sql->t($_POST['sec_openfirst']),
-				$sql->t($_POST['sec_to_news']),
-				$sql->t($_POST['sec_showinmenu']),
-				$sql->t($_POST['sec_from']),
-				$sql->t($_POST['sec_page']),
-				$_POST['sec_howchild'],
-				$_POST['sec_parent_id']
-			);
-			try {
-				$res = @$sql->query_fa($query);
-			} catch (DBException $e) {
-				if ($e->isDuplicate)
-					$checkResult[] = array('f'=>'sec_url','s'=>'Это url уже занято');
-			}
-			if (count($checkResult)==0) {
-				return json_encode(array('r'=>$res!==false?'t':'f','url'=>$res['sec_url_full']));
-			}
-		} 
-		return json_encode(array('error'=>$checkResult));
-	}
-    
-	public function ajxSecsve()
-	{
-		global $sql;
-		$checkRule = array();
+        //$checkRule[] = array('section_id'     , '/^\\d{1,}$/'); // Отключено. Если не передано - вставка, иначе обновление
 		$checkRule[] = array('sec_url'		  , '/^(\/|[a-z0-9_-]+)$/');
 		$checkRule[] = array('sec_enabled'    , '/^(t|f)$/');
 		$checkRule[] = array('sec_namefull'   , '.');
@@ -788,49 +738,49 @@ class PageUnit extends CmsPage {
 		$checkRule[] = array('sec_openfirst'  , '/^(t|f)$/');
 		$checkRule[] = array('sec_to_news'    , '/^(t|f)$/');
 		$checkRule[] = array('sec_showinmenu' , '/^(t|f)$/');
-		$checkRule[] = array('section_id'     , '/^\\d{1,}$/');
 		$checkRule[] = array('sec_from'  , '/^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/');
 		$checkRule[] = array('sec_howchild'  , '/^(0|1|2|3)$/');
 		$checkRule[] = array('sec_page'  , '/^[a-zA-Z0-9\-\_]+$/');
 		$checkResult = checkForm($_POST,$checkRule,$this->hasRight());
-		if (count($checkResult)==0) {
-            if ($_POST['section_id'] == 1) {
-                $_POST['sec_url'] = '/';
-                $_POST['sec_url_'] = '';
-            } else $_POST['sec_url_'] = $_POST['sec_url'];
-			$query = sprintf ('update cms_sections set sec_url=%s, sec_url_full=__cms_sections__full_path(sec_parent_id,%s)||\'/\', sec_description=%s, sec_enabled=%s, sec_title=%s, sec_keywords=%s, sec_namefull=%s, sec_nameshort=%s, sec_openfirst=%s, sec_to_news=%s, sec_showinmenu=%s, sec_from=%s, sec_page=%s, sec_howchild=%d where section_id=%d;', 
-				$sql->t(mb_strtolower($_POST['sec_url'])),
-				$sql->t(mb_strtolower($_POST['sec_url_'])),
-				$sql->t($_POST['sec_description']),
-				$sql->t($_POST['sec_enabled']),
-				$sql->t($_POST['sec_title']),
-				$sql->t($_POST['sec_keywords']),
-				$sql->t($_POST['sec_namefull']),
-				$sql->t($_POST['sec_nameshort']),
-				$sql->t($_POST['sec_openfirst']),
-				$sql->t($_POST['sec_to_news']),
-				$sql->t($_POST['sec_showinmenu']),
-				$sql->t($_POST['sec_from']),
-				$sql->t($_POST['sec_page']),
-				$_POST['sec_howchild'],
-				$_POST['section_id']
-			);
+		if (count($checkResult)===0) {
+            if ($_POST['section_id'] === 1) $_POST['sec_url'] = '/';
+            $data = array(
+                'sec_url'=>$sql->t(mb_strtolower($_POST['sec_url'])),
+                'sec_description'=>$sql->t($_POST['sec_description']),
+                'sec_enabled'=>$sql->b($_POST['sec_enabled']),
+                'sec_title'=>$sql->t($_POST['sec_title']),
+                'sec_keywords'=>$sql->t($_POST['sec_keywords']),
+                'sec_namefull'=>$sql->t($_POST['sec_namefull']),
+                'sec_nameshort'=>$sql->t($_POST['sec_nameshort']),
+                'sec_openfirst'=>$sql->t($_POST['sec_openfirst']),
+                'sec_to_news'=>$sql->b($_POST['sec_to_news']),
+                'sec_showinmenu'=>$sql->b($_POST['sec_showinmenu']),
+                'sec_from'=>$sql->t($_POST['sec_from']),
+                'sec_howchild'=>$sql->d($_POST['sec_howchild']),
+                'sec_parent_id'=>$sql->d($_POST['sec_parent_id']),
+                'sec_page'=>$sql->t($_POST['sec_page']),
+            );
+
+            if (isset($_POST['section_id']))
+                $query = $sql->pr_u('cms_sections',$data,'section_id='.$sql->d($_POST['section_id']));
+            else
+                $query = $sql->pr_i('cms_sections',$data);
+
+            $query .= ' RETURNING section_id,sec_url,sec_url_full,sec_enabled,sec_nameshort,sec_namefull,sec_title,sec_content,sec_keywords,sec_description;';
+            $res = false;
 			try {
-				@$res_count = $sql->command($query);
+                $res = @$sql->query_fa($query);
 			} catch (DBException $e) {
 				if ($e->isDuplicate)
 					$checkResult[] = array('f'=>'sec_url','s'=>'Это url уже занято');
-				$res_count = false;
+				else throw $e;
 			}
-			if (count($checkResult)==0) {
-				$new_url='';
-				$query = sprintf ('select * from cms_sections where section_id = %d;', 
-					$_POST['section_id']);
-				$indxpage =  $sql->query_first_assoc($query);
-				$new_url=$indxpage['sec_url_full'];
-				$this->reindex($indxpage);
-				$this->buildSiteMapXml();
-				return json_encode(array('r'=>$res_count>0?'t':'f','url'=>$new_url));
+			if (count($checkResult)===0) {
+			    if ($res && isset($_POST['section_id'])) {
+			        $this->reindex($res);
+                    $this->buildSiteMapXml();
+                }
+                return json_encode(array('r'=>$res!==false?'t':'f','url'=>$res['sec_url_full']));
 			}
 			
 		}
