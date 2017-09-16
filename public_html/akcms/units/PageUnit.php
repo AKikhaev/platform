@@ -1357,8 +1357,7 @@ class PageUnit extends CmsPage {
 
         $shape['pageuri'] = $this->pageUri;
         $shape['pagemainuri'] = $this->pageMainUri;
-		$pagecontent = $this->page['sec_content'];
 
-		return $pagecontent;
+		return $this->page['sec_content'];
 	}
 }
