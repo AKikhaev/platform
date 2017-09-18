@@ -22,15 +22,6 @@ class SecStrEdit extends PgUnitAbstract {
 		);
 	}
 
-	public function initAcl()
-	{
-		return array(
-		'admin'=>true,
-		'owner'=>true,
-		'default'=>null
-		);
-	}
-
 	public function ajxLoad()
 	{
 		global $sql;

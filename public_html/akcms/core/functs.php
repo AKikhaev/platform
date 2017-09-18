@@ -196,6 +196,10 @@ function var_log_terminal() {
     core::terminalBeep();
     core::terminalWrite($printVar);
 }
+function var_log_terminal__($var) {
+    var_log_terminal(...func_get_args());
+    exit();
+}
 
 function print_r_($var) {
 	$out = preg_replace('/\s*\n\(/'," (", print_r(...array($var, true)));

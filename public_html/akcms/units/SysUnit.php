@@ -22,15 +22,6 @@ class SysUnit extends CmsPage {						// Страницы из DB
 		);
 	}
 
-	public function initAcl()
-	{
-		return array(
-		'admin'=>true,
-		'owner'=>true,
-		'default'=>null
-		);
-	}
-  
 	public function __construct(&$pageTemplate)
 	{
 		global $pathlen,$path;

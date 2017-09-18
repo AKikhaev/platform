@@ -52,15 +52,6 @@ class Pg_Gallery extends PgUnitAbstract {
 		);
 	}
 
-	public function initAcl()
-	{
-		return array(
-		'admin'=>true,
-		'owner'=>true,
-		'default'=>null
-		);
-	}
-
 	public static function getGalleryPhotos($glr_id){
 		global $sql;
 		$query = sprintf ('select id_cgp,cgp_name,cgp_file from cms_gallery_photos where cgp_enabled and cgp_glr_id=%d order by id_cgp', 

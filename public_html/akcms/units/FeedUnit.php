@@ -14,15 +14,6 @@ class FeedUnit extends CmsPage {
 		);
 	}
 
-	public function initAcl()
-	{
-		return array(
-		'admin'=>true,
-		'owner'=>true,
-		'default'=>null
-		);
-	}
-  
 	public function __construct(&$pageTemplate)
 	{
 		global $sql,$cfg,$pathlen,$path;

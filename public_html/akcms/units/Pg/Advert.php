@@ -18,15 +18,6 @@ class Pg_Advert extends PgUnitAbstract {
 		);
 	}
 
-	public function initAcl()
-	{
-		return array(
-		'admin'=>true,
-		'owner'=>true,
-		'default'=>null
-		);
-	}
-
 	public static function paramsGet()
 	{
 		global $page;

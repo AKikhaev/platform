@@ -14,12 +14,6 @@ class Pg_Search extends PgUnitAbstract {
 		);
 	}
 
-	public function initAcl()
-	{
-		return array(
-		);
-	}
-
 	public function render()
 	{
 		global $sql,$shape,$page;

@@ -19,16 +19,6 @@ class Pg_Sects extends PgUnitAbstract {
 		);
 	}
 
-	public function initAcl()
-	{
-		return array(
-		'admin'=>true,
-		'owner'=>true,
-		'default'=>null
-		);
-	}
-  
-  
 	public function ajxSecNewssve()
 	{
 		global $sql;

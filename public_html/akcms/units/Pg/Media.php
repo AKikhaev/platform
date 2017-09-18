@@ -14,15 +14,6 @@ class Pg_Media extends PgUnitAbstract {
 		);
 	}
 
-	public function initAcl()
-	{
-		return array(
-			'admin'=>true,
-			'owner'=>true,
-			'default'=>null
-		);
-	}
-  
 	public function render()
 	{
 		global $shape;

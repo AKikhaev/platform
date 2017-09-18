@@ -24,43 +24,69 @@ class DBException extends CmsException {
 }
 
 abstract class AclProcessor { /* acl */
-	protected $thisOwner = false;
-	protected function initAcl() {return array();} // return array(); ...,owner,admin,idividual
-	protected function isOwner() {return $this->thisOwner;}  
-	protected function isSpecifiedRight($rightName) {return null;}
+	private $owner = false;
+	protected $aclSuper = array('admin','owner');
+    /**
+     * @var array
+     * Применимо к проверком, кроме exactly
+     */
+    protected $acl = array();
+    protected function initAclSuper() {return $this->aclSuper;} // return array(); owner,admin,...
+    protected function initAcl() {return $this->acl;} // return array(); owner,admin,...
+	protected function isOwner() {return $this->owner;}
+    protected function setOwner($isOwner) {return $this->owner = $isOwner;}
+    protected function isSpecifiedRight($rightName) {return null;}
 
-	protected function checkRight($class,$rightName) {
-		#echo "[$class.$rightName]";
-		$rightRes = null;
-		$needRights = $this->initAcl();
-		$userRights = CmsUser::$rights;
-		if ($this->isOwner()) $userRights[] = CMS_OBJOWNER;
-		$specifiedRight = $this->isSpecifiedRight($rightName);
-		if ($specifiedRight != null) $rightRes = $specifiedRight;
-		if ($rightRes !== false) {
-			foreach ($needRights as $needRight=>$v)
-				if (isset($userRights[$needRight])){
-					$rightRes = $userRights[$needRight];
-					break;
-				}
-		}
-		if ($rightRes !== false && isset($userRights["$class.$rightName"])) $rightRes = $userRights["$class.$rightName"];
-		if ($rightRes !== false && isset($userRights["$class.*"])) $rightRes = $userRights["$class.*"];
-		if ($rightRes !== false && isset($userRights["*.$rightName"])) $rightRes = $userRights["*.$rightName"];
-		if ($rightRes === null) $rightRes = false;
-		#print_r($rightRes);
-		return $rightRes;
-	}
+    /*** Провееряет право доступа с учетом текущего класса. Допустимые разрешения ClassName.methodName, ClassName.*, *.methodName, RightName
+     * @param null $rightName
+     * Имя права. Если null - используется имя метода
+     * @param bool $class
+     * Если null - автоопределение, если false - без класса
+     * @param $exact
+     * true - Обрабатывать только superAcl, иначе false
+     * @return bool
+     */
+    public function hasRight($rightName = null, $class = null, $exact = false) {
+        if ($class===null) {
+            $stacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+            $class = $stacktrace[1]['class'];
+            if ($rightName===null) $rightName = $stacktrace[1]['function'];
+        }
 
-	protected function hasRight($rightName = null) {
-		$stacktrace = debug_backtrace(false);
-		if (isset($stacktrace[1])) {
-			$class = $stacktrace[1]['class'];
-			$method = $stacktrace[1]['function'];
-			return $this->checkRight($class,$rightName===null?$method:$rightName);
-		}
-		else throw new CmsException('core_error');
-	}
+        /*
+        Работа механизма через разрешение от запрещенного. Изначально null - права не определены
+        и если так и будут не определны в ходе проверок, то переключаются в false - запрещено.
+        Если в процессе право запрещено, то разрешить его нельзя (приоритет запрещения)
+        Если право не задано или разрешено, то его еще можно запретить в ходе проверок.
+         */
+        $needRights = $exact ?
+            array_merge($this->initAclSuper()) :
+            array_merge($this->initAclSuper(),$this->initAcl());
+        $userRights = CmsUser::$rights;
+        $rightRes = null;
+
+        if ($class === false) {
+            $needRights[] = $rightName;
+        } else {
+            $needRights[] = $class.'.'.$rightName;
+            $needRights[] = $class.'.*';
+            $needRights[] = '*.'.$rightName;
+        }
+        //$specifiedRight = $this->isSpecifiedRight($rightName);
+        //if ($specifiedRight !== null) $rightRes = $specifiedRight; // Не помню
+        //if ($this->isOwner()) $userRights[CMS_OBJOWNER] = true; // Владелец
+
+        // Проверка на наличие необходимых прав (права, прописаные у объекта)
+        foreach ($needRights as $needRight) {
+            if ($rightRes !== false && isset($userRights[$needRight])) {
+                $rightRes = $userRights[$needRight];
+            }
+        }
+
+        var_log_terminal($rightName,$needRights, $userRights,$rightRes);
+        return $rightRes?:false;
+    }
+
 }
 
 abstract class CmsPage extends AclProcessor { /* page */
@@ -235,7 +261,7 @@ class CmsUser {
 		if (isset($_COOKIE[session_name()])) {
 			session_start();
 			if (isset($_SESSION['u'],$_SESSION['ip'])) {
-				if ($_SESSION['ip'] != $_SERVER['REMOTE_ADDR']) self::logout(); else {
+				if ($_SESSION['ip'] !== $_SERVER['REMOTE_ADDR']) self::logout(); else {
 					$login = $_SESSION['u'];
 					$query = sprintf('select *,array(SELECT (__if(usrrght_mode,\'\',\'!\'::text)||usrrght_name) FROM cms_users_groups_rgth where usrrght_grpid=any(usr_grp)) as rights from cms_users where usr_login = %s and usr_enabled and usr_activated limit 1;', 
 						$sql->t($login));
@@ -351,7 +377,7 @@ class core {
         self::GlobalErrorHandler(-1,$e->getMessage(),$e->getFile(),$e->getLine(),$e->getTrace());
         if (self::$isAjax) return; //json_encode(array('error'=>array(array('f'=>'system','s'=>'failure'))));
         $errorPageTemplate = 'error_page';
-        $shape['title'] = 'Прозиошла ошибка';
+        $shape['title'] = 'Произошла ошибка';
         $shape['metas'] = '';
         $shape['gajs'] = self::$prodServer?GetShape('parts/counters'):'';
         if ($e->getMessage()=='page_not_found') {
@@ -423,7 +449,7 @@ class core {
     {
         $class_name = str_replace('_','/',$class_name);
         $res = @include_once $class_name.'.php';
-        if ($res==false) {
+        if ($res===false) {
             $bugtrace = debug_backtrace(0)[1];
             throw new CmsException('class_not_found: '.$class_name,0,E_USER_ERROR,
                 isset($bugtrace['file'])?$bugtrace['file']:'',

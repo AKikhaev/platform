@@ -21,15 +21,6 @@ class Pg_Comments extends PgUnitAbstract {
 		);
 	}
 
-	public function initAcl()
-	{
-		return array(
-		'admin'=>true,
-		'owner'=>true,
-		'default'=>null
-		);
-	}
-  
 	public function ajxIsve()
 	{
 		global $sql;

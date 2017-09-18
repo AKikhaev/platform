@@ -13,15 +13,6 @@ class Pg_NewsHeads extends PgUnitAbstract {
 		);
 	}
 
-	public function initAcl()
-	{
-		return array(
-			'admin'=>true,
-			'owner'=>true,
-			'default'=>null
-		);
-	}
-  
 	public function render()
 	{
 		global $sql;

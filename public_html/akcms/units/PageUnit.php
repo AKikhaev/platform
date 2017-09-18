@@ -14,21 +14,22 @@ class PageUnit extends CmsPage {
 	private $imgthmb_w = 973;
 	private $imgthmb_h = 615;
 	private $imgthmb_m = 3;
+	public $editMode = false;
+	public $inEditCan = false;
 
 	public function initAjx()
 	{
-	    $ajaxesUnits = [];
 		$ajaxes = array(
             '_cntsve' => array(
-                'func' => 'ajxCntsve'),
+                'func' => 'ajxCntSve'),
             '_optsve' => array(
                 'func' => 'ajxOptSve'),
             '_secsve' => array(
                 'func' => 'ajxSecInsSve'),
             '_secins' => array(
-                'func' => 'ajxSecins'),
+                'func' => 'ajxSecInsSve'),
             '_secdrp' => array(
-                'func' => 'ajxSecdrp'),
+                'func' => 'ajxSecDrp'),
             '_secup' => array(
                 'func' => 'ajxSecUp'),
             '_sectop' => array(
@@ -72,30 +73,34 @@ class PageUnit extends CmsPage {
 		);
 	}
 
-	public function initAcl()
-	{
-		return array(
-		'admin'=>true,
-		'owner'=>true,
-		'default'=>null
-		);
-	}
-  
 	public function __construct(&$pageTemplate)
 	{
-		global $sql,$cfg;
-        $loadAnyway = core::$isAjax || core::$inEdit || $this->hasRight();
+
+        global $sql,$cfg;
 		define('MENU_FIELDS','select section_id,sec_parent_id,sec_url_full,sec_url,sec_nameshort,sec_namefull,sec_imgfile,sec_showinmenu,sec_openfirst,sec_to_news,sec_enabled,sec_title,sec_keywords,sec_description,sec_units,sec_from,sec_howchild,sec_page,sec_page_child, not sec_enabled or not sec_showinmenu as sec_hidden ');
 
 		$pathstr_str = $GLOBALS['pathstr'];
 
-		$query = sprintf ('select * from cms_sections where %s ilike sec_url_full || %s '.($loadAnyway?'':'and sec_enabled and now()>sec_from').' order by length(sec_url_full) desc limit 1;', 
+		$query = sprintf ('select *,now()>sec_from as sec_from_showing from cms_sections where %s ilike sec_url_full || %s order by length(sec_url_full) desc limit 1;',
 			$sql->t($pathstr_str),
 			"'%'");
 		$this->page = $sql->query_first_assoc($query);
-		#echo $query;
-		if ($this->page===false)
-		throw new CmsException('page_not_found');
+		//($loadAnyway?'':'and sec_enabled and now()>sec_from')
+
+		// Добавляем в список разрешений всех родителей и себя
+        foreach ($sql->da_a($this->page['sec_ids_closest']) as $id) {
+            $this->acl[] = 'pg'.$id;
+        }
+
+        $this->inEditCan = $this->hasRight('inEdit',false,true);
+        $this->editMode = $this->hasRight();
+        $loadAnyway = core::$isAjax || core::$inEdit || $this->editMode;
+        // Отклонить страницу если прав недостаточно
+        if (!$loadAnyway && ($this->page['sec_enabled']==='f' || $this->page['sec_from_showing']==='f')) {
+            $this->page=false;
+        }
+
+		if ($this->page===false) throw new CmsException('page_not_found');
 
 		if ($this->page['sec_openfirst'] === 't')
 		{
@@ -106,21 +111,30 @@ class PageUnit extends CmsPage {
 			if ($pagenew===false)$this->page['sec_content']='Нет дочерних страниц!';
 				else $this->page = $pagenew;
 		}
-		
-		$params_str = trim(mb_substr($pathstr_str,mb_strlen($this->page['sec_url_full'])),'/');
-		$params_arr = $params_str === ''?array():explode('/',$params_str);
-		 
-		$pageTemplate = (core::$inEdit?'editpage':$this->page['sec_page']);
+
+        $params_str = trim(mb_substr($pathstr_str,mb_strlen($this->page['sec_url_full'])),'/');
+        $params_arr = $params_str === ''?array():explode('/',$params_str);
+
+        $this->pageUri = $pathstr_str === '/'?'':$pathstr_str;
+        $this->pageMainUri = $this->page['sec_url_full'] === '/'?'':$this->page['sec_url_full'];
+        $this->imgpath = '/'.self::$imgthmbpath.($this->pageUri === '/'?'/_/':'/'.$GLOBALS['pathstr']);
+
+        $pageTemplate = $this->page['sec_page'];
+        if (core::$inEdit) {
+            if (!$this->inEditCan) { //!$this->editMode
+                header('Location: /'.$this->pageMainUri);
+                //throw new CmsException('login_needs_');
+            }
+            $pageTemplate = 'editpage';
+        }
+
 		$this->title = $this->page['sec_title'] !== '' ? $this->page['sec_title'] : $this->page['sec_namefull'].' - '.$cfg['site_title'];
 		#if ($this->hasRight()) var_dump_($this->page['sec_title']);
 
-		$this->pageUri = $pathstr_str === '/'?'':$pathstr_str;
-		$this->pageMainUri = $this->page['sec_url_full'] === '/'?'':$this->page['sec_url_full'];
-		$this->imgpath = '/'.self::$imgthmbpath.($this->pageUri === '/'?'/_/':'/'.$GLOBALS['pathstr']);
 		//$this->getMenu();
 		$this->getBreadcrumbs();
 		#var_dump($this->getMenu()); exit;
-		
+
 		$unitsCount = 0;
 		if (trim($this->page['sec_units']) !== '') foreach (explode(',',$this->page['sec_units']) as $pgUnitClass)
 			if (isset($cfg['pgunits'][$pgUnitClass]))
@@ -319,11 +333,10 @@ class PageUnit extends CmsPage {
 	}	
 	
 	/* полная структура, хорошо для админки*/
-	public function getMenu()
+	public function getMenu($showHidden)
 	{
         if (count($this->pageMenu) != 0) return $this->pageMenu;
 		$this->getBreadcrumbs();
-		$showHidden = $this->hasRight();
 		$howchild = 1;
 		$putInto = &$this->pageMenu;
 		$lastPathItem = false;
@@ -586,7 +599,7 @@ class PageUnit extends CmsPage {
 		$Cacher->cache_drop(''); //Главная
 	}
 	
-	public function ajxCntsve()
+	public function ajxCntSve()
 	{
 		global $sql;
 		$checkRule = array();
@@ -954,7 +967,7 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));   
 	}
 	
-	public function ajxSecdrp()
+	public function ajxSecDrp()
 	{
 		global $sql;
 		$checkRule = array();
@@ -1208,9 +1221,8 @@ class PageUnit extends CmsPage {
 	{
 		global $shape,$cfg;
 
-		$editMode = $this->hasRight();
-		$adminPart = $editMode && core::$inEdit;
-        shp::$editMode = $editMode && !$adminPart;
+		$adminPart = core::$inEdit;
+        shp::$editMode = $this->editMode && !$adminPart;
 		$shape['jses'] = '';
 
 		#Модули
@@ -1246,7 +1258,7 @@ class PageUnit extends CmsPage {
 				userControl();
 			});
 			</script>';
-			$this->_buildPageSections($this->getMenu());
+			$this->_buildPageSections($this->getMenu($this->editMode));
 			
             #Заполняем массивы модулей
             $sec_all_units = array();

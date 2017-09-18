@@ -91,15 +91,6 @@ class TmplMapperUnit extends CmsPage {
 		);
 	}
 
-	public function initAcl()
-	{
-		return array(
-		'admin'=>true,
-		'owner'=>true,
-		'default'=>null
-		);
-	}
-
 	public function prepareHtml($html){
 	    $html = str_replace('<br/>','<br>',$html);
         $html = str_replace('<br />','<br>',$html);

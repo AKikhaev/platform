@@ -14,12 +14,6 @@ class Pg_SiteMap extends PgUnitAbstract {
 		);
 	}
 
-	public function initAcl()
-	{
-		return array(
-		);
-	}
-
 	public function render()
 	{ # http://javascript.ru/ui/tree
 		$siteAllMenu = $GLOBALS['page']->getAllMenu();

@@ -28,15 +28,6 @@ class ObjGallery extends PgUnitAbstract {
 		);
 	}
 
-	function initAcl()
-	{
-		return array(
-		'admin'=>true,
-		'owner'=>true,
-		'default'=>null
-		);
-	}
-	
 	public static function getCopList($obj,$obj_id)
 	{
 		global $sql;

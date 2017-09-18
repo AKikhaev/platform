@@ -31,15 +31,6 @@ class Pg_News extends PgUnitAbstract {
 		);
 	}
 
-	public function initAcl()
-	{
-		return array(
-		'admin'=>true,
-		'owner'=>true,
-		'default'=>null
-		);
-	}
-  
 	public function reindex($indxnews)
 	{
 		if (!$this->hasRight()) return false;

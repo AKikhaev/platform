@@ -19,15 +19,6 @@ class MngUnit extends CmsPage {
 		);
 	}
 
-	public function initAcl()
-	{
-		return array(
-		'admin'=>true,
-		'owner'=>true,
-		'default'=>null
-		);
-	}
-
 	public function ajxAuth(){
 		$checkRule = array();
 		$checkRule[] = array('l', '.');

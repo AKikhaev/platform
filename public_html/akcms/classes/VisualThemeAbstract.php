@@ -37,7 +37,7 @@ abstract class VisualThemeAbstract
      * массив $page->getBreadcrumbs()
      * @param bool $showMain
      * добавить первым <li><a href="/" title="Главная">Главная</a></li>
-     * @param int $showlast
+     * @param int $showLast
      * Отображать последний элемент
      *
      *  0 - не отображать
@@ -52,24 +52,30 @@ abstract class VisualThemeAbstract
      *
      * @return string
      */
-    public static function buildBreadcrumbs_links($pagePath,$showMain=true,$showlast=1)
+    public static function buildBreadcrumbs_links($pagePath, $showMain=true, $showLast=1, $skipIds = [])
     {
         $path = array();
         $i=0; $count = count($pagePath);
         if ($showMain) $path[] = '<li><a href="/" title="Главная">Главная</a></li>';
         foreach ($pagePath as $pageItem) {
+            if (in_array((int)$pageItem['section_id'], $skipIds,true)) {
+                --$count;
+                continue;
+            }
+            //var_dump__($count,$i,$pageItem);
+
             if ($i===$count-1) {
-                if ($showlast>0) {
+                if ($showLast>0) {
                     $link = $pageItem['sec_nameshort'];
-                    if ($showlast === 1) $link = sprintf('<li class="active"><a href="/%1$s" title="%2$s">%2$s</a></li>',
+                    if ($showLast === 1) $link = sprintf('<li class="active"><a href="/%1$s" title="%2$s">%2$s</a></li>',
                         $pageItem['sec_url_full'],
                         $pageItem['sec_nameshort']
                     );
-                    if ($showlast === 2) $link = '<li class="active">' . $pageItem['sec_nameshort'] . '</li>';
-                    if ($showlast === 3) $link = '<li class="active"><h1>' . $pageItem['sec_nameshort'] . '</h1></li>';
+                    if ($showLast === 2) $link = '<li class="active">' . $pageItem['sec_nameshort'] . '</li>';
+                    if ($showLast === 3) $link = '<li class="active"><h1>' . $pageItem['sec_nameshort'] . '</h1></li>';
                     $path[] = $link;
                 }
-            } elseif ($showlast===-1 && $i===$count-2) {
+            } elseif ($showLast===-1 && $i===$count-2) {
                 $path[] = sprintf('<li class="active"><a href="/%1$s">%2$s</a></li>',
                     $pageItem['sec_url_full'],
                     $pageItem['sec_nameshort']
