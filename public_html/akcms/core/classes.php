@@ -40,7 +40,7 @@ abstract class AclProcessor { /* acl */
     /*** Провееряет право доступа с учетом текущего класса. Допустимые разрешения ClassName.methodName, ClassName.*, *.methodName, RightName
      * @param null $rightName
      * Имя права. Если null - используется имя метода
-     * @param bool $class
+     * @param bool|string $class
      * Если null - автоопределение, если false - без класса
      * @param $exact
      * true - Обрабатывать только superAcl, иначе false
@@ -60,7 +60,7 @@ abstract class AclProcessor { /* acl */
         Если право не задано или разрешено, то его еще можно запретить в ходе проверок.
          */
         $needRights = $exact ?
-            array_merge($this->initAclSuper()) :
+            $this->initAclSuper() :
             array_merge($this->initAclSuper(),$this->initAcl());
         $userRights = CmsUser::$rights;
         $rightRes = null;
@@ -83,7 +83,6 @@ abstract class AclProcessor { /* acl */
             }
         }
 
-        var_log_terminal($rightName,$needRights, $userRights,$rightRes);
         return $rightRes?:false;
     }
 

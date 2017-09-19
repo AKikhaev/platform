@@ -656,7 +656,8 @@ class Pg_Gallery extends PgUnitAbstract {
 	
 	public function render()
 	{
-		global $sql,$page;
+		/* @var $page PageUnit */
+	    global $sql,$page;
 		$res = '';
 		$editMode = $this->hasRight() && core::$inEdit;
 		$pageLinkUri = ($editMode?'_/':'').$page->pageMainUri;

@@ -140,10 +140,10 @@ class PageUnit extends CmsPage {
 			if (isset($cfg['pgunits'][$pgUnitClass]))
 			{
 				$unitsCount++;
-				$this->pageUnits[$pgUnitClass] = new $pgUnitClass($unitsCount==1?$params_arr:array());
+				$this->pageUnits[$pgUnitClass] = new $pgUnitClass($unitsCount===1?$params_arr:array());
 			} else trigger_error('Wrong unit "'.$pgUnitClass.'" on page '.$this->pageUri.'. All list:'.$this->page['sec_units'],E_USER_WARNING);
 
-		if ($unitsCount==0 && count($params_arr)>0)
+		if ($unitsCount===0 && count($params_arr)>0)
 			throw new CmsException('page_not_found');
 
         #Получение параметров
@@ -740,7 +740,8 @@ class PageUnit extends CmsPage {
 	{
 		global $sql;
 		$checkRule = array();
-        //$checkRule[] = array('section_id'     , '/^\\d{1,}$/'); // Отключено. Если не передано - вставка, иначе обновление
+        $checkRule[] = array('section_id'     , '/^\\d{1,}$/');
+        $checkRule[] = array('sec_parent_id'     , '/^\\d{1,}$/');
 		$checkRule[] = array('sec_url'		  , '/^(\/|[a-z0-9_-]+)$/');
 		$checkRule[] = array('sec_enabled'    , '/^(t|f)$/');
 		$checkRule[] = array('sec_namefull'   , '.');
@@ -754,7 +755,7 @@ class PageUnit extends CmsPage {
 		$checkRule[] = array('sec_from'  , '/^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/');
 		$checkRule[] = array('sec_howchild'  , '/^(0|1|2|3)$/');
 		$checkRule[] = array('sec_page'  , '/^[a-zA-Z0-9\-\_]+$/');
-		$checkResult = checkForm($_POST,$checkRule,$this->hasRight());
+		$checkResult = checkForm($_POST,$checkRule,($this->page['section_id']==1 && $_POST['section_id']==='0' && $_POST['sec_parent_id']==='0'?$this->hasRight('admin',false,true):$this->hasRight()));
 		if (count($checkResult)===0) {
             if ($_POST['section_id'] === 1) $_POST['sec_url'] = '/';
             $data = array(
@@ -774,7 +775,7 @@ class PageUnit extends CmsPage {
                 'sec_page'=>$sql->t($_POST['sec_page']),
             );
 
-            if (isset($_POST['section_id']))
+            if ($_POST['section_id']!=='0')
                 $query = $sql->pr_u('cms_sections',$data,'section_id='.$sql->d($_POST['section_id']));
             else
                 $query = $sql->pr_i('cms_sections',$data);
@@ -1258,7 +1259,7 @@ class PageUnit extends CmsPage {
 				userControl();
 			});
 			</script>';
-			$this->_buildPageSections($this->getMenu($this->editMode));
+			$this->_buildPageSections($this->getMenu($this->inEditCan));
 			
             #Заполняем массивы модулей
             $sec_all_units = array();

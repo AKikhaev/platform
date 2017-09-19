@@ -282,7 +282,7 @@ window.addEvent('domready', function() {
 			cnt_btn_opt.removeClass('hidden');
 		});		
 	};
-	if (currpage.pageurl.toLowerCase()==currpage.pagemainurl.toLowerCase()) addPageEdit();
+	if (currpage.pageurl.toLowerCase()===currpage.pagemainurl.toLowerCase()) addPageEdit();
 
 	var ru2lt = {
 		ru_str : "абвгдеёжзийклмнопрстуфхцчшщъыьэюя№ ",
@@ -302,6 +302,9 @@ window.addEvent('domready', function() {
 	};ru2lt.init();
 	var MakeEditSec = function(parentId,secId,closeEvent) {
 		if (closeEvent==undefined) closeEvent = null;
+        var ajaxUrl = '/ajx/';
+		if (secId!==0) ajaxUrl += currpage.secs[secId]['sec_url_full'];
+		else if (parentId!==0) ajaxUrl += currpage.secs[parentId]['sec_url_full'];
 		secitem = secId!=0?currpage.secs[secId]:{"section_id":0,"sec_parent_id":parentId,"sec_url":'',"sec_nameshort":'',"sec_namefull":'',"sec_showinmenu":"t","sec_openfirst":"f","sec_title":"","sec_keywords":"","sec_description":"",'sec_enabled':'f','sec_howchild':1,'_p_hc':0,'sec_page_child':'second','sec_page':(parentId!=0?currpage.secs[parentId].sec_page_child:'')};
 		var modalForm = new ModalBox({allowManualClose: false,width:500,top:100,onClose:closeEvent}),
 		errTips = new ErrorTips({}),
@@ -314,7 +317,7 @@ window.addEvent('domready', function() {
 					if (confirm('Переместить раздел '+(e.control?'на самый верх':'выше')+'?'))
 					{
 						ajxImgInfo(item_actpanel,1);
-						var jsonRequest = new Request.JSON({url: '/ajx/'+currpage.pageurl+'_sec'+(e.control?'top':'up'), onComplete: function(sres) {
+						var jsonRequest = new Request.JSON({url: ajaxUrl+'_sec'+(e.control?'top':'up'), onComplete: function(sres) {
 							if (sres=='t') {
 								ajxImgInfo(item_actpanel,2);
 								window.location.reload();
@@ -326,7 +329,7 @@ window.addEvent('domready', function() {
 					if (confirm('Переместить раздел '+(e.control?'в самый низ':'ниже')+'?'))
 					{
 						ajxImgInfo(item_actpanel,1);
-						var jsonRequest = new Request.JSON({url: '/ajx/'+currpage.pageurl+'_sec'+(e.control?'bttm':'dwn'), onComplete: function(sres) {
+						var jsonRequest = new Request.JSON({url: ajaxUrl+'_sec'+(e.control?'bttm':'dwn'), onComplete: function(sres) {
 							if (sres=='t') {
 								ajxImgInfo(item_actpanel,2);
 								window.location.reload();
@@ -342,7 +345,7 @@ window.addEvent('domready', function() {
 			if (confirm('Удалить раздел?'))
 			{
 				ajxImgInfo(item_actpanel,1);
-				var jsonRequest = new Request.JSON({url: '/ajx/'+currpage.pageurl+'_secdrp', onComplete: function(sres) {
+				var jsonRequest = new Request.JSON({url: ajaxUrl+'_secdrp', onComplete: function(sres) {
 					if (sres.r!=undefined?sres.r=='t':false) {
 						ajxImgInfo(item_actpanel,2);
 						if (currpage['id']==secitem['section_id']) window.location='/_/'+(sres.url=='/'?'':sres.url); else window.location.reload();
@@ -377,7 +380,7 @@ window.addEvent('domready', function() {
 				'sec_howchild': $('e_sec_howchild').get('value'),
 				'sec_page': $('e_sec_page').get('value')
 			};
-			var jsonRequest = new Request.JSON({url: '/ajx/'+currpage.pageurl+'_sec'+(secId!=0?'sve':'ins'), onComplete: function(sres){
+			var jsonRequest = new Request.JSON({url: ajaxUrl+'_sec'+(secId!=0?'sve':'ins'), onComplete: function(sres){
 				console.log(sres);
 				if (sres.r!=undefined?sres.r=='t':false) {
 					ajxImgInfo(item_actpanel,2);
@@ -387,7 +390,8 @@ window.addEvent('domready', function() {
 					ajxImgInfo(item_actpanel,3);
 					//kcms.errorsShow(tablediv,sres.error);
 					sres.error.each(function(error){
-						errTips.newTip('e_'+error.f,error.s);
+						if (error.f==='!' && error.s==='!') alert('Недостаточно привеллегий!');
+						else errTips.newTip('e_'+error.f,error.s);
 					});
 				}
 			}}).post(arrPost);
@@ -452,7 +456,7 @@ window.addEvent('domready', function() {
                     if (e.control) {
                         if (confirm('Удалить изображение?')) {
                             ajxImgInfo(upldiv, 1);
-                            var jsonRequest = new Request.JSON({url:'/ajx/' + currpage.pageurl + '_secidrp', onComplete:function (sres) {
+                            var jsonRequest = new Request.JSON({url:ajaxUrl+'_secidrp', onComplete:function (sres) {
                                 if (sres == 't') {
                                     ajxImgInfo(upldiv, 2);
                                     if (phtimg != null) phtimg.destroy();
@@ -461,7 +465,7 @@ window.addEvent('domready', function() {
                         }
                     } else if (e.shift) if (confirm('Определить центр изображения?')) {
                         ajxImgInfo(upldiv, 1);
-                        //var jsonRequest = new Request.JSON({url: '/ajx/'+currpage.pageurl+'_glrcpghdr', onComplete: function(sres) {
+                        //var jsonRequest = new Request.JSON({url:ajaxUrl+'_glrcpghdr', onComplete: function(sres) {
                         var jsonRequest = new Request.JSON({url:'/img/fd/', onComplete:function (sres) {
                             if (sres != undefined) {
                                 ajxImgInfo(upldiv, 2);
@@ -501,7 +505,7 @@ window.addEvent('domready', function() {
                 doUploadUrl = function (url) {
                     ajxImgInfo(upldiv, 1);
                     infodiv.empty();
-                    var jsonRequest = new Request.JSON({url:'/ajx/' + currpage.pageurl + '_seciuplurl', onComplete:function (sres) {
+                    var jsonRequest = new Request.JSON({url:ajaxUrl+'_seciuplurl', onComplete:function (sres) {
                         if (sres != undefined ? sres.res == 't' : false) {
                             ajxImgInfo(upldiv, 2);
                             secitem.sec_imgfile = sres.i_file;
