@@ -314,7 +314,7 @@ abstract class VisualThemeAbstract
      */
     public static function _ph_editable(&$pageData,$editMode,$text,$field,$mult = 's',$hint = '',$debug = ''){
         $stay_original = mb_stripos($debug,'!')!==false;
-
+        $classes = [];
         $textFound = false;
 
         if ($field==='ep_content' && !$stay_original) {
@@ -328,6 +328,8 @@ abstract class VisualThemeAbstract
             $textDB = $pageData['sec_namefull']; if ($textDB !== '') {
                 $text = $textDB;
                 $textFound = true;
+                if ($pageData['sec_enabled']==='f') $classes[] = 'ss_edit_secDisabled';
+                if (strtotime($pageData['sec_from'])>time()) $classes[] = 'ss_edit_secInFuture';
             }
             $hint = 'Основной заголовок';
         } else {
@@ -339,14 +341,17 @@ abstract class VisualThemeAbstract
         }
 
         $tag = $mult==='m'?'div':'span';
-        if ($editMode) return "<$tag class=\"ss_edit ss_edit_$mult ".($textFound?'':'textNotFound')."\" data-edt-uri=\"$pageData[sec_url_full]\" data-code=\"$field\" data-mult=\"$mult\" ".($hint!==''?"data-hint=\"$hint\"":'').">$text</$tag>";
+        if (!$textFound) $classes[] = 'textNotFound';
+        if ($editMode) return
+            "<$tag class=\"ss_edit ss_edit_$mult ".implode(' ',$classes)."\" data-edt-uri=\"$pageData[sec_url_full]\" data-code=\"$field\" data-mult=\"$mult\" ".
+            ($hint!==''?"data-hint=\"$hint\"":'').">$text</$tag>";
         else return $text;
     }
 
     /** Обрабатывает редактируемые поля в шаблоне
      * @param $html
      * @param $pageData
-     * должен содержать массив с полями: section_id, sec_url_full, sec_content, sec_namefull, sec_imgfile, sec_from
+     * должен содержать массив с полями: section_id, sec_url_full, sec_content, sec_namefull, sec_imgfile, sec_from, sec_enabled
      * @param $editMode bool
      * Режим редактирования, если не указан используется shp::$editMode
      */

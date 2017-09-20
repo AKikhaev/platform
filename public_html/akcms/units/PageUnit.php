@@ -1274,7 +1274,7 @@ class PageUnit extends CmsPage {
 			if ($this->page['section_id']!=1) {
 				$pageEdt = $this->page;
 				$pageEdt['_selected']=true;
-                unset($pageEdt['sec_content'], $pageEdt['sec_sort'], $pageEdt['sec_created'], $pageEdt['sec_system'], $pageEdt['sec_glr_id'], $pageEdt['sec_contshort'], $pageEdt['sec_lst_mofify'], $pageEdt['sec_url_priority'], $pageEdt['sec_params']);
+                unset($pageEdt['sec_content'], $pageEdt['sec_sort'], $pageEdt['sec_created'], $pageEdt['sec_system'], $pageEdt['sec_glr_id'], $pageEdt['sec_contshort'], $pageEdt['sec_lst_modify'], $pageEdt['sec_url_priority'], $pageEdt['sec_params']);
                 $this->pageSections[$pageEdt['section_id']]=$pageEdt;
 			}
 			$shape['jses']  .= '

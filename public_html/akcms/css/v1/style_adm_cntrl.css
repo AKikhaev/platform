@@ -66,7 +66,30 @@ div.ss_edit {
     background-color: #ffdeb9 !important;
     text-decoration-color: #ffdeb9 !important;
 }
-
+.ss_edithl.ss_edit_secDisabled:before {
+    font-family: "Glyphicons Halflings";
+    font-weight: 100;
+    font-size: 0.7em;
+    color: red;
+    margin-right: 5px;
+    content: "";
+}
+.ss_edithl.ss_edit_secInFuture:before {
+    font-family: "Glyphicons Halflings";
+    font-weight: 100;
+    font-size: 0.7em;
+    color: red;
+    margin-right: 5px;
+    content: "";
+}
+.ss_edithl.ss_edit_secDisabled.ss_edit_secInFuture:before {
+    font-family: "Glyphicons Halflings";
+    font-weight: 100;
+    font-size: 0.7em;
+    color: red;
+    margin-right: 5px;
+    content: "";
+}
 .ss_edithl:empty:before,.ss_edithl:empty:after {
     content: "\00a0";
 }
