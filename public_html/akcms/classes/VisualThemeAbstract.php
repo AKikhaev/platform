@@ -184,7 +184,6 @@ abstract class VisualThemeAbstract
         /* @var $page PageUnit */
         global $sql,$page;
 
-
         $html = '';
         $query = sprintf ('select * from cms_sections where sec_parent_id=%d '.($editMode?'':'and sec_enabled and now()>sec_from').
             ($skipthis==='t'||$skipthis===true?' AND section_id<>'.$sql->d($pageData['section_id']):'').
@@ -195,7 +194,8 @@ abstract class VisualThemeAbstract
         $sections = $sql->query_all($query);
         if ($sections!==false) foreach ($sections as $secData) {
             $childHtml = file_get_contents($template.'.shtm',true);
-            self::replaceStaticHolders($childHtml,$secData,$editMode);
+            $isEdit = $page->inEditCan && PageOutACL::getInstance($secData)->hasRight(); //Персональные права этой страницы
+            self::replaceStaticHolders($childHtml,$secData,$isEdit);
             $html .= $childHtml;
         }
         return $html;
@@ -254,18 +254,20 @@ abstract class VisualThemeAbstract
             $last = count($sections)-1;
             $k = 0;
             foreach ($sections as $secData) {
+                $isEdit = $page->inEditCan && PageOutACL::getInstance($secData)->hasRight(); //Персональные права этой страницы
                 $childHtml = $execIntoScope($template, array(
                     'pt' => &$pageData,
                     'ct' => &$secData,
                     'is_first' => $k === 0,
                     'is_last' => $k === $last,
                     'k' => $k++,
+                    //'editMode' => $editMode,
+                    'secEditMode' => $isEdit,
                 ));
-                self::replaceStaticHolders($childHtml, $secData, $editMode);
+                self::replaceStaticHolders($childHtml, $secData, $isEdit);
                 $html .= $childHtml;
             }
         }
-        if ($pageData['section_id']==37) var_log($pageData);
         return $html;
     }
 
@@ -338,6 +340,14 @@ abstract class VisualThemeAbstract
                 $text = $repls[$field]['secs_str'];
                 $textFound = true;
             }
+            if (mb_strpos($field,'eg_')===0) {
+                // Должны быть права на первую страницу
+                $pg1 = array(
+                    'section_id' => 1,
+                    'sec_ids_closest' => '{1}'
+                );
+                $editMode = $editMode && PageOutACL::getInstance($pg1)->hasRight();
+            };
         }
 
         $tag = $mult==='m'?'div':'span';
@@ -356,7 +366,7 @@ abstract class VisualThemeAbstract
      * Режим редактирования, если не указан используется shp::$editMode
      */
     public static function replaceStaticHolders(&$html, &$pageData, $editMode = null){
-        $editMode = $editMode !== null ? $editMode : shp::$editMode;
+        $editMode = $editMode ?: shp::$editMode;
         /* @var $sql pgdb */
         global $sql;
 
@@ -372,12 +382,12 @@ abstract class VisualThemeAbstract
         $html=preg_replace_callback('~\{#(ep|eg|_\w+):([^:#]+)(:[^#]+?)?#(?|\/\}(.*)\{\/#\1:\2(?::[^#])?#\}|})~usU',function($matches) use (&$pageData,$editMode){
             $funct = $matches[1];
             $field = $matches[2];
-            $params = isset($matches[3]) && $matches[3]!==''?explode(':',trim($matches[3],':')):[];
-            $text = ''; if (isset($matches[4])) $text = $matches[4];
             if ($funct==='ep' || $funct==='eg') {
-                $field = $matches[1].'_'.$matches[2];
+                $field = $funct.'_'.$field;
                 $funct = '_editable';
             }
+            $params = isset($matches[3]) && $matches[3]!==''?explode(':',trim($matches[3],':')):[];
+            $text = ''; if (isset($matches[4])) $text = $matches[4];
             return call_user_func_array('VisualTheme::_ph'.$funct,array_merge(array(&$pageData,$editMode,&$text,$field),$params));
         },$html);
     }

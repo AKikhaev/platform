@@ -49,10 +49,9 @@ abstract class AclProcessor { /* acl */
     public function hasRight($rightName = null, $class = null, $exact = false) {
         if ($class===null) {
             $stacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-            $class = $stacktrace[1]['class'];
+            $class = isset($stacktrace[1]['class'])?$stacktrace[1]['class']:'';
             if ($rightName===null) $rightName = $stacktrace[1]['function'];
         }
-
         /*
         Работа механизма через разрешение от запрещенного. Изначально null - права не определены
         и если так и будут не определны в ходе проверок, то переключаются в false - запрещено.
@@ -386,9 +385,11 @@ class core {
             $shape['title'] = 'Страница не найдена';
         } else
             if ($e->getMessage()=='login_needs') {
-                header('HTTP/1.0 401 Unauthorized');
+                //header('HTTP/1.0 401 Unauthorized');
+                header('HTTP/1.0 404 Not Found');
                 #var_dump__($e);
-                $shape['metas'] = '<meta http-equiv="Refresh" content="0; URL=/_auth/?url='.urlencode($GLOBALS['pathurl']).'">';
+                $url = $GLOBALS['pathurl']; if (trim($url,'/')==='_') $url = '/';
+                $shape['metas'] = '<meta http-equiv="Refresh" content="0; URL=/_auth/?url='.urlencode($url).'">';
                 $errorPageTemplate = 'error_pageauthneeds';
                 $shape['title'] = 'Страница не найдена';
             } else

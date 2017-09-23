@@ -6,7 +6,6 @@ try {
     /* @var $sql pgdb */
 
     #ob_start(); // Start output buffer
-    //profiler::showOverallTimeToTerminal();
     $pageClass = '';
     $pageTemplate = '';
 

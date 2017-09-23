@@ -39,7 +39,7 @@
 					<td class="cpm">
 						<div class="cpmh"><h1>{#head#}</h1></div>
 						<div class="cpmb">
-							<div id="pgcontent" class="pgcontent">{#content#}</div><div class="clearfix"></div>
+							<div id="pgcontent" class="pgcontent noEdit"></div><div class="clearfix"></div>
 							<div id='u_0' class="unitplace">{#pgunit_0#}</div>
                             <div id='u_1' class="unitplace">{#pgunit_1#}</div>
                             <div id='u_2' class="unitplace">{#pgunit_2#}</div>

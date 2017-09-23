@@ -192,6 +192,7 @@ window.addEvent('domready', function() {
 			sec_btn_edt.addClass('hidden');
 			MakeEditSec(0,currpage.id,function(){sec_btn_edt.removeClass('hidden');});
 		});
+		/* Заметки
 		var cnt_btn_pprclp_top = new Element('div', {'style':'background-image: url(/img/edt/btnpprclp.png);','text':'','title':'Заметки','class':'btn'}).inject(item_actpanel_top_cnt).addEvent('click',function() {
 			//ajxImgInfo(item_actpanel_top,1);
 			var modalForm_rmnd = new ModalBox({allowManualClose: false,width:460,top:50,zindex:2010});
@@ -207,6 +208,7 @@ window.addEvent('domready', function() {
 			));
 			//save_cnt(function(){ajxImgInfo(item_actpanel_top,2);},function(){ajxImgInfo(item_actpanel_top,3);});
 		});
+		*/
 		var cnt_btn_sve_top = new Element('div', {'style':'background-image: url(/img/edt/btnsve.png);width:20;','title':'Сохранить и продолжить','class':'btn hidden'}).inject(item_actpanel_top_cnt).addEvent('click',function() {
 			ajxImgInfo(item_actpanel_top,1);
 			save_cnt(function(){ajxImgInfo(item_actpanel_top,2);},function(){ajxImgInfo(item_actpanel_top,3);});
@@ -220,6 +222,7 @@ window.addEvent('domready', function() {
 				ajxImgInfo(item_actpanel,3);
 			});
 		});
+		/* Редактирование контента в админке
 		var cnt_btn_edt = new Element('img',{'src':'/img/edt/btnedt.png','title':'Редактировать'}).inject(item_actpanel_cnt).addEvent('click',function() {
 			if (!cnt_editorLoaded) {
 				cnt_editorLoaded = true;
@@ -271,6 +274,7 @@ window.addEvent('domready', function() {
 			cnt_btn_und.removeClass('hidden');
 			tinyMCE.execCommand('mceAddControl', false, 'pgcontent');			
 		});
+		*/
 		var cnt_btn_opt = new Element('img', {'src':'/img/edt/btnopt.gif','width':16,'height':16,'title':'Параметры страницы'}).inject(item_actpanel_cnt).addEvent('click',EditSecOpts);
 		var cnt_btn_und = new Element('img', {'src':'/img/edt/btnclse.gif','width':'16','height':'16','title':'Отменить','class':'hidden','style':'margin: 0px 3px;'}).inject(item_actpanel_cnt).addEvent('click',function() {
 			tinyMCE.execCommand('mceRemoveControl', false, 'pgcontent');
