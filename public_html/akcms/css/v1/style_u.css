@@ -407,28 +407,3 @@ a.pgrdgtcurr:hover,a.pgrdgtcurr:active {
 	font-family: Arial, Helvetica, sans-serif;
 	color: #1b536b;
 }
-.ftable {float: inherit;}
-.ftable td p, .ftable th p{
-	margin: 0;
-	padding: 0;
-}
-table.ftable {
-	border-collapse: collapse;
-}
-.ftable th {
-	background-color:#dddddd;
-	color:#585858;
-	font-size:12px;
-	padding-bottom:4px;
-	padding-top:5px;
-	text-align:center;
-}
-.ftable td, .ftable th {
-	border:1px solid #dedede;
-	font-size:12px;
-	padding:3px 7px 2px;
-}
-p.noredstring {
-	text-indent: 15px;
-}
-

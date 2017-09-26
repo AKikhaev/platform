@@ -4,6 +4,8 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="robots" content="noindex, nofollow, noarchive"/>
 	<title>{#title#}</title>
+
+	<!--link rel="stylesheet" href="/akcms/css/v2/bootstrap/bootstrap.min.css"-->
     <link href="/akcms/css/v1/style_u.css" rel="stylesheet" type="text/css"/>
 	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link href="/akcms/css/v1/style_adm.css" rel="stylesheet" type="text/css" />
@@ -40,10 +42,10 @@
 						<div class="cpmh"><h1>{#head#}</h1></div>
 						<div class="cpmb">
 							<div id="pgcontent" class="pgcontent noEdit"></div><div class="clearfix"></div>
-							<div id='u_0' class="unitplace">{#pgunit_0#}</div>
-                            <div id='u_1' class="unitplace">{#pgunit_1#}</div>
-                            <div id='u_2' class="unitplace">{#pgunit_2#}</div>
-							<div id='u_3' class="unitplace">{#pgunit_3#}</div>
+							<div id='u_0_' class="unitplace">{#pgunit_0#}</div>
+                            <div id='u_1_' class="unitplace">{#pgunit_1#}</div>
+                            <div id='u_2_' class="unitplace">{#pgunit_2#}</div>
+							<div id='u_3_' class="unitplace">{#pgunit_3#}</div>
                         </div>
 					</td>
 				</tr></table>

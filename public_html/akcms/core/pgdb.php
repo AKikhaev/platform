@@ -127,6 +127,15 @@ class pgdb {
         return $res;
     }
 
+    public function query_dict($query)
+    {
+        $dict = [];
+        $data = $this->query_all($query);
+        if ($data!==false) foreach ($data as $k=>$item){
+            $dict[current($item)] = $item;
+        }
+        return $dict;
+    }
 
     public function query_all_column($query, $row=0)
     {
@@ -181,7 +190,7 @@ class pgdb {
     public function pgf_array_int($v)
     {
         foreach ($v as &$i) $i = @(int)$i; # check it is digit
-        return 'ARRAY['.implode(',',$v).']';
+        return 'ARRAY['.implode(',',$v).']::bigint[]';
     }
 
     public function pgf_array_float($v)
@@ -280,7 +289,10 @@ class pgdb {
     public function a_d($v) {return $this->pgf_array_int($v);}
 
     /* digital array to array */
-    public function da_a($v) {return $v=='{}'?array():explode(',',trim($v,'{}'));}
+    public function da_a($v) {
+        $v = str_replace(['{','}','ARRAY[',']'],'',$v);
+        return $v==''?array():explode(',',$v);
+    }
 
     /* array of float */
     public function a_f($v) {return $this->pgf_array_float($v);}

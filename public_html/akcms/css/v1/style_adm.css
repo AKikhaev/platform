@@ -69,57 +69,15 @@ h6 {
 	padding-top: 8px;
 	padding-left: 8px;
 }
-.mnu_ul,.mnu_li,.mnu_li_c,.mnu_lii,.mnu_lii_c {
+#mnu ul, #mnu li {
     list-style:none;
     margin:0; padding:0;
-    list-style-type: none;
 }
 
-.mnu_ul ul {
-	padding-left: 0px;
+#mnu li {
+    padding:2px 5px 2px 15px;
 }
 
-.mnu_li {
-    padding:5px 10px 5px 21px;
-    background-image: url(/img/adm/sectsignm.png);
-    background-repeat: no-repeat;
-    background-position: left 5px;
-    font-family: Arial;
-    font-weight:bold;
-    font-size: 12px;
-    /*text-transform: uppercase;*/
-}
-.mnu_li_c {
-    padding:13px 10px 13px 26px;
-    background-image: url(/img/adm/sectsigns.gif);
-    background-repeat: no-repeat;
-    background-position: left 13px;
-    font-family: Arial;
-    font-weight:bold;
-    font-size: 12px;
-    text-transform: uppercase;
-}
-.mnu_lii {
-    /*	margin: 7px 0 0 -40px;*/
-    padding:2px 5px 6px 20px;
-    background-image: url(/img/adm/sectsignm.png);
-    background-repeat: no-repeat;
-    background-position: left 3px;
-    font-family: Arial;
-    font-weight:bold;
-    font-size: 12px;
-    text-transform:none;
-}
-.mnu_lii_c {
-    /*	margin: 7px 0 0 -40px;*/
-    padding:2px 5px 6px 20px;
-    background-image: url(/img/adm/sectsigns.gif);
-    background-repeat: no-repeat;
-    background-position: left 3px;
-    font-family: Arial;
-    font-weight:bold;
-    font-size: 12px;
-}
 a.mnu_curr, a.mnu_curr:link, a.mnu_curr:visited, a.mnu_curr:hover, a.mnu_curr:active {
     color: #c22235;
     text-decoration: none;
@@ -136,19 +94,20 @@ a.mnu_hddn, a.mnu_hddn:link, a.mnu_hddn:visited, a.mnu_hddn:hover, a.mnu_hddn:ac
 a.mnu_hddn:hover, a.mnu_hddn:active {
     text-decoration: underline;
 }
-.mnu_lii_l {
-    padding-bottom: 0;
-}
+
 .mnu_hc0 {
 	padding-left: 6px;
+    margin-left: -6px;
 	background: url(/img/adm/mnu_hc0.gif) left 2px no-repeat
 }
 .mnu_hc2 {
 	padding-left: 6px;
+    margin-left: -6px;
 	background: url(/img/adm/mnu_hc2.gif) left 2px no-repeat
 }
 .mnu_hc3 {
 	padding-left: 6px;
+    margin-left: -6px;
 	background: url(/img/adm/mnu_hc3.gif) left 2px no-repeat
 }
 /*************************************************/

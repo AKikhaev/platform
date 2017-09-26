@@ -22,7 +22,7 @@
 }
 /**************************** unit placement ********************************/
 .unitplace {
-    border: 1px dotted #eba7a0;
+	/* border: 1px dotted #eba7a0; */
     padding: 5px;
     margin: 1px;
 }
@@ -330,7 +330,7 @@
 	cursor: default !important;
 }
 
-/************ Оформление текста **************/
+/************ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ **************/
 .ftable {float: inherit;}
 .ftable td p, .ftable th p{
 	margin: 0;
@@ -340,7 +340,10 @@ table.ftable {
 	border-collapse: collapse;
 }
 .ftable th {
-	background-color:#dddddd;
+	/*
+	transform: rotate(-15deg);
+	*/
+	background-color: #e8e8e8;
 	color:#585858;
 	font-size:12px;
 	padding-bottom:4px;
@@ -351,6 +354,12 @@ table.ftable {
 	border:1px solid #dedede;
 	font-size:12px;
 	padding:3px 7px 2px;
+}
+.ftable tr:nth-child(odd) {
+	background: #f7f7f7;
+}
+.ftable tr:hover {
+	background: #eeeeee;
 }
 p.noredstring {
 	text-indent: 15px;

@@ -298,8 +298,9 @@ class PageUnit extends CmsPage {
 				if (!$expByPath || ($expByPath && isset($this->pagePath_ids[$menuAllItem['section_id']]))) // Раскрытие по крошкам
 					$this->_getAllMenuItems($menuAllItem['_children'],$menuAllItem['section_id'],$menuAllItem['sec_howchild'],
 						$showHidden,$prefix,$markSelected, $markCurrent,$expByPath, $deep-1);
-				if ($menuAllItem['sec_units'] !== '') foreach (explode(',',$menuAllItem['sec_units']) as $pgUnitClass) if (isset($cfg['pgunits'][$pgUnitClass]))
-                    call_user_func_array(array($pgUnitClass,'buildLevelSiteMap'),array(&$menuAllItem['_children'],$menuAllItem['section_id'],$menuAllItem['sec_url_full']));
+				if ($menuAllItem['sec_units'] !== '')
+				    foreach (explode(',',$menuAllItem['sec_units']) as $pgUnitClass) if (isset($cfg['pgunits'][$pgUnitClass]))
+				        call_user_func_array(array($pgUnitClass,'buildLevelSiteMap'),array(&$menuAllItem['_children'],$menuAllItem['section_id'],$menuAllItem['sec_url_full']));
                 if (count($menuAllItem['_children'])==0) unset($menuAllItem['_children']);
 			}
 		}
@@ -1268,9 +1269,10 @@ class PageUnit extends CmsPage {
             if (trim($this->page['sec_units']) !== '') foreach ($sec_units_array as $k)
                 $sec_units[]=array('k'=>$k,'v'=>$cfg['pgunits'][$k]);
             foreach ($cfg['pgunits'] as $k=>$v)
-                if (!in_array($k, $sec_units_array, true)) $sec_all_units[]=array('k'=>$k,'v'=>$v);
-				
-			
+                if (!in_array($k, $sec_units_array, true))
+                    if (!isset($cfg['pgunits_hidden'][$k]))
+                        $sec_all_units[]=array('k'=>$k,'v'=>$v);
+
 			if ($this->page['section_id']!=1) {
 				$pageEdt = $this->page;
 				$pageEdt['_selected']=true;

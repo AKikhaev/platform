@@ -724,17 +724,58 @@ function TableHeader($tblStruct = false,$tblSort='') {
     $html = '<table class="ftable"><tbody>';
     if ($tblStruct!==false) {
         $html .= '<tr>';
-        foreach ($tblStruct as $tblCol) $html .= '<th'.(isset($tblCol['width'])?' width="'.$tblCol['width'].'"':'').(isset($tblCol['nowrap'])?' nowrap':'').'>'.$tblCol['name'].'</th>';
+        foreach ($tblStruct as $tblCol) {
+            if (!(isset($tblCol['hideTable']) && $tblCol['hideTable']))
+            $html .=
+                '<th' .
+                (isset($tblCol['width']) ? ' width="' . $tblCol['width'] . '"' : '') .
+                (isset($tblCol['nowrap']) ? ' nowrap' : '') . '>' .
+                $tblCol['name'] .
+                '</th>';
+        }
         $html .= '</tr>';
     }
     return $html;
 }
 function TableRow($tblStruct,$tblData,$css='',$cssclass='') {
-    $html = '<tr'.($css!=''?' style="'.$css.'"':'').($cssclass!=''?' class="'.$cssclass.'"':'').'>';
-    foreach ($tblStruct as $k=>$tblCol) $html .= '<td'.(isset($tblCol['nowrap'])?' nowrap':'').(isset($tblCol['align'])?' align="'.$tblCol['align'].'"':'').'>'.@$tblData[$k].'</td>';
+    $html =
+        '<tr'.
+        ($css!=''?' style="'.$css.'"':'').
+        ($cssclass!=''?' class="'.$cssclass.'"':'').
+        '>';
+    foreach ($tblStruct as $k=>$tblCol) {
+        if (!(isset($tblCol['hideTable']) && $tblCol['hideTable']))
+        {
+            $value = isset($tblData[$k]) ? $tblData[$k] : '';
+            if (isset($tblCol['toText']))
+                $value = call_user_func($tblCol['toText'],$value,$k,$tblData);
+            $html .=
+                '<td' . (isset($tblCol['nowrap']) ? ' nowrap' : '') .
+                (isset($tblCol['align']) ? ' align="' . $tblCol['align'] . '"' : '') .
+                '>' .
+                $value .
+                '</td>';
+        }
+    }
     $html .= '</tr>';
     return $html;
 }
+function TableEditRows($tblStruct,$tblData){
+    $html = '';
+    foreach ($tblStruct as $k=>$tblCol)
+        if (!(isset($tblCol['hideEdit']) && $tblCol['hideEdit']))
+        {
+            $value = sprintf('<input type="text" name="%s" value="%s">',
+                $k,
+                htmlspecialchars(isset($tblData[$k]) ? $tblData[$k] : '')
+            );
+            if (isset($tblCol['toEdit']))
+                $value = call_user_func($tblCol['toEdit'],isset($tblData[$k]) ? $tblData[$k] : '',$k,$tblData);
+            $html .= TableRowD($tblCol['name'],$value);
+        }
+    return $html;
+}
+
 function TableRowD($header,$value) {
     $html = '<tr>';
     $html .= '<th>'.$header.'</th>';

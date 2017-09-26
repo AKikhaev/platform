@@ -423,6 +423,7 @@ class core {
             $GlobalVars = preg_replace('/Array\n\s*/','Array',$GlobalVars);
             $GlobalVars = preg_replace('/\n\s+\(/','(',$GlobalVars);
             $GlobalVars = preg_replace('/\n\s+\)/',')',$GlobalVars);
+            $GlobalVars = str_replace('[GLOBALS] => Array*RECURSION*','',$GlobalVars);
             $GlobalVars = preg_replace('/\n\s*\n/',"\n",$GlobalVars);
 
             $sent = self::terminalWrite(
