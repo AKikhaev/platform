@@ -135,15 +135,6 @@ function LOAD_CORE() {
 
 	if (file_exists('akcms/u/config/redirect.php')) {#site redirect
 		require_once 'akcms/u/config/redirect.php';
-		/*
-		$cfg['redirects']=array(
-			''=>'',
-		);
-		if (isset($cfg['redirects'][$pathstr])) {
-		  header('Location: '.$cfg['redirects'][$pathstr],true,301);
-		  exit;
-		}
-		*/
 	}
 
     require_once 'akcms/u/VisualTheme.php';

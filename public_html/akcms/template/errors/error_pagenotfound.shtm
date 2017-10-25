@@ -150,6 +150,7 @@
 			<li>ошибки в наборе адреса</li>
 			<li>очень старой ссылки</li>
 		</ul>
+		Попробуйте перейти на <a href="/">главную страницу</a> и найти необходимую информацию
 		<!-- script>
 			var GOOG_FIXURL_LANG = (navigator.language || '').slice(0,2),GOOG_FIXURL_SITE = location.host;
 		</script>

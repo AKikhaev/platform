@@ -16,6 +16,3 @@ Disallow: /
 User-agent: gigabot
 Disallow: /
 
-User-agent: *
-Disallow: /
-
