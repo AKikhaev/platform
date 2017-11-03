@@ -134,10 +134,11 @@ abstract class VisualThemeAbstract
     }
 
     public static function _ph_text_trunc(&$pageData,$editMode,$text,$field,$quote = 0,$cnt = 200){
-        $txt = mb_trim(strip_tags($pageData[$field]));
-        if ($text==='' && $field==='sec_contshort') {
-            $txt = mb_trim(strip_tags($pageData['sec_content']));
-        }
+        $txt = $pageData[$field];
+        if ($text==='' && $field==='sec_contshort') $txt = $pageData['sec_content'];
+        //&nbsp;
+        $txt = str_replace('&nbsp;',' ',$txt);
+        $txt = mb_trim(strip_tags($txt),'\s\n');
         $txt = GetTruncText(html_entity_decode($txt),$cnt);
         switch ($quote) {
             case 1: return str_replace('\'','&apos;',$txt); //&#039;

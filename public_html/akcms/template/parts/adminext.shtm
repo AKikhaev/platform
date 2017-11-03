@@ -1,6 +1,8 @@
 <link href="/akcms/css/v1/style_adm_cntrl.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript">
-    var _akcms = _akcms || {}; _akcms.uri = '{#pageMainUri#}';
+    var _akcms = _akcms || {};
+    _akcms.uri = '{#pageMainUri#}';
+    _akcms.editablepage = true;
     var te_fullscreen_on = function myCustomInitInstance(ed) {
         if(ed.editorId !== 'mce_fullscreen') ed.execCommand('mceFullScreen');
     };

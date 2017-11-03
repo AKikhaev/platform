@@ -5,7 +5,7 @@ function br2nl($string)
 }
 
 function mb_trim($string, $trim_chars = '\s'){
-    return preg_replace('/^['.$trim_chars.']*(?U)(.*)['.$trim_chars.']*$/u', '\\1',$string);
+    return preg_replace('/^['.$trim_chars.']*(?U)(.*)['.$trim_chars.']*$/um', '\\1',$string);
 }
 
 function prettySize($size,array $unit=array('б.','Кб.','Мб.','Гб.','Тб.','Пб.'))
