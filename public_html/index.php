@@ -23,6 +23,7 @@ try {
             'SysUnit',
             //'FeedUnit',
             'TmplMapperUnit',
+            'RootFolder'
         );
 
         /* @var  $page CmsPage */

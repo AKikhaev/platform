@@ -192,7 +192,7 @@ class TmplMapperUnit extends CmsPage {
                 $templates = [];
                 foreach(glob('akcms/u/template/{pages,parts}/*.shtm',GLOB_BRACE) as $item) {
                     $item = mb_substr($item,17,mb_strlen($item)-5-17);
-                    $templates[] = sprintf("<a target='_blank' href='http://kend.beside.ru/_tmpl/%s'>%s</a>",
+                    $templates[] = sprintf("<a target='_blank' href='/_tmpl/%s'>%s</a>",
                         $item,
                         $item
                     );
