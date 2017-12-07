@@ -1,5 +1,5 @@
 <?php //Цена на первое место, генерация ссылки для без ссылки
-chdir('../..');
+chdir(dirname(__FILE__).'/../..');
 if(php_sapi_name()!=='cli')die('<!-- not allowed -->');
 ini_set('memory_limit', '228M');
 require_once('akcms/core/core.php'); LOAD_CORE_CLI();
@@ -10,6 +10,15 @@ require_once('akcms/classes/ImgResizer.php');
 
 ini_set('display_errors',1);
 error_reporting (E_ALL);
+
+function rrmdir($dir) {
+    foreach(glob($dir . '/*') as $file) {
+        if(is_dir($file))
+            rrmdir($file);
+        else unlink($file);
+    }
+    rmdir($dir);
+}
 
 $saved = 0;
 $removed = 0;
@@ -29,8 +38,35 @@ try {
 
 	}
 
-	$startFrom = isset($_SERVER["argv"][1])? (int)$_SERVER["argv"][1] :0;
 
+	$ids_all = $sql->query_all_column('SELECT section_id FROM cms_sections');
+
+	//Удаление ненужных каталогов ресурсов
+	$dirs = glob('s/{images,files}/*/*',GLOB_BRACE | GLOB_ONLYDIR);
+	foreach ($dirs as $dir) {
+	    if (preg_match('~(\\d++/\\d++)$~',$dir,$match)) {
+	        $id = (string)(int)str_replace('/','',$match[1]);
+	        if (!in_array($id,$ids_all)) {
+                rrmdir($dir);
+                toLogError('Папка без раздела: ' . $dir);
+            }
+        }
+    }
+
+    //Удаление картинок разделов
+    $files = glob('img/pages/{*,*/*}',GLOB_BRACE);
+    foreach ($files as $file) if (is_file($file)) {
+        $id = basename($file,'.jpg');
+        if (!in_array($id,$ids_all)) {
+            $saved += @filesize($file);
+            unlink($file);
+            toLogError('Файл без раздела: ' . $file);
+        }
+    }
+
+	die;
+
+    $startFrom = isset($_SERVER["argv"][1])? (int)$_SERVER["argv"][1] :0;
 	$query = 'SELECT section_id,sec_nameshort,sec_content,sec_url_full FROM cms_sections WHERE section_id>='.$sql->d($startFrom).' ORDER by 1'.($startFrom>0?'':' DESC');
     $itemObj = $sql->queryObj($query);
     $remain = new remainCalc();

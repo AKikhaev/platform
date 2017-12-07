@@ -340,7 +340,7 @@ class core {
             $err = $errortype[$errno].': '. $errmsg . "\n";
             if (self::$ErrorFirstTitle=='')
             	self::$ErrorFirstTitle = $errortype[$errno].': '.$errmsg.' '.
-					($_SERVER['SERVER_NAME']?:'').' '.($_SERVER['REQUEST_URI']?:'');
+					(isset($_SERVER['SERVER_NAME'])?$_SERVER['SERVER_NAME']:'').' '.(isset($_SERVER['REQUEST_URI'])?$_SERVER['REQUEST_URI']:'');
             $err .= 'src: ' . self::hidePathForError($filename).': '.$linenum . "\n";
             if (in_array($errno, array(E_USER_ERROR, E_USER_WARNING, E_USER_NOTICE, E_NOTICE, E_ERROR, E_WARNING, -1))) {#E_WARNING,
                 $tracedata = array();
