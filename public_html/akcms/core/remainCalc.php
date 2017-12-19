@@ -6,6 +6,7 @@ class remainCalc {
     private $skip = 0;
     private $nextPlot = 0;
     private $str;
+    private $value = 0;
 
     function init($count, $str='',$skip=0) {
         if ($count == 0)
@@ -24,7 +25,8 @@ class remainCalc {
         return $h . ':' . ($m<10?'0'.$m:$m) . ':' . ($s<10?'0'.$s:$s);
     }
 
-    function plot($num,$printlog = true,$msg='',$msgTitle='') {
+    function plot($num=-1,$printlog = true,$msg='',$msgTitle='') {
+        if ($num === -1) $num = ++$this->value;
         $elapsed = microtime(true) - $this->started;
         if (($elapsed < $this->nextPlot) && ($num != $this->count))
             return;

@@ -37,7 +37,7 @@ abstract class AclProcessor { /* acl */
     protected function setOwner($isOwner) {return $this->owner = $isOwner;}
     protected function isSpecifiedRight($rightName) {return null;}
 
-    /*** Провееряет право доступа с учетом текущего класса. Допустимые разрешения ClassName.methodName, ClassName.*, *.methodName, RightName
+    /*** Проверяет право доступа с учетом текущего класса. Допустимые разрешения ClassName.methodName, ClassName.*, *.methodName, RightName
      * @param null $rightName
      * Имя права. Если null - используется имя метода
      * @param bool|string $class
@@ -113,6 +113,11 @@ abstract class PgUnitAbstract extends AclProcessor { /* Pg_ untits */
 }
 
 class CacheController { /* cache */
+    /**
+     * @var bool Ингорировать время, брать если есть
+     */
+    public $forceCache = false;
+
 	public function getpath($key, $cd=false) {
 		global $cfg;
 		$key = md5($key);
@@ -126,7 +131,7 @@ class CacheController { /* cache */
 		$dump = file_exists($ipath)?file_get_contents($ipath):false;
 		if ($dump!==false) {
 			$c_obj = unserialize($dump);
-			if (time()<$c_obj['u']) {
+			if (time()<$c_obj['u'] || $this->forceCache) {
 				$val = $c_obj['d'];
 				return true;
 			} //else @unlink($ipath); //$this->cache_drop($key); //Зачем удалять если его и так перезапишут
@@ -297,6 +302,8 @@ class core {
     private static $terminals = array();
     public static $outputData = '';
     public static $renderPage;
+    public static $OS_WIN = false;
+    public static $IS_CLI = false;
 
     public static function get_client_ip() {
         $ip = getenv('HTTP_CLIENT_IP');
@@ -308,7 +315,6 @@ class core {
         return $ip;
     }
     private static function hidePathForError($filename) {
-		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') $filename = str_replace('\\','/',$filename);
 		if (isset($_SERVER) && strpos($filename,$_SERVER['DOCUMENT_ROOT'])!==false)
     		$filename = substr($filename,strlen($_SERVER['DOCUMENT_ROOT']));
     	else $filename = basename($filename);
@@ -339,12 +345,12 @@ class core {
         if ($errmsg !== 'login_needs' && error_reporting()!==0) {
             $err = $errortype[$errno].': '. $errmsg . "\n";
             if (self::$ErrorFirstTitle=='')
-            	self::$ErrorFirstTitle = $errortype[$errno].': '.$errmsg.' '.
+            	self::$ErrorFirstTitle = $errortype[$errno].': '.explode("\n",$errmsg)[0].' '.
 					(isset($_SERVER['SERVER_NAME'])?$_SERVER['SERVER_NAME']:'').' '.(isset($_SERVER['REQUEST_URI'])?$_SERVER['REQUEST_URI']:'');
             $err .= 'src: ' . self::hidePathForError($filename).': '.$linenum . "\n";
             if (in_array($errno, array(E_USER_ERROR, E_USER_WARNING, E_USER_NOTICE, E_NOTICE, E_ERROR, E_WARNING, -1))) {#E_WARNING,
                 $tracedata = array();
-                if (!isset($backtrace[0])) $backtrace = debug_backtrace(0);
+                if (!isset($backtrace[0])) { $backtrace = debug_backtrace(0); unset($backtrace[0]);}
                 foreach($backtrace as $k=>$d) if (is_array($d)) {
                     $i='  '.$k.': ';
                     if (isset($d['file'])) $i  .= self::hidePathForError($d['file']);
@@ -352,12 +358,26 @@ class core {
                     if (isset($d['class'])) $i .= ' {'.$d['class'].'}';
                     if (isset($d['type'])) $i  .= ' '.$d['type'];
                     if (isset($d['function'])) $i .= ' '.$d['function'];
+                    if (isset($d['args'])) {
+                        $d['args'] = array_map(function($v){
+                            switch (gettype($v)) {
+                                case 'boolean': return $v===true?'TRUE':FALSE;
+                                case 'integer':
+                                case 'double':
+                                case 'float': return GetTruncString($v,20);
+                                case 'string': return '\''.GetTruncString($v,20).'\'';
+                                case 'object': return '{'.get_class($v).'}';
+                            }
+                            return gettype($v);
+                        },$d['args']);
+                        $i .= '('.implode(',',$d['args']).')';
+                    }
                     $tracedata[] = $i;
                 }
                 $err .= implode("\n",$tracedata) . "\n";
             }
             if (isset($cfg['debug']) && $cfg['debug']===true) {
-                if (self::$isAjax) {}//echo '/* '.$err.' */';
+                if (self::$isAjax || self::$IS_CLI) {}//echo '/* '.$err.' */';
                 else echo '<script>console.log('.json_encode($err).');</script>';
                 //else echo '<!--'.$err.'-->';
                 //echo ErrorsStringToHTML($err);
@@ -407,32 +427,39 @@ class core {
             if (mb_stripos(self::$ErrorFirstTitle,'page_not_found')!==false && mb_substr(self::$ErrorFirstTitle,-5,5)=='.map/') return;
 
             $emailTo = $cfg['email_error'];
+            $ip = self::get_client_ip();
             $inf = "sessioninfo:\n";
-            //if (isset($_SERVER['SERVER_NAME'])) $inf .= " addr: " . $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] . "\n";
-            if (isset($_SERVER['HTTP_USER_AGENT'])) $inf .= ' useragent: ' . $_SERVER['HTTP_USER_AGENT'] . "\n";
-            if (isset($_SERVER['HTTP_REFERER'])) $inf .= ' referer: ' . $_SERVER['HTTP_REFERER'] . "\n";
-            if (isset($_SERVER['REMOTE_ADDR'])) $inf .= ' ip: ' . $_SERVER['REMOTE_ADDR'] . "\n";
+            //if (isset($_SERVER['SERVER_NAME'])) $inf .= " addr: " . $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] . PHP_EOL;
+            if (isset($_SERVER['HTTP_USER_AGENT'])) $inf .= ' useragent: ' . $_SERVER['HTTP_USER_AGENT'] . PHP_EOL;
+            if (isset($_SERVER['HTTP_REFERER'])) $inf .= ' referer: ' . $_SERVER['HTTP_REFERER'] . PHP_EOL;
+            if ($ip!==false) $inf .= ' ip: ' . $ip  . PHP_EOL;
             $inf .= "\n";
             self::$GlobalErrors .= $inf;
 
             //$cfg['debug']===true
-            $host = $_SERVER['HTTP_HOST'];
+            //$host = $_SERVER['HTTP_HOST'];
 
-            unset($GLOBALS['cfg'], $GLOBALS['_SERVER'], $GLOBALS['page'], $GLOBALS['runObj'], $GLOBALS['shapes'], $GLOBALS['shape'], $GLOBALS['Cacher'], $GLOBALS['pagecontent'], $GLOBALS['e'], $GLOBALS['html']);
-            $GlobalVars = print_r($GLOBALS,true);
-            $GlobalVars = preg_replace('/Array\n\s*/','Array',$GlobalVars);
-            $GlobalVars = preg_replace('/\n\s+\(/','(',$GlobalVars);
-            $GlobalVars = preg_replace('/\n\s+\)/',')',$GlobalVars);
-            $GlobalVars = str_replace('[GLOBALS] => Array*RECURSION*','',$GlobalVars);
-            $GlobalVars = preg_replace('/\n\s*\n/',"\n",$GlobalVars);
+            unset(
+                $GLOBALS['cfg'], $GLOBALS['_SERVER'], $GLOBALS['page'], $GLOBALS['runObj'], $GLOBALS['shapes'],
+                $GLOBALS['shape'], $GLOBALS['Cacher'], $GLOBALS['pagecontent'], $GLOBALS['e'], $GLOBALS['html'],
+                $GLOBALS['remain'],$GLOBALS['sql']
+            );
+            $GlobalVars = var_log_export($GLOBALS);
 
             $sent = self::terminalWrite(
-                "\x07\x1b[2J\x1b[H\x1b[3J" .
-                "\033]0;".date('M d H:i:s ').self::$ErrorFirstTitle."\007" .
-                '=> ' . date('M d H:i:s ').self::$ErrorFirstTitle . "\n" . self::$GlobalErrors . $GlobalVars . '<=='
+                (
+                    self::$IS_CLI?
+                        '=> ' . date('M d H:i:s ').self::$ErrorFirstTitle . PHP_EOL
+                        :
+                        "\x1b[2J\x1b[H\x1b[3J".
+                        '=> ' . date('M d H:i:s ').self::$ErrorFirstTitle . PHP_EOL
+                ) . // Clear screen, move to left upper, clear all with scroll
+                "\x07\033]0;".date('M d H:i:s ').self::$ErrorFirstTitle."\007" .
+                self::$GlobalErrors . $GlobalVars . '<=='.PHP_EOL
             );
-            if (!$sent) $sent = sendTelegram(self::$ErrorFirstTitle.' '. self::get_client_ip());
+            if (!$sent) $sent = sendTelegram(self::$ErrorFirstTitle.PHP_EOL.$inf);
             if (!$sent) sendMailHTML($emailTo, 'ERROR '.self::$ErrorFirstTitle, self::ErrorsStringToHTML(self::$GlobalErrors).'<pre>'.$GlobalVars.'</pre>','',$cfg['email_from']);
+            //if (self::$IS_CLI) sleep(2);
         }
         //if (isset(core::$prodServer)) try { new LiveinternetSeTracker($cfg['liveinternet_account']); } catch(Exception $e) {}
     }
@@ -440,20 +467,15 @@ class core {
     {
         return str_replace(array("\n", ' '),array("<br>\n",'&nbsp;'),$errStr);//
     }
-    private static function SendErrorMessage($errStr,$title='',$wrn='WARNING') {
-        Global $cfg;
-        $emailTo = $cfg['email_error'];
-        sendMailHTML($emailTo, $wrn.' '.$_SERVER['HTTP_HOST'].' '.$title, $errStr,'',$cfg['email_from']);
-    }
-
     public static function cms_autoload($class_name)
     {
-        $class_name = str_replace('_','/',$class_name);
-        $res = @include_once $class_name.'.php';
+        $classNameSlashed = str_replace('_','/',$class_name);
+        $res = @include_once $classNameSlashed.'.php';
+        if ($res===false) $res = @include_once $class_name.'.php';
         if ($res===false) {
             $bugtrace = debug_backtrace(0)[1];
-            throw new CmsException('class_not_found: '.$class_name,0,E_USER_ERROR,
-                isset($bugtrace['file'])?$bugtrace['file']:'',
+            throw new CmsException('class_not_found: '.$class_name,-1,E_ERROR,
+                isset($bugtrace['file'])?$bugtrace['file']:(isset($bugtrace['function'])?$bugtrace['function'].'(...)':''),
                 isset($bugtrace['line'])?$bugtrace['line']:-1); // 5.3.0+
             //self::InTryErrorHandler(new CmsException('class_not_found: '.$class_name,0,E_USER_ERROR,$bugtrace['file'],$bugtrace['line'])); die();
         }
@@ -466,9 +488,10 @@ class core {
     }
     public static function getTerminalsList(){
         $out = array();
-        $currentUser = get_current_user();
+        if (self::$OS_WIN) return $out; // exit when win, no terminals support
+
         $ip = self::get_client_ip();
-        exec('who| grep '.$currentUser.' | grep '.$ip,$terminalsRaw);
+        exec('who| grep '.get_current_user().' | grep '.$ip,$terminalsRaw);
         foreach ($terminalsRaw as $data) {
             if (preg_match('/([A-Za-z0-9_-]+)\s+([a-zA-Z0-9\/]+)\s+([\d-]+)\s+([\d:]+)\s+\(([\d.]+)\)/iu', $data, $terminalInfo)) {
                 $out[] = array(
@@ -484,8 +507,11 @@ class core {
         return self::$terminals = array_reverse($out);
     }
     public static function terminalWrite($data, $terminal=null){
-
         if ($terminal==null) {
+            if (self::$IS_CLI) {
+                echo $data;
+                return true;
+            }
             if (!isset(self::$terminals[0])) self::getTerminalsList();
             if (isset(self::$terminals[0])) $terminal = self::$terminals[0]['terminal'];
             else return false;
@@ -498,6 +524,8 @@ class core {
     }
     public static function terminalClear($terminal=null) { self::terminalWrite("\e[2J\e[H\e[3J",$terminal); }
     public static function terminalBeep($terminal=null) { self::terminalWrite("\x07",$terminal); }
+    public static function terminalTitle($title,$terminal=null) { self::terminalWrite("\033]0;$title\007",$terminal); }
+    public static function terminalClearLine($terminal=null) { self::terminalWrite("\e[2K",$terminal); }
     public static function proceedAjax(){
         global $page;
         /* @var $page CmsPage */

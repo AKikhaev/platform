@@ -185,16 +185,21 @@ function var_log() {
     //else die(json_encode($var));
 }
 
-function var_log_terminal() {
+function var_log_export() {
     $var = func_get_args();
     $var = count($var)===1?$var[0]:$var;
     $printVar = print_r($var,true);
     $printVar = preg_replace('/Array\n\s*/','Array',$printVar);
     $printVar = preg_replace('/\n\s+\(/','(',$printVar);
     $printVar = preg_replace('/\n\s+\)/',')',$printVar);
+    $printVar = str_replace('[GLOBALS] => Array*RECURSION*','',$printVar);
     $printVar = preg_replace('/\n\s*\n/',"\n",$printVar);
+    return $printVar;
+}
+
+function var_log_terminal() {
     core::terminalBeep();
-    core::terminalWrite($printVar);
+    core::terminalWrite(var_log_export(...func_get_args()));
 }
 function var_log_terminal__($var) {
     var_log_terminal(...func_get_args());
@@ -322,6 +327,14 @@ Function GetTruncText($str,$cnt,$p3after = true) // Возвращает час�
 	$lstchr = mb_substr($str,mb_strlen($str)-1,1);
 	if (in_array($lstchr,array('!',',','.',';'))) $str = mb_substr($str,0,mb_strlen($str)-1);
 	return $str.($p3after?'... ':'');
+}
+
+Function GetTruncString($str,$cnt,$p3after = true) // Возвращает часть строки. Обрезает строку
+    //  до указанной длины и всё
+{
+    if (mb_strlen($str)<=$cnt) return $str;
+    $str = mb_substr($str,0,$cnt);
+    return $str.($p3after?'... ':'');
 }
 
 Function DtTmToDtStr($dttm,$y=true) // Конвертирует 2005-05-06 в 6 мая 2005г.
@@ -622,6 +635,37 @@ function strUpCorr($str)
   return $findstring;
 }
 
+function mb_str_pad($input, $length, $pad_str=' ', $type = STR_PAD_RIGHT)
+{
+    $input_len = mb_strlen($input);
+    if ($length <= $input_len)
+        return $input;
+    $pad_str_len = mb_strlen($pad_str);
+    $pad_len = $length - $input_len;
+    if ($type == STR_PAD_RIGHT)
+    {
+        $repeat_times = ceil($pad_len / $pad_str_len);
+        return mb_substr($input.str_repeat($pad_str, $repeat_times), 0, $length);
+    }
+    if ($type == STR_PAD_LEFT)
+    {
+        $repeat_times = ceil($pad_len / $pad_str_len);
+        return mb_substr(str_repeat($pad_str, $repeat_times), 0, floor($pad_len)).$input;
+    }
+    if ($type == STR_PAD_BOTH)
+    {
+        $pad_len /= 2;
+        $pad_amount_left = floor($pad_len);
+        $pad_amount_right = ceil($pad_len);
+        $repeat_times_left = ceil($pad_amount_left / $pad_str_len);
+        $repeat_times_right = ceil($pad_amount_right / $pad_str_len);
+        $padding_left = mb_substr(str_repeat($pad_str, $repeat_times_left), 0, $pad_amount_left);
+        $padding_right = mb_substr(str_repeat($pad_str, $repeat_times_right), 0, $pad_amount_right);
+        return $padding_left.$input.$padding_right;
+    }
+    trigger_error('utf8_str_pad: Unknown padding type ('.$type.')', E_USER_ERROR);
+}
+
 /** Консоль. Цвет
  *
  * 0 все атрибуты по умолчанию
@@ -689,9 +733,99 @@ function toTitle($msg){
 	echo("\033]0;$msg\007");
 }
 function toLog($msg){ echo "\r\e[K"._ls(35).date('H:i:s ')._ls().$msg._ls().PHP_EOL; }
+function toLogProcess($msg){ echo "\r\e[K"._ls(35).date('H:i:s ')._ls(37)._ls(1).$msg._ls(); }
 function toLogError($msg){ echo "\r\e[K"._ls(35).date('H:i:s ')._ls(31)._ls(1).$msg._ls().PHP_EOL; }
 function toLogDie__($msg){ die("\r\e[K"._ls(35).date('H:i:s ')._ls(31)._ls(1).$msg._ls(36).' DIE'._ls().PHP_EOL); }
 function toLogInfo($msg){ echo "\r\e[K"._ls(35).date('H:i:s ')._ls(32).$msg._ls().PHP_EOL; }
+
+function _getUrlContent(
+    $url,
+    $headers_add = array(),
+    $GET=array(),
+    $POST=array(),
+    $followlocation=true,
+    &$cookies = false,
+    $cookiefile='../cookie_file.txt',
+    $proxy = false)
+{
+    /* @var $Cacher CacheController */
+    global $Cacher;
+
+    //$cacheKey = md5(serialize(func_get_args()));
+
+    $res = '';
+    $headers = array(
+        'User-Agent'=>'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0',
+        'Accept'=>'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language'=>'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
+        'Accept-Encoding'=>'gzip, deflate',
+        'X-Compress'=>1,
+        'Connection'=>'keep-alive',
+    );
+    $headers = array_merge($headers_add,$headers);
+    $headers = array_merge($headers,$headers_add);
+    $headers_raw = array();
+    foreach($headers as $k=>$v) $headers_raw[] = $k.': '.$v;
+
+    $url = str_replace(' ','%20',$url);
+    if (count($GET)>0) $url .= '?'.http_build_query($GET);
+    $ch = curl_init($url);
+    curl_setopt_array($ch, array(
+        CURLOPT_HEADER => true,
+        CURLOPT_HTTPHEADER => $headers_raw,
+        CURLOPT_RETURNTRANSFER => true,
+        #CURLOPT_VERBOSE => false,
+        CURLOPT_ENCODING => "gzip",
+        CURLOPT_COOKIEJAR => $cookiefile,
+        CURLOPT_COOKIEFILE => $cookiefile,
+        //CURLOPT_PROXY => '212.192.64.125:3128',
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_FOLLOWLOCATION => $followlocation,
+        //CURLOPT_SSL_VERIFYHOST => 2,
+        //CURLOPT_CAINFO => '_scripts/thawtePrimaryRootCA.crt',
+        CURLINFO_HEADER_OUT => true,
+    ));
+    if ($proxy!==false) {
+        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+        curl_setopt($ch, CURLOPT_PROXY, $proxy);
+    }
+    if ($POST===true) { curl_setopt($ch, CURLOPT_POST, true); $POST = array();}
+    if (count($POST)>0) curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($POST));
+    $time_start = microtime(true);
+    $output = curl_exec($ch);
+    $headers_len = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+    $headers = substr($output, 0, $headers_len);
+    if ($cookies!==false) {
+        foreach (explode("\r\n",$headers) as $header)
+            if (mb_stripos($header,'SET-COOKIE: ')===0) {
+                $header = explode(';',mb_substr($header,12));
+                $header = explode('=',$header[0]);
+                if (count($header)==2) {
+                    $cookies[$header[0]] = $header[1];
+                    #toLog('cookie '.$header[0].'='.$header[1]);
+                }
+            }
+    }
+    $res = array(
+        'redirects'     => curl_getinfo($ch,CURLINFO_REDIRECT_COUNT),
+        'code'          => curl_getinfo($ch,CURLINFO_HTTP_CODE),
+        'url'           => curl_getinfo($ch,CURLINFO_EFFECTIVE_URL),
+        'url_orig'      => $url,
+        'headers'       => array_filter(explode("\r\n\r\n", $headers),function($v){return trim($v)!='';}),
+        'headers_out'   => curl_getinfo($ch, CURLINFO_HEADER_OUT),
+        'headers_len'   => $headers_len,
+        'time_start'    => $time_start,
+        'time_duration' => microtime(true)-$time_start,
+        'data'          => substr($output, $headers_len)
+    );
+    curl_close($ch);
+    if (count($GET)>0) $res['get'] = $GET;
+    if (count($POST)>0) {
+        #$res['post'] = $POST;
+        $res['post_raw'] = http_build_query($POST);
+    }
+    return $res;
+}
 
 function getUrlContent($url) {
     $headers = array(
@@ -719,6 +853,12 @@ function getUrlContent($url) {
     return $output;
 }
 
+function removeBOM($text="") {
+    if(substr($text, 0, 3) == pack('CCC', 0xef, 0xbb, 0xbf)) {
+        $text= substr($text, 3);
+    }
+    return $text;
+}
 
 function TableHeader($tblStruct = false,$tblSort='') {
     $html = '<table class="ftable"><tbody>';

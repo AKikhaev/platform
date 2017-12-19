@@ -75,10 +75,10 @@ class pgdbQuery implements Iterator {
 class pgdb {
     private $db_conn;
     protected $debug = false;
-    protected $debuq_queries = 0;
-    protected $debuq_commands = 0;
 
-    public function __construct()
+    public function __construct() {}
+
+    private function pgconnect()
     {
         global $cfg;
         $dbnum = 1;
@@ -88,15 +88,18 @@ class pgdb {
             ' password='.$cfg['db'][$dbnum]['password']);
         if ($this->db_conn===false) throw new CmsException('DB_connect');
         pg_query($this->db_conn,'SET client_encoding TO \'UTF-8\';SET search_path TO '.$cfg['db'][$dbnum]['schema'].';');
+        if ($this->debug) call_user_func(profiler::$sql_logger,'connected');
     }
 
     public function getClientEncoding()
     {
+        if (!$this->db_conn) $this->pgconnect();
         return pg_client_encoding();
     }
 
     public function query($query)
     {
+        if (!$this->db_conn) $this->pgconnect();
         $sqlres = pg_query($this->db_conn,$query); if ($sqlres===false) throw new DBException('DB_no_data: ' .$query,pg_last_error());
         if ($this->debug) {
             ++profiler::$sql_quries;
@@ -107,6 +110,7 @@ class pgdb {
 
     public function command($query)
     {
+        if (!$this->db_conn) $this->pgconnect();
         $sqlres = $this->query($query);
         if ($this->debug) {
             --profiler::$sql_quries;
@@ -283,7 +287,10 @@ class pgdb {
     public function b($v) {return $this->pgf_boolean($v);}
 
     /* array of text */
-    public function a_t($v) {return $this->pgf_array_text($v);}
+    function a_t($v) {
+        foreach ($v as &$i) $i = '\''.pg_escape_string($i).'\'';
+        return 'ARRAY['.implode(',',$v).']::text[]';
+    }
 
     /* array of digit */
     public function a_d($v) {return $this->pgf_array_int($v);}
@@ -296,6 +303,14 @@ class pgdb {
 
     /* array of float */
     public function a_f($v) {return $this->pgf_array_float($v);}
+
+    /* text array to array */
+    function at_a($v)
+    {
+        $v = trim($v,'{}');
+        $items = str_getcsv($v,',','"');
+        return $items;
+    }
 
     public function query_fa($query) {
         return $this->query_first_assoc($query);
@@ -311,5 +326,25 @@ class pgdb {
     public function zzzSetDebug($debug=true)
     {
         $this->debug = $debug;
+    }
+
+    /** Экранирует данные данные и приводят их к указанным типам полей
+     * @param $data
+     * @param $fieldTypes
+     * @return mixed
+     */
+    function dataEscape($data,$fieldTypes) {
+        foreach ($data as $k=>&$v) {
+            if (isset($fieldTypes[$k])) {
+                switch ($fieldTypes[$k]) {
+                    case 'BIGSERIAL':
+                    case 'BIGINT': $v = $this->d($v); break;
+                    case 'DOUBLE PRECISION': $v = $this->f($v); break;
+                    case 'BOOLEAN': $v = $this->b($v); break;
+                }
+            } else $v = $this->t($v);
+        }
+
+        return $data;
     }
 }

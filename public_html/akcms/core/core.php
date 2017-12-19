@@ -45,20 +45,25 @@ function LOAD_CORE_BASE(){
 }
 function LOAD_CORE_CLI() {
     LOAD_CORE_BASE();
-	GLOBAL $cfg,$CliUser,$OS_WIN;
+	GLOBAL $cfg,$CliUser;
 	
 	#function CORE_CLI_TERMINATE(){die();}
 	#pcntl_signal(SIGINT, 'CORE_CLI_TERMINATE'); // Ctrl+C
 	#pcntl_signal(SIGTERM, 'CORE_CLI_TERMINATE'); // killall myscript / kill <PID>
 	#pcntl_signal(SIGHUP, 'CORE_CLI_TERMINATE'); // обрыв связи
-	$CliUser = function_exists('posix_getpwuid') ? posix_getpwuid(posix_getuid()) : array();
-	$OS_WIN = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
+	$CliUser = function_exists('posix_getpwuid') ? posix_getpwuid(posix_getuid()) : array('name'=>get_current_user());
+	core::$OS_WIN = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
+	core::$IS_CLI = true;
 	$_SERVER['DOCUMENT_ROOT'] = getcwd();
+    $_SERVER['HTTP_HOST'] = 'CLI:'.$cfg['site_domain'];
+    $_SERVER['SERVER_NAME'] = 'CLI:'.$cfg['site_domain'];
+    $_SERVER['REQUEST_URI'] = '/'.$GLOBALS['argv'][0];
+    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
 	#set_error_handler("GlobalErrorHandler");
-	if ($OS_WIN) {
+	if (core::$OS_WIN) {
 		//system('chcp 65001>null');
-		mb_http_output('cp866'); ob_start('mb_output_handler');
+		//mb_http_output('cp866'); ob_start('mb_output_handler');
 		set_include_path(str_replace(':',';', get_include_path()));
 	}
 
