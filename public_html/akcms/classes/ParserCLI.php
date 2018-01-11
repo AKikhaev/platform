@@ -1,5 +1,5 @@
 <?php
-class ParserHelper
+class ParserCLI
 {
 
     static function getCsvLine($handle) {
@@ -25,6 +25,15 @@ class ParserHelper
         $text = preg_replace('/\<\!\-\-.*?\-\-\>/',' ',$text);
         return mb_trim(preg_replace('/\s{2,}/',' ',$text));
     }
+
+    static function writeParam($f2,&$data,$param,$xml){
+        if ($data[$param]!=null && mb_strlen($data[$param])>0) fwrite($f2,' '.$xml.'="'.htmlspecialchars($data[$param],ENT_QUOTES).'"');
+    }
+
+    static function writeTag($f2,&$data,$param,$tag,$cdata = false){
+        if ($data[$param]!='')fwrite($f2,"\t\t<$tag>".($cdata?'<![CDATA[':'')."$data[$param]".($cdata?']]>':'' )."</$tag>\n");
+    }
+
 
 
 }

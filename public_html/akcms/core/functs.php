@@ -727,11 +727,9 @@ function _ls($code = '0'){
     //http://wiki.bash-hackers.org/scripting/terminalcodes
     //http://ascii-table.com/ansi-escape-sequences.php
     //http://ascii-table.com/ansi-escape-sequences-vt-100.php
-	return "\x1b[".$code."m"; // \e = \x1b
+	return "\e[".$code."m"; // \e = \x1b = \033
 }
-function toTitle($msg){
-	echo("\033]0;$msg\007");
-}
+function toTitle($msg){ echo("\033]0;$msg\007"); }
 function toLog($msg){ echo "\r\e[K"._ls(35).date('H:i:s ')._ls().$msg._ls().PHP_EOL; }
 function toLogProcess($msg){ echo "\r\e[K"._ls(35).date('H:i:s ')._ls(37)._ls(1).$msg._ls(); }
 function toLogError($msg){ echo "\r\e[K"._ls(35).date('H:i:s ')._ls(31)._ls(1).$msg._ls().PHP_EOL; }

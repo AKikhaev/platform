@@ -374,7 +374,7 @@ class core {
                     }
                     $tracedata[] = $i;
                 }
-                $err .= implode("\n",$tracedata) . "\n";
+                $err .= implode(PHP_EOL,$tracedata) . PHP_EOL.PHP_EOL;
             }
             if (isset($cfg['debug']) && $cfg['debug']===true) {
                 if (self::$isAjax || self::$IS_CLI) {}//echo '/* '.$err.' */';
