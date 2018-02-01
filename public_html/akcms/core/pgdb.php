@@ -286,6 +286,10 @@ class pgdb {
     /* boolean */
     public function b($v) {return $this->pgf_boolean($v);}
 
+    /* DATETIME */
+    public function dtFromDateTime(DateTime $v) {return $this->t($v->format('Y-m-d H:i:s T'));}
+    public function dtFromInt($v) {return $this->t( date('Y-m-d H:i:s T',$v));}
+
     /* array of text */
     function a_t($v) {
         foreach ($v as &$i) $i = '\''.pg_escape_string($i).'\'';
@@ -341,6 +345,8 @@ class pgdb {
                     case 'BIGINT': $v = $this->d($v); break;
                     case 'DOUBLE PRECISION': $v = $this->f($v); break;
                     case 'BOOLEAN': $v = $this->b($v); break;
+                    case 'TIMESTAMP': $v = $this->dtFromDateTime($v); break;
+                    default: $v = $this->t($v);
                 }
             } else $v = $this->t($v);
         }
