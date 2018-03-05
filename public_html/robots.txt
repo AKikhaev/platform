@@ -16,3 +16,8 @@ Disallow: /
 User-agent: gigabot
 Disallow: /
 
+User-agent: DeuSu
+Disallow: /
+
+User-agent: CCBot
+Disallow: /

@@ -51,7 +51,8 @@ class MngUnit extends CmsPage {
             core::$renderPage = true;
             $this->title = 'Добро пожаловать';
 
-            $shape['cval'] = md5($_SERVER['REMOTE_ADDR']);
+            $hash = $_SERVER['REMOTE_ADDR'].PATH_SEPARATOR.(isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT']:'').PATH_SEPARATOR.date('Yd');
+            $shape['cval'] = md5($hash);
 			$shape['msg'] = '';
 			$shape['location'] = '';
 			$location = (isset($_GET['url'])?!empty($_GET['url']):false)?$_GET['url']:'/_/';

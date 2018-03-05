@@ -422,13 +422,23 @@ class core {
     }
     public static function ShutdownHandler()
     {
-        Global $cfg;
+        Global $cfg,$pathstr;
         if (self::$GlobalErrors!='') {
-            if (mb_stripos(self::$ErrorFirstTitle,'page_not_found')!==false && mb_substr(self::$ErrorFirstTitle,-5,5)=='.map/') return;
+            if (mb_stripos(self::$ErrorFirstTitle,'page_not_found')!==false) {
+                if (mb_substr($pathstr,-5,5)=='.map/') return;
+                if (mb_substr($pathstr,-5,5)=='.php/' ||
+                    mb_strpos($pathstr,'admin')!==false ||
+                    mb_strpos($pathstr,'bitrix')!==false ||
+                    mb_strpos($pathstr,'netcat')!==false ||
+                    mb_strpos($pathstr,'cms')!==false ||
+                    mb_strpos($pathstr,'manager')!==false ||
+                    mb_strpos($pathstr,'login.html/')!==false
+                ) return;
+            }
 
             $emailTo = $cfg['email_error'];
             $ip = self::get_client_ip();
-            $inf = "sessioninfo:\n";
+            $inf = '';
             //if (isset($_SERVER['SERVER_NAME'])) $inf .= " addr: " . $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] . PHP_EOL;
             if (isset($_SERVER['HTTP_USER_AGENT'])) $inf .= ' useragent: ' . $_SERVER['HTTP_USER_AGENT'] . PHP_EOL;
             if (isset($_SERVER['HTTP_REFERER'])) $inf .= ' referer: ' . $_SERVER['HTTP_REFERER'] . PHP_EOL;

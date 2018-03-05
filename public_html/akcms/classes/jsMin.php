@@ -54,7 +54,7 @@
  * @link http://code.google.com/p/jsmin-php/
  */
 
-class JSMin {
+class jsMin {
     const ORD_LF            = 10;
     const ORD_SPACE         = 32;
     const ACTION_KEEP_A     = 1;

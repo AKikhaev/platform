@@ -117,17 +117,24 @@ function sendMailHTML($to, $subject, $message, $headersAdds = '', $from = 'norep
  * @param string $to
  * @param bool $notify
  * @param bool $web
+ * @param int $parseMode
  * @return bool
  */
-function sendTelegram($text,$to=null,$notify = true,$web = false) {
+function sendTelegram($text,$to=null,$notify = true,$web = false,$parseMode = 0) {
+    global $cfg;
+    if ($to===null && isset($cfg['telegramId'])) $to = $cfg['telegramId'];
     if ($to===null) $to = '203405254';
     $auth = '276469341:AAE1A1kt1APsm8WsmxCvgFiOOc0BAnVaOZg';
-    $url = 'https://api.telegram.org/bot'.$auth.'/sendMessage?'.http_build_query(array(
-            'chat_id'=>$to,
-            'text'=>$text,
-            'disable_notification'=>$notify?'0':'1',
-            'disable_web_page_preview',$web?'0':'1',
-        ));
+    $params = array(
+        'chat_id'=>$to,
+        'text'=>$text,
+        'disable_notification'=>$notify?'0':'1',
+        'disable_web_page_preview',$web?'0':'1',
+        'parse_mode'=>'Markdown',
+    );
+    if ($parseMode===1) $params['parse_mode'] = 'Markdown';
+    elseif ($parseMode===2) $params['parse_mode'] = 'HTML';
+    $url = 'https://api.telegram.org/bot'.$auth.'/sendMessage?'.http_build_query($params);
 
     $headers = array(
         "User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox/5.0.1",
