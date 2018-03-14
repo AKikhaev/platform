@@ -130,7 +130,6 @@ function sendTelegram($text,$to=null,$notify = true,$web = false,$parseMode = 0)
         'text'=>$text,
         'disable_notification'=>$notify?'0':'1',
         'disable_web_page_preview',$web?'0':'1',
-        'parse_mode'=>'Markdown',
     );
     if ($parseMode===1) $params['parse_mode'] = 'Markdown';
     elseif ($parseMode===2) $params['parse_mode'] = 'HTML';

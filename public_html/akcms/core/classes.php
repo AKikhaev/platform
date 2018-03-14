@@ -432,6 +432,7 @@ class core {
                     mb_strpos($pathstr,'netcat')!==false ||
                     mb_strpos($pathstr,'cms')!==false ||
                     mb_strpos($pathstr,'manager')!==false ||
+                    mb_strpos($pathstr,'wp-content')!==false ||
                     mb_strpos($pathstr,'login.html/')!==false
                 ) return;
             }
