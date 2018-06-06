@@ -3,10 +3,12 @@
 abstract class VisualThemeAbstract
 {
     const weekdays = array('Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота');
+    const weekdaysShort = array('вс','пн','вт','ср','чт','пт','сб');
     const months = array('','января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря');
+    const monthsShort = array('','янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек');
     /**
      * 7 июля в 14:17         - j F в H:i
-     * Пятница, 7 июля 2017г. - l, j F Y г.
+     * Пятница, 7 янв 2017г. - l, j M Y г.
      * @param $format
      * @param $dt
      * @return false|string
@@ -15,8 +17,14 @@ abstract class VisualThemeAbstract
         if (mb_strpos($format,'l')!==false) {
             $format = str_replace('l',self::weekdays[date('w',$dt)],$format);
         }
+        if (mb_strpos($format,'k')!==false) {
+            $format = str_replace('k',self::weekdaysShort[date('w',$dt)],$format);
+        }
         if (mb_strpos($format,'F')!==false) {
             $format = str_replace('F',self::months[date('n',$dt)],$format);
+        }
+        if (mb_strpos($format,'M')!==false) {
+            $format = str_replace('M',self::monthsShort[date('n',$dt)],$format);
         }
         return date($format,$dt);
     }
