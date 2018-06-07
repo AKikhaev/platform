@@ -1,5 +1,4 @@
-<?
-#import from wp
+<?php # import from wp
 if(php_sapi_name()!=='cli')die('<!-- not allowed -->');
 die();
 chdir('../..');

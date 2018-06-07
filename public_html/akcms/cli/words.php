@@ -1,4 +1,4 @@
-<?php
+<?php // phpMorphy test
 if(php_sapi_name()!=='cli')die('<!-- not allowed -->');
 chdir('../..');
 ini_set('memory_limit', '228M');

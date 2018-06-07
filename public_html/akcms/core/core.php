@@ -4,25 +4,11 @@ define('CMS_OBJOWNER','owner');
 define('CMS_ADMIN','admin');
 $cfg['debug']=true;
 
-set_include_path(
-	'akcms/u/units'.PATH_SEPARATOR.
-	'akcms/u/models'.PATH_SEPARATOR.
-	'akcms/units'.PATH_SEPARATOR.
-	'akcms/classes'.PATH_SEPARATOR.
-	'akcms/models'.PATH_SEPARATOR.
-	'akcms/u/template'.PATH_SEPARATOR.
-	'akcms/template'.PATH_SEPARATOR.'.');
-
-require_once 'akcms/core/classes.php';
-error_reporting(-1);
-set_error_handler('core::GlobalErrorHandler',-1);
-set_exception_handler('core::GlobalExceptionHandler');
-register_shutdown_function('core::ShutdownHandler');
-spl_autoload_register('core::cms_autoload');
 
 require_once 'akcms/core/functs.php';
 require_once 'akcms/u/config/config.php';
-require_once 'akcms/core/pgdb.php';
+//require_once 'akcms/core/pgdb.php';
+require_once 'akcms/core/classes.php'; core::init();
 
 //if ($cfg['debug']===true) core::terminalClear();
 //if ($cfg['debug']===true) profiler::showOverallTimeToTerminal();
@@ -31,20 +17,8 @@ require_once 'akcms/core/pgdb.php';
 $sql = new pgdb();
 $Cacher = new CacheController();
 
-function LOAD_CORE_BASE(){
-    GLOBAL $cfg;
-    umask(0077);
-    setlocale(LC_CTYPE, 'ru_RU.UTF-8');
-    setlocale(LC_COLLATE, 'ru_RU.UTF-8');
-    mb_internal_encoding("UTF-8");
-    mb_http_output('UTF-8');
-    mb_http_input('UTF-8');
-    mb_language('uni');
-    mb_regex_encoding('UTF-8');
-    date_default_timezone_set($cfg['default_timezone']);
-}
+
 function LOAD_CORE_CLI() {
-    LOAD_CORE_BASE();
 	GLOBAL $cfg,$CliUser;
 	
 	#function CORE_CLI_TERMINATE(){die();}
@@ -74,7 +48,6 @@ function LOAD_CORE_CLI() {
  * @throws CmsException
  */
 function LOAD_CORE() {
-    LOAD_CORE_BASE();
 	GLOBAL $cfg,$path,$pathurl,$pathstr,$pathlen;
 	
 	# error tracking

@@ -305,6 +305,37 @@ class core {
     public static $OS_WIN = false;
     public static $IS_CLI = false;
 
+    /***
+     * Core loader
+     */
+    static function init(){
+        global $cfg;
+        set_include_path(
+            'akcms/u/units'.PATH_SEPARATOR.
+            'akcms/u/models'.PATH_SEPARATOR.
+            'akcms/units'.PATH_SEPARATOR.
+            'akcms/classes'.PATH_SEPARATOR.
+            'akcms/models'.PATH_SEPARATOR.
+            'akcms/u/template'.PATH_SEPARATOR.
+            'akcms/template'.PATH_SEPARATOR.'.');
+
+        error_reporting(-1);
+        set_error_handler('core::GlobalErrorHandler',-1);
+        set_exception_handler('core::GlobalExceptionHandler');
+        register_shutdown_function('core::ShutdownHandler');
+        spl_autoload_register('core::cms_autoload');
+
+        umask(0077);
+        setlocale(LC_CTYPE, 'ru_RU.UTF-8');
+        setlocale(LC_COLLATE, 'ru_RU.UTF-8');
+        mb_internal_encoding("UTF-8");
+        mb_http_output('UTF-8');
+        mb_http_input('UTF-8');
+        mb_language('uni');
+        mb_regex_encoding('UTF-8');
+        date_default_timezone_set($cfg['default_timezone']);
+    }
+
     public static function get_client_ip() {
         $ip = getenv('HTTP_CLIENT_IP');
         if ($ip===false) $ip = getenv('HTTP_X_FORWARDED_FOR');
@@ -566,6 +597,15 @@ class shp{
         },$html);
         return $html;
     }
+
+    /***
+     * @param $html
+     * html as shape
+     * @param $vars
+     * Parameters
+     * @param bool $replace_once
+     * @return mixed|null|string|string[]
+     */
     public static function str($html, &$vars, $replace_once = false) //Возвращает готовый HTML код
     {
         $html=preg_replace_callback('/{#tmpl:(.*?)#}/u',function($matches) use (&$vars,$replace_once){
@@ -580,6 +620,15 @@ class shp{
         }
         return $html;
     }
+
+    /***
+     * @param $shape
+     * Shape name
+     * @param array $vars
+     * Parameters
+     * @param bool $replace_once
+     * @return mixed|null|string|string[]
+     */
     public static function tmpl($shape, $vars=array(), $replace_once = false) //Возвращает готовый HTML код
     {
         global $shapes;

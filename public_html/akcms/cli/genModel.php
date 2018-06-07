@@ -1,15 +1,4 @@
-<?php
-chdir('../..');
-if (php_sapi_name()!=='cli') die('<!-- not allowed -->');
-ini_set('memory_limit', '228M');
-require_once('akcms/core/core.php'); LOAD_CORE_CLI();
-require_once('akcms/core/remainCalc.php');
-//$sql->command('set transform_null_equals=true;');
-ini_set('display_errors',1);
-ini_set('display_startup_errors',1);
-//error_reporting (0);
-error_reporting (E_ALL);
-
+<?php // Generate DB model from DBMS Postgres
 
 class modelGenerator {
 
@@ -293,83 +282,88 @@ class modelGenerator {
 	}
 }
 
-try {
-    profiler::showOverallTime();
-
-	toTitle('Loading... ');
-	if (!$OS_WIN) {
-		$width = exec('tput cols');
-		$w_blank = "\r" . str_repeat(' ', $width - 1);
-	} else {
-
-	}
-
-	//$md = new modelGenerator(); $md->generate('cms_sections','_2');
-/*
-	$cs =(new modelCmsSections())->fields(array(
-		modelCmsSections::$_SectionId,
-		modelCmsSections::$_SecGlrId,
-		//modelCmsSections::$_SecCreated,
-		modelCmsSections::$_SecPage,
-		modelCmsSections::$_SecUrlFull,
-
-	))->
-	where(array(
-		array(modelCmsSections::$_SecUrlFull,'=',new rawsql(modelCmsSections::$_SecUrl)),
-		//array(modelCmsSections::$_SecGlrId,'<>',0),
-	))->OR_(modelCmsSections::$_SectionId,'=Any',[2,3])
-
-	->get();
-*/
+class GenModel extends cliUnit {
+    public function runAction(){
+        global $sql,$cfg;
 
 
-	$cs = (new modelCmsSections())->where(1)->get();
-	toLogInfo( $cs->SecTitle );
+        try {
+            profiler::showOverallTime();
+
+            $md = new modelGenerator(); $md->generate('cms_sections',$cfg['db'][1]['schema']);
+            
+            /*
+                $cs =(new modelCmsSections())->fields(array(
+                    modelCmsSections::$_SectionId,
+                    modelCmsSections::$_SecGlrId,
+                    //modelCmsSections::$_SecCreated,
+                    modelCmsSections::$_SecPage,
+                    modelCmsSections::$_SecUrlFull,
+
+                ))->
+                where(array(
+                    array(modelCmsSections::$_SecUrlFull,'=',new rawsql(modelCmsSections::$_SecUrl)),
+                    //array(modelCmsSections::$_SecGlrId,'<>',0),
+                ))->OR_(modelCmsSections::$_SectionId,'=Any',[2,3])
+
+                ->get();
+            */
+
+
+            $cs = (new modelCmsSections())->where(1)->get();
+            toLogInfo( $cs->SecNamefull );
 
 
 //	echo new rawsql('data')."\n";
 
 //    foreach ($cs as $item) {
-        /* @var $item modelCmsSections*/
+            /* @var $item modelCmsSections*/
 //        print_r_($item);
 //    }
 
-    //$cs = new modelCmsSections(1);
-	//$cs->SecCreated = $cs->SecCreated;
-    //$cs->update();
-    //$cs->insert();
+            //$cs = new modelCmsSections(1);
+            //$cs->SecCreated = $cs->SecCreated;
+            //$cs->update();
+            //$cs->insert();
 
-    //todo data when next|prev etc.
-    // todo WHERE
+            //todo data when next|prev etc.
+            // todo WHERE
 
 
-    //var_dump($cs);
+            //var_dump($cs);
 
-	//$cs->
-    //modelCmsSections::
+            //$cs->
+            //modelCmsSections::
 
-		/*
+            /*
 
-		$query = 'SELECT section_id,sec_nameshort,sec_content,sec_url_full FROM cms_sections';
-		$itemObj = $sql->queryObj($query);
-		$remain = new remainCalc();
-		$remain->init($itemObj->count(),'processing',0);
-		$i = 0;
-		foreach ($itemObj as $item) {
-			$remain->plot($i++);
-			usleep(110000);
-		}
+            $query = 'SELECT section_id,sec_nameshort,sec_content,sec_url_full FROM cms_sections';
+            $itemObj = $sql->queryObj($query);
+            $remain = new remainCalc();
+            $remain->init($itemObj->count(),'processing',0);
+            $i = 0;
+            foreach ($itemObj as $item) {
+                $remain->plot($i++);
+                usleep(110000);
+            }
 
-		*/
-	echo "\n";
-	toLog('Готово');
+            */
+            echo "\n";
+            toLog('Готово');
 
-} catch (Exception $e) {
-	$sql->command('rollback');
-	echo 'Caught exception: ',$e->getMessage(), "\n";
-	echo $e->getTraceAsString();
-	//echo $e->getMessage()."\n";
-	#print_r_($e);
-	//sleep(6);
-	echo PHP_EOL;
+        } catch (Exception $e) {
+            $sql->command('rollback');
+            echo 'Caught exception: ',$e->getMessage(), "\n";
+            echo $e->getTraceAsString();
+            //echo $e->getMessage()."\n";
+            #print_r_($e);
+            //sleep(6);
+            echo PHP_EOL;
+        }
+
+
+
+
+    }
 }
+

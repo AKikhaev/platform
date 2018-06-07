@@ -5,10 +5,10 @@ const RAWSQL = 'rawsql';
  */
 trait SQLpgModelAdapter {
     private $sqlres = NULL;
-    private $sqlpos = 0;
+    private $sqlpos = 0; // Позиция в sql
     private $recors = 0;
-    private $position = 0;
-    private $datapos = -1;
+    private $position = 0; // Сторока для возврата
+    private $datapos = -1; // Позиция текущих данных
     //protected $data = array();
     protected $result_type = PGSQL_ASSOC;
     /* @var pgdb */
@@ -94,11 +94,12 @@ trait SQLpgModelAdapter {
     }
 
 
-    /**
+    /***
      * Set query where
      *
      * @param array|string|int $where id value may be only int. Otherwise go another way
      * @return $this
+     * @throws DBException
      */
     public function where($where = []) {
         $this->query = '!';
@@ -232,6 +233,7 @@ trait SQLpgModelAdapter {
      * @param int $page
      * @param null $pageSize
      * @return $this
+     * @throws DBException
      */
     public function select($fields = ['*'],$from = [],$where = [],$order = [],$limit = 0,$page = 0,$pageSize = NULL){
         $this->fields($fields);
@@ -301,6 +303,9 @@ trait SQLpgModelAdapter {
         if ($this->query=='!') $this->buildQuery();
         $this->sqlres=$this->sql->query($this->query);
         $this->recors = pg_num_rows($this->sqlres);
+        $this->position =0;
+        $this->datapos =  -1;
+        $this->sqlpos = null;
         $this->current();
         return $this;
     }

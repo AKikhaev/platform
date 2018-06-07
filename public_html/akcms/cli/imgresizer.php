@@ -1,15 +1,13 @@
-<?php //Цена на первое место, генерация ссылки для без ссылки
-chdir(dirname(__FILE__).'/../..');
+<?php // Storage optimizer
+
+
+
 if(php_sapi_name()!=='cli')die('<!-- not allowed -->');
-ini_set('memory_limit', '228M');
-require_once('akcms/core/core.php'); LOAD_CORE_CLI();
-require_once('akcms/core/remainCalc.php');
-$sql->command('set transform_null_equals=true;');
-
-require_once('akcms/classes/ImgResizer.php');
-
 ini_set('display_errors',1);
 error_reporting (E_ALL);
+$sql->command('set transform_null_equals=true;');
+require_once('akcms/classes/ImgResizer.php');
+
 
 function rrmdir($dir) {
     foreach(glob($dir . '/*') as $file) {
@@ -31,7 +29,7 @@ register_shutdown_function('show_saved');
 try {
 
 	toTitle('Loading... ');
-	if (!$OS_WIN) {
+	if (!core::$OS_WIN) {
 		$width = exec('tput cols');
 		$w_blank = "\r" . str_repeat(' ', $width - 1);
 	} else {
@@ -39,32 +37,6 @@ try {
 	}
 
 
-	$ids_all = $sql->query_all_column('SELECT section_id FROM cms_sections');
-
-	//Удаление ненужных каталогов ресурсов
-	$dirs = glob('s/{images,files}/*/*',GLOB_BRACE | GLOB_ONLYDIR);
-	foreach ($dirs as $dir) {
-	    if (preg_match('~(\\d++/\\d++)$~',$dir,$match)) {
-	        $id = (string)(int)str_replace('/','',$match[1]);
-	        if (!in_array($id,$ids_all)) {
-                rrmdir($dir);
-                toLogError('Папка без раздела: ' . $dir);
-            }
-        }
-    }
-
-    //Удаление картинок разделов
-    $files = glob('img/pages/{*,*/*}',GLOB_BRACE);
-    foreach ($files as $file) if (is_file($file)) {
-        $id = basename($file,'.jpg');
-        if (!in_array($id,$ids_all)) {
-            $saved += @filesize($file);
-            unlink($file);
-            toLogError('Файл без раздела: ' . $file);
-        }
-    }
-
-	die;
 
     $startFrom = isset($_SERVER["argv"][1])? (int)$_SERVER["argv"][1] :0;
 	$query = 'SELECT section_id,sec_nameshort,sec_content,sec_url_full FROM cms_sections WHERE section_id>='.$sql->d($startFrom).' ORDER by 1'.($startFrom>0?'':' DESC');
@@ -79,6 +51,7 @@ try {
         $f = 0;
 		if ($imgList[0]!=false)
         foreach($imgList[0] as $imgHtml) {
+		    var_dump__($imgList[0]);
             preg_match('/(?<=src="\/|src=\'\/)(s\/images\/[^\s]+?\.jpg)(?="|\')/iu',$imgHtml,$img_src); $img_src = @$img_src[0];
             preg_match('/(?<=width="|width=\'|width=)(\d+)(?="|\'|)/iu',$imgHtml,$img_width); $img_width = @$img_width[0];
             preg_match('/(?<=height="|height=\'|height=)(\d+)(?="|\'|)/iu',$imgHtml,$img_height); $img_height = @$img_height[0];
