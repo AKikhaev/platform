@@ -9,7 +9,7 @@ trait SQLpgModelAdapter {
     private $recors = 0;
     private $position = 0; // Сторока для возврата
     private $datapos = -1; // Позиция текущих данных
-    //protected $data = array();
+    //protected $data = array(); //Объявлено в abstact
     protected $result_type = PGSQL_ASSOC;
     /* @var pgdb */
     private $sql;
@@ -36,11 +36,12 @@ trait SQLpgModelAdapter {
      * Set query fields
      *
      * @param array|string $fields
-     * @return $this
+     * @return $this|$this[]
      */
     public function fields($fields = []) {
         $this->query = '!';
-        $this->query_fields = $fields;
+        if (func_num_args()>1) $this->query_fields = func_get_args();
+        else $this->query_fields = $fields;
         return $this;
     }
 
@@ -48,11 +49,13 @@ trait SQLpgModelAdapter {
      * Set query from
      *
      * @param array|string $from
-     * @return $this
+     * @return $this|$this[]
      */
     public function from($from = []) {
+        //todo другой объект для смешанных запросов
         $this->query = '!';
-        $this->query_from = $from;
+        if (func_num_args()>1) $this->query_from = func_get_args();
+        else $this->query_from = $from;
         return $this;
     }
 
@@ -67,7 +70,7 @@ trait SQLpgModelAdapter {
             $field = @$this->struct['fields'][$this->struct['fieldsDB'][$where[0]]];
             if ($field!==NULL) {
                 $type = is_object($where[2])?get_class($where[2]):gettype($where[2]);
-                if ($type==RAWSQL) return $where[0].$where[1].$where[2];
+                if ($type==RAWSQL) return $where[0].' '.$where[1].' '.$where[2];
                 $FieldClass = 'CMS'.$field['FIELD_CLASS'];
                 if (strcasecmp($where[1],'IN')===0) $where[1] = '=ANY';
                 /* @var CMSFieldAbstract */
@@ -77,10 +80,10 @@ trait SQLpgModelAdapter {
                     foreach ($where[2] as $f_) {$f[] = '('.$FieldClass::quote($this->sql,$f_).')';}
                     return $where[0].$where[1].'(VALUES'.implode(',',$f).')';
                 }
-                else return $where[0].$where[1].$FieldClass::quote($this->sql,$where[2]);
+                else return $where[0].' '.$where[1].' '.$FieldClass::quote($this->sql,$where[2]);
             } else throw new DBException('Where field not found '.$where[0]);
 
-        }
+        } else
         if (count($where)==4 && is_string($where[1])) {
             $field = @$this->struct['fields'][$this->struct['fieldsDB'][$where[0]]];
             if ($field!==NULL) {
@@ -89,56 +92,53 @@ trait SQLpgModelAdapter {
                 return $where[0].' BETWEEN '.$FieldClass::quote($this->sql,$where[2]).' AND '.$FieldClass::quote($this->sql,$where[3]);
             } else throw new DBException('Where field not found '.$where[0]);
 
+        } else if (count($where)>0 && is_array($where[0])){
+            $f = [];
+            foreach ($where as $w) {
+                $f[] = $this->_where($w);
+            }
+            $where = implode(' AND ',$f);
+            return $where;
         }
-
     }
 
 
-    /***
+    /**
      * Set query where
      *
      * @param array|string|int $where id value may be only int. Otherwise go another way
-     * @return $this
+     * @return $this|$this[]
      * @throws DBException
      */
     public function where($where = []) {
         $this->query = '!';
-        if (func_num_args()==3) $where = $this->_where(func_get_args());
-        else if (is_array($where)) {
-            $f = [];
-            foreach ($where as $w) {
-                $f[] = $this->_where($w);
-            }
-            $where = implode(' AND ',$f);
-        }
+        $where = $this->_where(func_get_args());
         $this->query_where = $where;
         return $this;
     }
 
+    /**
+     * And where ...
+     * @param array $where
+     * @return $this|$this[]
+     * @throws DBException
+     */
     public function AND_($where = []) {
         $this->query = '!';
-        if (func_num_args()===3) $where = $this->_where(func_get_args());
-        else if (is_array($where)) {
-            $f = [];
-            foreach ($where as $w) {
-                $f[] = $this->_where($w);
-            }
-            $where = implode(' AND ',$f);
-        }
-        $this->query_where .= ' OR ('.$where.')';
+        $where = $this->_where(func_get_args());
+        $this->query_where .= ' AND ('.$where.')';
         return $this;
     }
 
+    /**
+     * Or where ...
+     * @param array $where
+     * @return $this|$this[]
+     * @throws DBException
+     */
     public function OR_($where = []) {
         $this->query = '!';
-        if (func_num_args()==3) $where = $this->_where(func_get_args());
-        else if (is_array($where)) {
-            $f = [];
-            foreach ($where as $w) {
-                $f[] = $this->_where($w);
-            }
-            $where = implode(' AND ',$f);
-        }
+        $where = $this->_where(func_get_args());
         $this->query_where .= ' OR ('.$where.')';
         return $this;
     }
@@ -147,7 +147,7 @@ trait SQLpgModelAdapter {
      * Set query order
      *
      * @param array $order
-     * @return $this
+     * @return $this|$this[]
      */
     public function order($order = []) {
         $this->query = '!';
@@ -159,7 +159,7 @@ trait SQLpgModelAdapter {
      * Set query limit
      *
      * @param int $limit
-     * @return $this
+     * @return $this|$this[]
      */
     public function limit($limit = 0) {
         $this->query = '!';
@@ -172,7 +172,7 @@ trait SQLpgModelAdapter {
      *
      * @param int $page
      * @param null $pageSize
-     * @return $this
+     * @return $this|$this[]
      */
     public function page($page = 0,$pageSize=null) {
         $this->query = '!';
@@ -185,7 +185,7 @@ trait SQLpgModelAdapter {
      * Set size of query page
      *
      * @param null $pageSize
-     * @return $this
+     * @return $this|$this[]
      */
     public function pageSize($pageSize=null) {
         if (is_int($pageSize)) $this->query_pageSize = $pageSize;
@@ -207,14 +207,14 @@ trait SQLpgModelAdapter {
         else $query .= ' FROM '.implode(' ',$this->query_from);
 
         //todo Сложные условия, указание сравнения
-        if (is_int($this->query_where)) $query .= ' WHERE '.$this->_pr_whereID($this->query_where);
-        if (is_object($this->query_where) && is_subclass_of($this->query_where,'modelAbstact')) $query .= ' WHERE '.$this->query_where->_pr_whereEQ();
-        if (is_string($this->query_where) && $this->query_where!='') $query .= ' WHERE '.$this->query_where;
-        if (is_array($this->query_where) && count($this->query_where)>0) $query .= ' WHERE '.implode(' AND ',$this->query_where);
+        if (is_int($this->query_where)) $query .= ' WHERE '.$this->_pr_whereID($this->query_where); // Число
+        if (is_object($this->query_where) && is_subclass_of($this->query_where,'modelAbstact')) $query .= ' WHERE '.$this->query_where->_pr_whereEQ(); //Класс самого себя
+        if (is_string($this->query_where) && $this->query_where!='') $query .= ' WHERE '.$this->query_where; // готовый query
+        if (is_array($this->query_where) && count($this->query_where)>0) $query .= ' WHERE '.implode(' AND ',$this->query_where); //набор готовых условий для склейки
 
         //todo указание направления сотрировки
-        if (is_array($this->query_order) && count($this->query_order)>0) $query .= ' ORDER BY '.implode(',',$this->query_order);
-        if (is_string($this->query_order) && $this->query_order!='') $query .= ' ORDER BY '.$this->query_order;
+        if (is_array($this->query_order) && count($this->query_order)>0) $query .= ' ORDER BY '.implode(',',$this->query_order); //Условия перечисленны в массиве
+        if (is_string($this->query_order) && $this->query_order!='') $query .= ' ORDER BY '.$this->query_order; // готовое условие
 
         if ($this->query_limit>0) $query .= ' LIMIT '.@(int)$this->query_limit;
         else if ($this->query_page>0)
@@ -232,7 +232,7 @@ trait SQLpgModelAdapter {
      * @param int $limit
      * @param int $page
      * @param null $pageSize
-     * @return $this
+     * @return $this|$this[]
      * @throws DBException
      */
     public function select($fields = ['*'],$from = [],$where = [],$order = [],$limit = 0,$page = 0,$pageSize = NULL){
@@ -255,28 +255,36 @@ trait SQLpgModelAdapter {
      */
     function __construct($any = NULL) {
         $this->sql = $GLOBALS['sql'];
-        if (is_int($any)) {
+        if (is_numeric($any)) {
             $primary = $this->struct['primary'];
             if ($primary=='') throw new DBException('No primary for '.__CLASS__);
             $this->__set($primary,$any);
             $any = 'SELECT * FROM '.static::$tableName.' WHERE '.$this->_pr_whereID();
         }
-        if (is_string($any) && mb_strlen($any)>0) {
+        elseif (is_string($any) && mb_strlen($any)>0) {
             $this->query = $any;
             $this->get();
         }
-        if (is_resource($any)) {
+        elseif (is_resource($any)) {
             $this->sqlres=$any;
             $this->recors = pg_num_rows($this->sqlres);
         }
     }
 
+    /**
+     * @param null $where
+     * @return int
+     * @throws DBException
+     */
     public function update($where = null) {
         if ($where==null) $where=$this->_pr_whereID();
         $query = $this->pr_u($where);
         return $this->sql->command($query);
     }
 
+    /**
+     * @return int
+     */
     public function insert() {
         $query = $this->pr_i();
         $primary = $this->struct['primary'];
@@ -294,8 +302,8 @@ trait SQLpgModelAdapter {
         }
     }
 
-    /** Execute query ant return the result
-     * @return $this
+    /** Execute query and return the result
+     * @return $this|$this[]
      * @throws DBException
      */
     public function get() {
@@ -310,22 +318,36 @@ trait SQLpgModelAdapter {
         return $this;
     }
 
+    /**
+     * retutn all records
+     * @return $this|$this[]
+     * @throws DBException
+     */
     public function all() {
         return $this->where()->get();
     }
 
+    /**
+     * call as function
+     * @return $this|$this[]
+     * @throws DBException
+     */
     public function __invoke()
     {
         return $this->get();
     }
 
+    /**
+     * @return $this|$this[]
+     * @throws DBException
+     */
     public function explain(){
         if ($this->query=='') throw new DBException('No query for '.__CLASS__);
         if ($this->query=='!') $this->buildQuery();
         $this->sql->query('begin');
         $res = implode("\n",$this->sql->query_all_column('EXPLAIN ANALYZE '.$this->query));
         $this->sql->query('rollback');
-        echo $res."\n";
+        core::terminalWrite($res);
         return $this;
     }
 
@@ -374,6 +396,7 @@ trait SQLpgModelAdapter {
     }
 
     /**
+     * Prepare where part like filled
      * @return string
      * @throws DBException
      */
@@ -446,6 +469,9 @@ trait SQLpgModelAdapter {
         $this->data = $res;
         return $res;
     }
+
+    private function __debugInfo(){return [$this->data,$this->query];}
+
 }
 
 class rawsql{

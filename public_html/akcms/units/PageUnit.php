@@ -683,7 +683,7 @@ class PageUnit extends CmsPage {
 		return $el;
 	}  
   
-	public static function _imgduplicate($pathold, $pathto, &$imggrabbed) { // Загружает изображения с других северов
+	public static function _imgduplicate($pathold, $pathto, &$imggrabbed) { // Загружает изображения с других серверов
 		$dirpath = mb_substr($pathto, 0, -1);
 		if(!file_exists($dirpath)) mkdir($dirpath,0755,true);  
 		$result = '';

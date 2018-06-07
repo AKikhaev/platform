@@ -19,7 +19,7 @@ class modelGenerator {
 		return implode('',$names);
 	}
 
-	/*
+	/**
 	 * Returns the column descriptions for a table.
 	 *
 	 * The return value is an associative array keyed by the column name,
@@ -153,14 +153,15 @@ class modelGenerator {
 		);
 	}
 
-	/*
-	 * Создание модели
-	 *
-	 * @param  string $tableName
-	 * @param  string $schemaName OPTIONAL
-	 *
-	 * @return array
-	 */
+    /**
+     * Создание модели
+     *
+     * @param  string $tableName
+     * @param  string $schemaName OPTIONAL
+     *
+     * @return void
+     * @throws CmsException
+     */
 	public function generate($tableName, $schemaName = 'public') {
 		$tableInfo = $this->describeTable($tableName,$schemaName);
 
@@ -209,6 +210,11 @@ class modelGenerator {
 				case 'timestamptz':
 					$typeSimple = 'string';
 					$field['FIELD_CLASS'] = 'FieldDateTime';//
+					unset($field['LENGTH']);
+					break;
+				case 'date':
+					$typeSimple = 'string';
+					$field['FIELD_CLASS'] = 'CMSFieldDate';//
 					unset($field['LENGTH']);
 					break;
 
@@ -268,7 +274,7 @@ class modelGenerator {
 		$template = str_replace('$struct = array()','$struct = '.$tableVar,$template);
 
 		if (!file_exists('u/models/'.$tableInfo['model'].'.php')) {
-			file_put_contents('u/models/'.$tableInfo['model'].'.php',$template);
+			file_put_contents('akcms/u/models/'.$tableInfo['model'].'.php',$template);
 			toLogInfo('Модель '.$tableInfo['model'].' создана '.mb_strlen($template));
 		} else {
 			$splitter = '/*** customer extensions ***/';
@@ -276,7 +282,7 @@ class modelGenerator {
 			$newTemplate = explode($splitter,$template);
 
 			$updateTemplate = $newTemplate[0].$splitter.$oldTemplate[1];
-			file_put_contents('u/models/'.$tableInfo['model'].'.php',$updateTemplate);
+			file_put_contents('akcms/u/models/'.$tableInfo['model'].'.php',$updateTemplate);
 			toLogInfo('Модель '.$tableInfo['model'].' обновлена '.mb_strlen($updateTemplate));
 		}
 	}
@@ -286,12 +292,18 @@ class GenModel extends cliUnit {
     public function runAction(){
         global $sql,$cfg;
 
+        $md = new modelGenerator();
 
         try {
-            profiler::showOverallTime();
+            profiler::showOverallTimeToTerminal();
 
-            $md = new modelGenerator(); $md->generate('cms_sections',$cfg['db'][1]['schema']);
-            
+            foreach ($sql->query_all_column('select tablename from pg_tables where schemaname='.$sql->t($cfg['db'][1]['schema'])) as $tableName) {
+                toLogInfo('Генерация '.$tableName);
+                $md->generate($tableName,$cfg['db'][1]['schema']);
+            }
+
+            //$md->generate('cms_sections',$cfg['db'][1]['schema']);
+
             /*
                 $cs =(new modelCmsSections())->fields(array(
                     modelCmsSections::$_SectionId,
@@ -310,14 +322,29 @@ class GenModel extends cliUnit {
             */
 
 
-            $cs = (new modelCmsSections())->where(1)->get();
-            toLogInfo( $cs->SecNamefull );
+            /*
+            $cs = (new modelCmsSections())->fields(
+                modelCmsSections::$_SecUrlFull,
+                modelCmsSections::$_SecNamefull,
+                'sec_url as t'
+            )->where([
+                [modelCmsSections::$_SecNamefull,'ilike','%аб%'],
+                [modelCmsSections::$_SecNamefull,'ilike','%оо%']
+            ])->OR_(
+                [modelCmsSections::$_SecNamefull,'ilike','%ко%'],
+                [modelCmsSections::$_SecSort,'>',7]
+            )
+                ->get();
+            foreach ($cs as $c) {
+                toLogInfo("$c->SecNamefull $c->t");
 
+
+            }
+            */
 
 //	echo new rawsql('data')."\n";
 
 //    foreach ($cs as $item) {
-            /* @var $item modelCmsSections*/
 //        print_r_($item);
 //    }
 

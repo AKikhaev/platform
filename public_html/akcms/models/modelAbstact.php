@@ -40,7 +40,10 @@ abstract class modelAbstact implements SeekableIterator
         $fieldName = @$this->struct['fields'][$name]['COLUMN_NAME'];
         if ($fieldName!==NULL) {
             return @$this->data[$fieldName];
-        } else throw new DBException('Field not found '.$name);
+        }
+        elseif (isset($this->data[$name]))
+            return $this->data[$name];
+        else throw new DBException('Field not found '.$name);
     }
 
     public function __unset($name)
@@ -58,9 +61,6 @@ abstract class modelAbstact implements SeekableIterator
             return isset($this->data[$fieldName]);
         } else throw new DBException('Field not found '.$name);
     }
-
-
-    private function __debugInfo(){return $this->data;}
 
     /*-------------------*/
 

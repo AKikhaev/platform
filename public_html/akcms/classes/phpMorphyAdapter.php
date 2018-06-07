@@ -33,7 +33,7 @@ class phpMorphyAdapter extends phpMorphy {
 		);
 	
 		// Path to directory where dictionaries located
-		$dir = 'akcms/classes/phpMorphy/_dicts/utf-8/';
+		$dir = 'akcms/dicts/utf-8/';
 	
 		// Create descriptor for dictionary located in $dir directory with russian language
 		parent::__construct($dir, 'ru_RU', $opts);

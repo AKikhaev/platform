@@ -1,12 +1,13 @@
 <?php
 
 class pgdbQuery implements Iterator {
-    private $sqlres=false;
+    private $sqlres = NULL;
     private $sqlpos = 0;
     private $recors = 0;
     private $position = 0;
     private $datapos = -1;
     private $data = false;
+    public $result_type = PGSQL_ASSOC;
 
     public function __construct($sqlres) {
         $this->sqlres=$sqlres;
@@ -55,7 +56,7 @@ class pgdbQuery implements Iterator {
 
     public function fetch() {
         $this->datapos = $this->sqlpos;
-        $res = pg_fetch_assoc($this->sqlres);
+        $res = pg_fetch_array($this->sqlres,null,$this->result_type);
         if ($res!==false) $this->sqlpos++;
         $this->data = $res;
         return $res;
