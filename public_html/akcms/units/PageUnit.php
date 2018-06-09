@@ -1179,21 +1179,17 @@ class PageUnit extends CmsPage {
                 'eg'=>0,
                 'ep'=>$this->page['section_id']
             );
-            /* @var $sql pgdb */
-            if ($data['code'] === 'ep_content') {
 
+            if ($data['code'] === 'ep_content') {
                 $query = $sql->pr_u('cms_sections', array(
                     'sec_content' => $sql->t($data['data']),
                 ), 'section_id=' . $sql->d($secs[$sec]));
                 $res_count = $sql->command($query);
-
             } elseif ($data['code'] === 'ep_namefull') {
-
                 $query = $sql->pr_u('cms_sections', array(
                     'sec_namefull' => $sql->t($data['data']),
                 ), 'section_id=' . $sql->d($secs[$sec]));
                 $res_count = $sql->command($query);
-
             } else {
 
                 $query = $sql->pr_u('cms_sections_string', array(
@@ -1214,6 +1210,7 @@ class PageUnit extends CmsPage {
             }
             return json_encode($res_count > 0 ? 't' : 'f');
         }
+        http_response_code(405);
         return json_encode(array('error' => $checkResult));
     }
 

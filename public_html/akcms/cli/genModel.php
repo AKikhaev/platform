@@ -1,6 +1,6 @@
 <?php // Generate DB model from DBMS Postgres
 
-class cmsModelGenerator {
+class pgCmsModelGenerator {
 
 	private function TableNameToModel($name) {
 		$names = array();
@@ -299,13 +299,24 @@ class cmsModelGenerator {
 			unset($field['COLUMN_POSITION']);
             unset($field['PRIMARY']);
 			unset($field['PRIMARY_POSITION']);
-			unset($field['COMPLETE_TYPE']);
+			unset($field['DATA_TYPE']);
+            unset($field['COMPLETE_TYPE']);
 			unset($field['IDENTITY']);
 			//unset($field['COMMENT']);
 		}
         $tableInfo['primary'] = $primary;
+        $tableInfo['primaryDB'] = $primaryDB;
 
-		$tableVar = var_export($tableInfo,true);
+        $tableInfo['tables'][] = [
+            'table'=>$tableInfo['table'],
+            'primary'=>$tableInfo['primary'],
+            'primaryDB'=>$tableInfo['primaryDB'],
+            'schema'=>$tableInfo['schema'],
+            'prefix'=>''
+        ];
+        $tableVar = $tableInfo;
+        unset($tableVar['model']);
+		$tableVar = var_export($tableVar,true);
 		$tableVar = preg_replace('/\n\s*array \(/','array(',$tableVar);
 		$tableVar = str_replace("\n","\n  ",$tableVar);
 
@@ -318,16 +329,20 @@ class cmsModelGenerator {
 		$template = str_replace('{#tablecomment#}',$comment,$template);
 		$template = str_replace('$struct = array()','$struct = '.$tableVar,$template);
 
-		if (!file_exists('akcms/u/models/'.$tableInfo['model'].'.php')) {
-			file_put_contents('akcms/u/models/'.$tableInfo['model'].'.php',$template);
+        if (mb_strpos($tableInfo['model'],'modelCms')===0)
+            $modelPath = 'akcms/models/'.$tableInfo['model'].'.php';
+		else $modelPath = ('akcms/u/models/').$tableInfo['model'].'.php';
+
+		if (!file_exists($modelPath)) {
+			file_put_contents($modelPath,$template);
 			toLogInfo('Модель '.$tableInfo['model'].' создана '.mb_strlen($template));
 		} else {
 			$splitter = '/*** customer extensions ***/';
-			$oldTemplate = explode($splitter,file_get_contents('akcms/u/models/'.$tableInfo['model'].'.php'));
+			$oldTemplate = explode($splitter,file_get_contents($modelPath));
 			$newTemplate = explode($splitter,$template);
 
 			$updateTemplate = $newTemplate[0].$splitter.$oldTemplate[1];
-			file_put_contents('akcms/u/models/'.$tableInfo['model'].'.php',$updateTemplate);
+			file_put_contents($modelPath,$updateTemplate);
 			toLogInfo('Модель '.$tableInfo['model'].' обновлена '.mb_strlen($updateTemplate));
 		}
 	}
@@ -336,22 +351,34 @@ class cmsModelGenerator {
 /**
  * GenModel - Generate DB model from DBMS Postgres
  */
-class GenModel extends cliUnit {
+class genModel extends cliUnit {
 
     /**
      * Generate all models
+     * @param string $filter
      * @throws CmsException
      */
-    public function genAllAction(){
+    public function genAllAction($filter = ''){
         global $sql,$cfg;
 
-        $md = new cmsModelGenerator();
+        $md = new pgCmsModelGenerator();
         profiler::showOverallTimeToTerminal();
 
-        foreach ($sql->query_all_column('select tablename from pg_tables where schemaname='.$sql->t($cfg['db'][1]['schema']).' order by 1') as $tableName) {
-            toLogInfo('Генерация '.$tableName);
-            $md->generate($tableName,$cfg['db'][1]['schema']);
-        }
+        $filter = str_replace('*','%',$filter);
+        if ($filter=='')
+            $_filter = sprintf(' AND NOT (tablename ilike %s)',
+                $sql->t('cms_%')
+            );
+        else $_filter = ' AND tablename like '.$sql->t($filter);
+
+        $query = 'select tablename from pg_tables where schemaname='.$sql->t($cfg['db'][1]['schema']).$_filter.' order by 1';
+        $tablesNames = $sql->query_all_column($query);
+        if (count($tablesNames)>0)
+            foreach ($tablesNames as $tableName) {
+                toLogInfo('Генерация '.$tableName);
+                $md->generate($tableName,$cfg['db'][1]['schema']);
+            }
+        else toLogInfo('Нет подходящих таблиц');
     }
 
     /**
@@ -371,7 +398,12 @@ class GenModel extends cliUnit {
 //            var_log_terminal($modelCmsGalleryPhoto);
 //        }
 
-        $tagList = (new modelCmsTagsSections())->join(new modelCmsTags())->fields()->get();
+
+        $tagList = (new modelCmsGalleryPhotos())
+            ->join(new modelCmsGaleries())
+            ->join(new modelCmsGallerySec())
+            ->fields()
+            ->get();
 
 
         try {

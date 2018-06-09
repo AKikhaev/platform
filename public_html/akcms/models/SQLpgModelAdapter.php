@@ -24,6 +24,7 @@ trait SQLpgModelAdapter {
     private $query_limit = 0;
     private $query_page = 0;
     private $query_pageSize = 50;
+    private $tableSet = [];
 
     private function genFiledsDBList(){
         if (isset($this->struct['fieldsDB'])) return;
@@ -37,28 +38,60 @@ trait SQLpgModelAdapter {
         return $this->struct;
     }
 
-    private function _join($way,cmsModelAbstact $join,$condition = []) {
+    /**
+     * join
+     *
+     * @param $way
+     * @param cmsModelAbstact $join
+     * @param string $prefix
+     * @param array $condition
+     * @return $this
+     * @throws DBException
+     */
+    private function _join($way,cmsModelAbstact $join,$prefix = '',$condition = []) {
         $anotherStruct = $join->zzJoinData();
+        $_query_join = '';
 
-        if ($condition == [])
+        if ($condition == [] || $condition == '') //Search mine link to another
             foreach ($this->struct['fields'] as $fieldName=>$field) {
                 if (isset($field['RELATE_TO']) && $field['RELATE_TO']==$anotherStruct['table'] && $anotherStruct['primary']!='') {
                     if ($fieldName==$anotherStruct['primary'])
                         $condition = "USING ($field[COLUMN_NAME])";
                     else
-                        $condition = "ON ($field[COLUMN_NAME]=".$anotherStruct['fields'][$anotherStruct['primary']]['COLUMN_NAME'].")";
+                        $condition = "ON ($field[COLUMN_NAME]=".($prefix!=''?$prefix.'.':'').$anotherStruct['primaryDB'].")";
                     break;
                 }
-
             }
+        if ($condition == [] || $condition == '') //Search another link to mine
+            foreach ($anotherStruct['fields'] as $fieldName=>$field) {
+                foreach (array_reverse($this->struct['tables']) as $table) {
+                    if (isset($field['RELATE_TO']) && $field['RELATE_TO'] == $table['table'] && $table['primary'] != '') {
+                        if ($fieldName == $table['primary'])
+                            $condition = "USING ($field[COLUMN_NAME])";
+                        else
+                            $condition = "ON (" . ($prefix != '' ? $prefix . '.' : '') . "$field[COLUMN_NAME]=" . $this->struct['primaryDB'] . ")";
+                        break;
+                    }
+                }
+            }
+
         $this->struct['fields'] = array_merge($this->struct['fields'],$anotherStruct['fields']);
         $this->struct['fieldsDB'] = array_merge($this->struct['fieldsDB'],$anotherStruct['fieldsDB']);
 
-        if (is_array($condition) && $condition != []) $condition = $this->_where($condition);
+        $_query_join = "$way JOIN $anotherStruct[table] ";
+        if ($prefix!='') $_query_join .= $prefix.' ';
+        if (is_array($condition) && $condition != []) $_query_join .= $this->_where($condition);
+        else if (is_string($condition)) $_query_join .= $condition;
 
-        $this->query_join[] = "$way JOIN $anotherStruct[table] $condition";
+        $this->query_join[] = $_query_join;
+        $this->struct['tables'][] = [
+            'table'=>$anotherStruct['table'],
+            'primary'=>$anotherStruct['primary'],
+            'primaryDB'=>$anotherStruct['primaryDB'],
+            'schema'=>$anotherStruct['schema'],
+            'prefix'=>'',
+        ];
 
-        //var_dump__($this->struct,$condition);
         return $this;
     }
 
@@ -66,55 +99,65 @@ trait SQLpgModelAdapter {
      * Join Inner
      *
      * @param cmsModelAbstact $join
+     * @param string $prefix
      * @param array $condition
      * @return $this|$this[]
+     * @throws DBException
      */
-    public function join(cmsModelAbstact $join,$condition = []){
-        return $this->_join('INNER',$join,$condition);
+    public function join(cmsModelAbstact $join,$prefix = '',$condition = []){
+        return $this->_join('INNER',$join,$prefix,$condition);
     }
 
     /**
      * Join Inner
      *
      * @param cmsModelAbstact $join
+     * @param string $prefix
      * @param array $condition
      * @return $this|$this[]
+     * @throws DBException
      */
-    public function joinInner(cmsModelAbstact $join,$condition = []){
-        return $this->_join('INNER',$join,$condition);
+    public function joinInner(cmsModelAbstact $join,$prefix = '',$condition = []){
+        return $this->_join('INNER',$join,$prefix,$condition);
     }
 
     /**
      * Join Left
      *
      * @param cmsModelAbstact $join
+     * @param string $prefix
      * @param array $condition
      * @return $this|$this[]
+     * @throws DBException
      */
-    public function joinLeft(cmsModelAbstact $join,$condition = []){
-        return $this->_join('LEFT',$join,$condition);
+    public function joinLeft(cmsModelAbstact $join,$prefix = '',$condition = []){
+        return $this->_join('LEFT',$join,$prefix,$condition);
     }
 
     /**
      * Join Right
      *
      * @param cmsModelAbstact $join
+     * @param string $prefix
      * @param array $condition
      * @return $this|$this[]
+     * @throws DBException
      */
-    public function joinRight(cmsModelAbstact $join,$condition = []){
-        return $this->_join('RIGHT',$join,$condition);
+    public function joinRight(cmsModelAbstact $join,$prefix = '',$condition = []){
+        return $this->_join('RIGHT',$join,$prefix,$condition);
     }
 
     /**
      * Join Outer
      *
      * @param cmsModelAbstact $join
+     * @param string $prefix
      * @param array $condition
      * @return $this|$this[]
+     * @throws DBException
      */
-    public function joinOuter(cmsModelAbstact $join,$condition = []){
-        return $this->_join('OUTER',$join,$condition);
+    public function joinOuter(cmsModelAbstact $join,$prefix = '',$condition = []){
+        return $this->_join('OUTER',$join,$prefix,$condition);
     }
 
     /**
@@ -380,11 +423,11 @@ trait SQLpgModelAdapter {
             return $this->sql->command($query);
         }
         else {
-            $field = $this->struct['fields'][$primary];
-            $query .= ' RETURNING '.$field['COLUMN_NAME'];
+            $primaryDB = $this->struct['primaryDB'];
+            $query .= ' RETURNING '.$primaryDB;
             $res = $this->sql->query_one($query);
             if ($res!=false) {
-                $this->data[$field['COLUMN_NAME']] = $res;
+                $this->data[$primaryDB] = $res;
                 return 1;
             } else return 0;
         }
@@ -407,7 +450,7 @@ trait SQLpgModelAdapter {
     }
 
     /**
-     * retutn all records
+     * return all records
      * @return $this|$this[]
      * @throws DBException
      */
@@ -439,7 +482,13 @@ trait SQLpgModelAdapter {
         return $this;
     }
 
-    /** prepare update */
+    /**
+     * prepare update
+     *
+     * @param string $where
+     * @return string
+     * @throws DBException
+     */
     private function pr_u($where='') {
         $_f = array();
         foreach ($this->filled as $k=>$v) if ($this->struct['primary']!=$k) {
