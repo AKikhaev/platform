@@ -82,7 +82,7 @@ class storageOptimizer extends cliUnit {
         $remain->init($cmsSections->count(),'processing',0);
         toLogInfo('Оптимизация разделов: '.$cmsSections->count());
         foreach ($cmsSections as $item) {
-            $item->SecUrl
+            //$item->SecUrl
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php // Generate DB model from DBMS Postgres
 
-class modelGenerator {
+class cmsModelGenerator {
 
 	private function TableNameToModel($name) {
 		$names = array();
@@ -15,7 +15,7 @@ class modelGenerator {
 		foreach (explode('_',$name) as $name) {
 			$names[] = mb_ucfirst($name);
 		}
-		//$names[0] = mb_strtolower($names[0]);
+		$names[0] = mb_strtolower($names[0]);
 		return implode('',$names);
 	}
 
@@ -120,11 +120,11 @@ class modelGenerator {
 				$identity        = (bool)(preg_match('/^nextval/', $row[$default_value]));
 			}
 			$fieldInfo = array(
-				'SCHEMA_NAME'      => mb_strtolower($row[$nspname]),
-				'TABLE_NAME'       => mb_strtolower($row[$relname]),
+				//'SCHEMA_NAME'      => mb_strtolower($row[$nspname]),
+				//'TABLE_NAME'       => mb_strtolower($row[$relname]),
 				'COLUMN_NAME'      => mb_strtolower($row[$colname]),
 				'MODEL_NAME'	   => $this->ColumnNameToModel($row[$colname]),
-				'COLUMN_POSITION'  => $row[$attnum],
+				//'COLUMN_POSITION'  => $row[$attnum],
 				'DATA_TYPE'        => $row[$type],
 				'COMPLETE_TYPE'    => $row[$complete_type],
 				'DEFAULT'          => $defaultValue,
@@ -133,7 +133,8 @@ class modelGenerator {
 				//'SCALE'            => null, // @todo_
 				//'PRECISION'        => null, // @todo_
 				//'UNSIGNED'         => null, // @todo_
-				'PRIMARY'          => $primary,				'PRIMARY_POSITION' => $primaryPosition,
+				'PRIMARY'          => $primary,
+                //'PRIMARY_POSITION' => $primaryPosition,
 				'IDENTITY'         => $identity,
 				'COMMENT'		   => $row[$coldescription],
 			);
@@ -164,16 +165,57 @@ class modelGenerator {
      */
 	public function generate($tableName, $schemaName = 'public') {
 		$tableInfo = $this->describeTable($tableName,$schemaName);
+        $isView = preg_match('/view$/iu',$tableInfo['model'])===1;
+        $primary = ''; $primaryDB = '';
 
-		$template = file_get_contents('akcms/models/modelTemplate.php');
+        $tableCommentRaw = $tableInfo['comment'];
+        if (!$tableInfo['comment']) toLogError($tableInfo['model'].' Без описания');
+        $tableAttr = array();
+        if (mb_strpos($tableInfo['comment'],'|')!==false) {
+            $tableCommentInfo = explode('|',$tableInfo['comment']);
+            for($i=1;$i<count($tableCommentInfo);$i++) {
+                @list($a,$v) = explode('=',$tableCommentInfo[$i]);
+                $tableAttr[$a]=$v;
+            }
+            unset($a,$v);
+            if (isset($tableAttr['name'])) $objnameDB = $tableAttr['name'];
+            $tableInfo['comment'] = $tableCommentInfo[0];
+        }
+        if (array_key_exists('i',$tableAttr)) {
+            toLog("  $schemaName.$tableName пропущена");
+            return;
+        }
+
+		$template = file_get_contents('akcms/models/cmsModelTemplate.php');
 		//echo $template;
 
 		$fieldsProperties = array();
 		$fieldsStatic = array();
 
 		$maxNameLength = 0; foreach ($tableInfo['fields'] as &$field) if (mb_strlen($field['MODEL_NAME'])>$maxNameLength) $maxNameLength = mb_strlen($field['MODEL_NAME']); $maxNameLength++;
-        $primary = '';
 		foreach ($tableInfo['fields'] as &$field) {
+
+            if (!$field['COMMENT']) toLogError($tableInfo['model'].'.'.$field['COLUMN_NAME'].' Без описания');
+            $field['COMMENT'] = str_replace("\r",'',$field['COMMENT']);
+            $field['COMMENT'] = str_replace(PHP_EOL,', ',$field['COMMENT']);
+            $fieldAttr = array();
+            if (mb_strpos($field['COMMENT'],'|')!==false) {
+                $fieldCommentInfo = explode('|',$field['COMMENT']);
+                for($i=1;$i<count($fieldCommentInfo);$i++) {
+                    @list($a,$v) = explode('=',$fieldCommentInfo[$i]);
+                    $fieldAttr[$a]=$v;
+                }
+                unset($a,$v);
+                $field['COMMENT'] = $fieldCommentInfo[0];
+            }
+            if (array_key_exists('i',$fieldAttr)) {
+                toLog("  Пропуск поля $field[COLUMN_NAME]");
+                continue;
+            } //Пропус поля
+            if (array_key_exists('>',$fieldAttr)) {
+                $field['RELATE_TO'] = $fieldAttr['>'];
+            } //Пропус поля
+
 			// string|integer|int|boolean|bool|float|double|object|mixed|array|resource|void|null|callback|false|true|self
 			$typeSimple = '';
 			switch ($field['DATA_TYPE']) {
@@ -245,7 +287,10 @@ class modelGenerator {
 			$comment = str_replace("\r\n",', ',$field['COMMENT']);
 			$fieldsProperties[] = ' * @property '.str_pad($typeSimple,8).''.$field['MODEL_NAME'].' '.$comment;
 			$fieldsStatic[] = "    ".'public static $_'.str_pad($field['MODEL_NAME'],$maxNameLength).' = \''.$field['COLUMN_NAME'].'\';';
-            if ($field['PRIMARY']) $primary = $field['MODEL_NAME'];
+            if ($field['PRIMARY']) {
+                $primary = $field['MODEL_NAME'];
+                $primaryDB = $field['COLUMN_NAME'];
+            }
 			$tableInfo['fieldsDB'][$field['COLUMN_NAME']]=$field['MODEL_NAME'];
 			unset($field['SCHEMA_NAME']);
 			unset($field['TABLE_NAME']);
@@ -256,7 +301,7 @@ class modelGenerator {
 			unset($field['PRIMARY_POSITION']);
 			unset($field['COMPLETE_TYPE']);
 			unset($field['IDENTITY']);
-			unset($field['COMMENT']);
+			//unset($field['COMMENT']);
 		}
         $tableInfo['primary'] = $primary;
 
@@ -264,7 +309,7 @@ class modelGenerator {
 		$tableVar = preg_replace('/\n\s*array \(/','array(',$tableVar);
 		$tableVar = str_replace("\n","\n  ",$tableVar);
 
-		$template = str_replace('modelTemplate',$tableInfo['model'],$template);
+		$template = str_replace('cmsModelTemplate',$tableInfo['model'],$template);
 		$comment = str_replace("\r\n",' * ',$tableInfo['comment']);
 		$template = str_replace('{#properties#}',implode("\n",$fieldsProperties),$template);
 		$template = str_replace('    //{#staticfields#}',implode("\n",$fieldsStatic),$template);
@@ -273,12 +318,12 @@ class modelGenerator {
 		$template = str_replace('{#tablecomment#}',$comment,$template);
 		$template = str_replace('$struct = array()','$struct = '.$tableVar,$template);
 
-		if (!file_exists('u/models/'.$tableInfo['model'].'.php')) {
+		if (!file_exists('akcms/u/models/'.$tableInfo['model'].'.php')) {
 			file_put_contents('akcms/u/models/'.$tableInfo['model'].'.php',$template);
 			toLogInfo('Модель '.$tableInfo['model'].' создана '.mb_strlen($template));
 		} else {
 			$splitter = '/*** customer extensions ***/';
-			$oldTemplate = explode($splitter,file_get_contents('u/models/'.$tableInfo['model'].'.php'));
+			$oldTemplate = explode($splitter,file_get_contents('akcms/u/models/'.$tableInfo['model'].'.php'));
 			$newTemplate = explode($splitter,$template);
 
 			$updateTemplate = $newTemplate[0].$splitter.$oldTemplate[1];
@@ -288,21 +333,48 @@ class modelGenerator {
 	}
 }
 
+/**
+ * GenModel - Generate DB model from DBMS Postgres
+ */
 class GenModel extends cliUnit {
+
+    /**
+     * Generate all models
+     * @throws CmsException
+     */
+    public function genAllAction(){
+        global $sql,$cfg;
+
+        $md = new cmsModelGenerator();
+        profiler::showOverallTimeToTerminal();
+
+        foreach ($sql->query_all_column('select tablename from pg_tables where schemaname='.$sql->t($cfg['db'][1]['schema']).' order by 1') as $tableName) {
+            toLogInfo('Генерация '.$tableName);
+            $md->generate($tableName,$cfg['db'][1]['schema']);
+        }
+    }
+
+    /**
+     * @throws DBException
+     */
     public function runAction(){
         global $sql,$cfg;
 
-        $md = new modelGenerator();
+        profiler::showOverallTimeToTerminal(true);
+
+//        $modelCmsGalleryPhotos = (new modelCmsGalleryPhotos())->where(
+//            [modelCmsGalleryPhotos::$_cgpCreated,'>','2018-04-01'],
+//            [modelCmsGalleryPhotos::$_idCgp,'>',86]
+//        )->join(new modelCmsGaleries())->get();
+
+//        foreach ($modelCmsGalleryPhotos as $modelCmsGalleryPhoto) {
+//            var_log_terminal($modelCmsGalleryPhoto);
+//        }
+
+        $tagList = (new modelCmsTagsSections())->join(new modelCmsTags())->fields()->get();
+
 
         try {
-            profiler::showOverallTimeToTerminal();
-
-            foreach ($sql->query_all_column('select tablename from pg_tables where schemaname='.$sql->t($cfg['db'][1]['schema'])) as $tableName) {
-                toLogInfo('Генерация '.$tableName);
-                $md->generate($tableName,$cfg['db'][1]['schema']);
-            }
-
-            //$md->generate('cms_sections',$cfg['db'][1]['schema']);
 
             /*
                 $cs =(new modelCmsSections())->fields(array(
@@ -322,59 +394,11 @@ class GenModel extends cliUnit {
             */
 
 
-            /*
-            $cs = (new modelCmsSections())->fields(
-                modelCmsSections::$_SecUrlFull,
-                modelCmsSections::$_SecNamefull,
-                'sec_url as t'
-            )->where([
-                [modelCmsSections::$_SecNamefull,'ilike','%аб%'],
-                [modelCmsSections::$_SecNamefull,'ilike','%оо%']
-            ])->OR_(
-                [modelCmsSections::$_SecNamefull,'ilike','%ко%'],
-                [modelCmsSections::$_SecSort,'>',7]
-            )
-                ->get();
-            foreach ($cs as $c) {
-                toLogInfo("$c->SecNamefull $c->t");
-
-
-            }
-            */
-
-//	echo new rawsql('data')."\n";
-
-//    foreach ($cs as $item) {
-//        print_r_($item);
-//    }
-
             //$cs = new modelCmsSections(1);
             //$cs->SecCreated = $cs->SecCreated;
             //$cs->update();
             //$cs->insert();
 
-            //todo data when next|prev etc.
-            // todo WHERE
-
-
-            //var_dump($cs);
-
-            //$cs->
-            //modelCmsSections::
-
-            /*
-
-            $query = 'SELECT section_id,sec_nameshort,sec_content,sec_url_full FROM cms_sections';
-            $itemObj = $sql->queryObj($query);
-            $remain = new remainCalc();
-            $remain->init($itemObj->count(),'processing',0);
-            $i = 0;
-            foreach ($itemObj as $item) {
-                $remain->plot($i++);
-                usleep(110000);
-            }
-
-            */
             echo "\n";
             toLog('Готово');
 

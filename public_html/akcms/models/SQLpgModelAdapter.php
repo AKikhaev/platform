@@ -18,6 +18,7 @@ trait SQLpgModelAdapter {
     public $query = '';
     private $query_fields = [];
     private $query_from = [];
+    private $query_join = [];
     private $query_where = [];
     private $query_order = [];
     private $query_limit = 0;
@@ -30,6 +31,90 @@ trait SQLpgModelAdapter {
             $field = $this->struct['fields'][$k];
             $this->struct['fieldsDB'][$field['COLUMN_NAME']] = &$field;
         }
+    }
+
+    public function zzJoinData() {
+        return $this->struct;
+    }
+
+    private function _join($way,cmsModelAbstact $join,$condition = []) {
+        $anotherStruct = $join->zzJoinData();
+
+        if ($condition == [])
+            foreach ($this->struct['fields'] as $fieldName=>$field) {
+                if (isset($field['RELATE_TO']) && $field['RELATE_TO']==$anotherStruct['table'] && $anotherStruct['primary']!='') {
+                    if ($fieldName==$anotherStruct['primary'])
+                        $condition = "USING ($field[COLUMN_NAME])";
+                    else
+                        $condition = "ON ($field[COLUMN_NAME]=".$anotherStruct['fields'][$anotherStruct['primary']]['COLUMN_NAME'].")";
+                    break;
+                }
+
+            }
+        $this->struct['fields'] = array_merge($this->struct['fields'],$anotherStruct['fields']);
+        $this->struct['fieldsDB'] = array_merge($this->struct['fieldsDB'],$anotherStruct['fieldsDB']);
+
+        if (is_array($condition) && $condition != []) $condition = $this->_where($condition);
+
+        $this->query_join[] = "$way JOIN $anotherStruct[table] $condition";
+
+        //var_dump__($this->struct,$condition);
+        return $this;
+    }
+
+    /**
+     * Join Inner
+     *
+     * @param cmsModelAbstact $join
+     * @param array $condition
+     * @return $this|$this[]
+     */
+    public function join(cmsModelAbstact $join,$condition = []){
+        return $this->_join('INNER',$join,$condition);
+    }
+
+    /**
+     * Join Inner
+     *
+     * @param cmsModelAbstact $join
+     * @param array $condition
+     * @return $this|$this[]
+     */
+    public function joinInner(cmsModelAbstact $join,$condition = []){
+        return $this->_join('INNER',$join,$condition);
+    }
+
+    /**
+     * Join Left
+     *
+     * @param cmsModelAbstact $join
+     * @param array $condition
+     * @return $this|$this[]
+     */
+    public function joinLeft(cmsModelAbstact $join,$condition = []){
+        return $this->_join('LEFT',$join,$condition);
+    }
+
+    /**
+     * Join Right
+     *
+     * @param cmsModelAbstact $join
+     * @param array $condition
+     * @return $this|$this[]
+     */
+    public function joinRight(cmsModelAbstact $join,$condition = []){
+        return $this->_join('RIGHT',$join,$condition);
+    }
+
+    /**
+     * Join Outer
+     *
+     * @param cmsModelAbstact $join
+     * @param array $condition
+     * @return $this|$this[]
+     */
+    public function joinOuter(cmsModelAbstact $join,$condition = []){
+        return $this->_join('OUTER',$join,$condition);
     }
 
     /**
@@ -206,14 +291,17 @@ trait SQLpgModelAdapter {
         elseif (count($this->query_from)==0) $query .= ' FROM '.static::$tableName;
         else $query .= ' FROM '.implode(' ',$this->query_from);
 
+        if (is_string($this->query_join)) $query .= ' '.$this->query_join; // готовый перечень
+        else if (count($this->query_join)>0) $query .= ' '.implode(' ',$this->query_join); // таблицы перечислены в массиве
+
         //todo Сложные условия, указание сравнения
         if (is_int($this->query_where)) $query .= ' WHERE '.$this->_pr_whereID($this->query_where); // Число
-        if (is_object($this->query_where) && is_subclass_of($this->query_where,'modelAbstact')) $query .= ' WHERE '.$this->query_where->_pr_whereEQ(); //Класс самого себя
+        if (is_object($this->query_where) && is_subclass_of($this->query_where, 'cmsModelAbstact')) $query .= ' WHERE '.$this->query_where->_pr_whereEQ(); //Класс самого себя
         if (is_string($this->query_where) && $this->query_where!='') $query .= ' WHERE '.$this->query_where; // готовый query
         if (is_array($this->query_where) && count($this->query_where)>0) $query .= ' WHERE '.implode(' AND ',$this->query_where); //набор готовых условий для склейки
 
         //todo указание направления сотрировки
-        if (is_array($this->query_order) && count($this->query_order)>0) $query .= ' ORDER BY '.implode(',',$this->query_order); //Условия перечисленны в массиве
+        if (is_array($this->query_order) && count($this->query_order)>0) $query .= ' ORDER BY '.implode(',',$this->query_order); //Условия перечислены в массиве
         if (is_string($this->query_order) && $this->query_order!='') $query .= ' ORDER BY '.$this->query_order; // готовое условие
 
         if ($this->query_limit>0) $query .= ' LIMIT '.@(int)$this->query_limit;
