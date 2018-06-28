@@ -55,7 +55,6 @@ class cli {
         return self::$rootCmdList;
     }
     public static function run(){
-        global $sql;
         self::getRootCommandList();
 
         $command = $_SERVER['argv'];
@@ -68,9 +67,9 @@ class cli {
             }
             foreach (self::$rootCmdList as $cmd=>$path) {
                 $handle = fopen($path, 'r');
-                $description = mb_trim(str_replace('<?php','',fgets($handle, 4096)),'\#\/\s');
+                $description = mb_trim(str_replace(['<?php',"\n","\r"],'',fgets($handle, 4096)),'\s\#\/');
                 fclose($handle);
-                echo '  '.str_pad($cmd,$maxLenght).' - '.$description;
+                echo '  '.str_pad($cmd,$maxLenght).' - '.$description."\n";
             }
         } else {
             $rootCommand = $command[1];

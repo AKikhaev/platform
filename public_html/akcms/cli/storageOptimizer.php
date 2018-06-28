@@ -41,7 +41,7 @@ class storageOptimizer extends cliUnit {
             if (preg_match('~(\\d++/\\d++)$~',$dir,$match)) {
                 $id = (string)(int)str_replace('/','',$match[1]);
                 if (!in_array($id,$ids_all)) {
-                    $this->removed += rrmdir($dir);
+                    $this->removed += $this->rrmdir($dir);
                     toLogError('Папка без раздела: ' . $dir);
                 }
             }
@@ -66,22 +66,17 @@ class storageOptimizer extends cliUnit {
         global $sql;
         profiler::showOverallTimeToTerminal(true);
 
-/*
-        $query = 'SELECT section_id,sec_nameshort,sec_content,sec_url_full FROM cms_sections ORDER by 1 DESC';
-        $itemObj = $sql->queryObj($query);
-
-        $remain = new remainCalc();
-        $remain->init($itemObj->count(),'processing',0);
-        toLogInfo('Оптимизация разделов: '.$itemObj->count());
-        foreach ($itemObj as $item) {
-        }
-*/
         $cmsSections = (new modelCmsSections())->fields('section_id,sec_content,sec_url_full')->order('1 desc')->get();
 
         $remain = new remainCalc();
         $remain->init($cmsSections->count(),'processing',0);
         toLogInfo('Оптимизация разделов: '.$cmsSections->count());
-        foreach ($cmsSections as $item) {
+        foreach ($cmsSections as $section) {
+            var_log_terminal($section);
+            $secStr = (new modelCmsSectionsString())->where(modelCmsSectionsString::$_secId,'=',$section->sectionId)->get();
+
+
+            var_log_terminal($secStr);die;
             //$item->SecUrl
         }
     }
