@@ -2,7 +2,14 @@
 /public_html/assets
 /public_html/akcms/u/*
 /htmls
-/cache
-/img-*
 /export
 /public_html/sitemap.xml
+
+/cache
+/dev
+/etc
+/lib
+/logs
+/tmp
+/usr
+/var

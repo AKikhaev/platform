@@ -1,0 +1,5 @@
+
+location /.well-known {
+    alias /data/nfs/acme/.well-known;
+	#return 501;
+}
