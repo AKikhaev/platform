@@ -1,3 +1,6 @@
-mv /tmp/php-fpm-knpzkenru.sock /tmp/php-fpm-knpzkenru.sock.original
-socat -x -v UNIX-LISTEN:/tmp/php-fpm-knpzkenru.sock,mode=777,reuseaddr,fork UNIX-CONNECT:/tmp/php-fpm-knpzkenru.sock.original
-mv /tmp/php-fpm-knpzkenru.sock.original /tmp/php-fpm-knpzkenru.sock
+name=knpz-ken.ru
+nameShort=`echo $name | sed 's/[ \t\.-]//g'`
+
+touch /data/nfs/$name/logs/terminal && chmod 666 /data/nfs/$name/logs/terminal && truncate --size 0 /data/nfs/$name/logs/terminal
+trap "rm /data/nfs/$name/logs/terminal" EXIT INT TERM
+tail -f /data/nfs/$name/logs/terminal

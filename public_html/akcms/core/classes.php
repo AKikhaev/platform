@@ -467,6 +467,7 @@ class core {
                     mb_strpos($pathstr,'login.html/')!==false
                 ) return;
             }
+            self::getTerminalsList();
 
             $emailTo = $cfg['email_error'];
             $ip = self::get_client_ip();
@@ -529,20 +530,30 @@ class core {
         else return self::$sharedObj[$obj_name] = new $obj_name();
     }
     public static function getTerminalsList(){
-        $out = array();
-        if (self::$OS_WIN) return $out; // exit when win, no terminals support
+        if (count(self::$terminals)>0) return self::$terminals;
+        $out = [];
+        if (strrpos($_SERVER["DOCUMENT_ROOT"],'/')===0 && file_exists('/logs/terminal'))
+            $out[] = [
+            'user' => 'nouser',
+            'terminal' => '/logs/terminal',
+            'date' => '',
+            'time' => '',
+            'ip' => '127.0.0.1',
+        ];
 
-        $ip = self::get_client_ip();
-        exec('who| grep '.get_current_user().' | grep '.$ip,$terminalsRaw);
-        foreach ($terminalsRaw as $data) {
-            if (preg_match('/([A-Za-z0-9_-]+)\s+([a-zA-Z0-9\/]+)\s+([\d-]+)\s+([\d:]+)\s+\(([\d.]+)\)/iu', $data, $terminalInfo)) {
-                $out[] = array(
-                    'user' => $terminalInfo[1],
-                    'terminal' => $terminalInfo[2],
-                    'date' => $terminalInfo[3],
-                    'time' => $terminalInfo[4],
-                    'ip' => $terminalInfo[5],
-                );
+        if (function_exists('exec')) {
+            $ip = self::get_client_ip();
+            exec('who| grep ' . get_current_user() . ' | grep ' . $ip, $terminalsRaw);
+            foreach ($terminalsRaw as $data) {
+                if (preg_match('/([A-Za-z0-9_-]+)\s+([a-zA-Z0-9\/]+)\s+([\d-]+)\s+([\d:]+)\s+\(([\d.]+)\)/iu', $data, $terminalInfo)) {
+                    $out[] = array(
+                        'user' => $terminalInfo[1],
+                        'terminal' => '/dev/'.$terminalInfo[2],
+                        'date' => $terminalInfo[3],
+                        'time' => $terminalInfo[4],
+                        'ip' => $terminalInfo[5],
+                    );
+                }
             }
         }
 
@@ -559,7 +570,7 @@ class core {
             else return false;
         }
         //exec('who > /dev/pts/1');
-        $tty = fopen('/dev/'.$terminal, 'wb');
+        $tty = fopen($terminal, 'a+b');
         $r = fwrite($tty, "$data\n");
         fclose($tty);
         return $r !== false;

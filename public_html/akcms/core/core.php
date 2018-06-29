@@ -26,7 +26,7 @@ function LOAD_CORE_CLI() {
 	#pcntl_signal(SIGTERM, 'CORE_CLI_TERMINATE'); // killall myscript / kill <PID>
 	#pcntl_signal(SIGHUP, 'CORE_CLI_TERMINATE'); // обрыв связи
 	$CliUser = function_exists('posix_getpwuid') ? posix_getpwuid(posix_getuid()) : array('name'=>get_current_user());
-	core::$OS_WIN = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
+	core::$OS_WIN = DIRECTORY_SEPARATOR==='\\';
 	core::$IS_CLI = true;
 	$_SERVER['DOCUMENT_ROOT'] = getcwd();
     $_SERVER['HTTP_HOST'] = 'CLI:'.$cfg['site_domain'];

@@ -6,7 +6,10 @@ mkdir -p /data/nfs/$name
 mount --bind /mnt/d/Documents/Projects/$name /data/nfs/$name
 
 # mount and crate needs tree
-mkdir -p /data/nfs/$name/dev/pts && mount --bind /dev/pts /data/nfs/$name/dev/pts
+mkdir -p /data/nfs/$name/dev/pts
+mount --bind /dev/pts /data/nfs/$name/dev/pts
+#mount /dev/tty1 /data/nfs/$name/dev/tty1
+
 mkdir -p /data/nfs/$name/cache
 mkdir -p /data/nfs/$name/logs
 mkdir -p /data/nfs/$name/tmp
