@@ -9,7 +9,7 @@
  * @property int     mnuiSecId Страница
  * @property int     mnuiSort Сортировка
  */
-class modelCmsMenuItems extends cmsModelAbstact
+class modelCmsMenuItems extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

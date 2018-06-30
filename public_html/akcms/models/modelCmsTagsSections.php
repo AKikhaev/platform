@@ -7,7 +7,7 @@
  * @property int     tagId Тег
  * @property int     secId Страница
  */
-class modelCmsTagsSections extends cmsModelAbstact
+class modelCmsTagsSections extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

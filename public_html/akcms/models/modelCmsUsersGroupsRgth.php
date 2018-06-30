@@ -8,7 +8,7 @@
  * @property string  usrrghtName Право
  * @property bool    usrrghtMode Разрешено
  */
-class modelCmsUsersGroupsRgth extends cmsModelAbstact
+class modelCmsUsersGroupsRgth extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

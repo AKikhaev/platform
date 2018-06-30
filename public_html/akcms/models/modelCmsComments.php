@@ -12,7 +12,7 @@
  * @property string  cmntMessage Сообщение
  * @property bool    cmntEnabled Показывать
  */
-class modelCmsComments extends cmsModelAbstact
+class modelCmsComments extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

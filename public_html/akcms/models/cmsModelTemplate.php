@@ -6,7 +6,7 @@
  *
 {#properties#}
  */
-class cmsModelTemplate extends cmsModelAbstact
+class cmsModelTemplate extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

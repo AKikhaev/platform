@@ -14,7 +14,7 @@
  * @property int     gbAnswererId ИД отвечающего
  * @property string  gbPhone Телефон
  */
-class modelCmsGb extends cmsModelAbstact
+class modelCmsGb extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

@@ -13,7 +13,7 @@
  * @property string  copCreated Дата
  * @property bool    copEnabled Отображать
  */
-class modelCmsObjPhotos extends cmsModelAbstact
+class modelCmsObjPhotos extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

@@ -10,7 +10,7 @@
  * @property string  secsStr Текст
  * @property bool    secsMultiline Многострочный
  */
-class modelCmsSectionsString extends cmsModelAbstact
+class modelCmsSectionsString extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

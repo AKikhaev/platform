@@ -184,7 +184,7 @@ function var_export__($var) {
     exit();
 }
 
-function var_log() {
+function var_log_js() {
     $var = func_get_args();
     ///$stacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS); $line = $stacktrace['line'];
         echo '<script>console.log('.json_encode(count($var)==1?$var[0]:$var).');</script>';

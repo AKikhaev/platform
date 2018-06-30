@@ -17,7 +17,7 @@
  * @property string  usrLostcode Код восстановления
  * @property string  usrEmail Почта
  */
-class modelCmsUsers extends cmsModelAbstact
+class modelCmsUsers extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

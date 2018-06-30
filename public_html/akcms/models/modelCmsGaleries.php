@@ -15,7 +15,7 @@
  * @property string  glrDesc Описание
  * @property int     glrSort Сортировка
  */
-class modelCmsGaleries extends cmsModelAbstact
+class modelCmsGaleries extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

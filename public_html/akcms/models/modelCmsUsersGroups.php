@@ -7,7 +7,7 @@
  * @property int     idUsrgpr ИД
  * @property string  usrgrpName Группа
  */
-class modelCmsUsersGroups extends cmsModelAbstact
+class modelCmsUsersGroups extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

@@ -33,7 +33,7 @@
  * @property int     secHowchild 0-не отображать, 1-по порядку, 2-по дате (со старых), 3-по дате (с новых)
  * @property array   secIdsClosest ИД путь
  */
-class modelCmsSections extends cmsModelAbstact
+class modelCmsSections extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

@@ -42,13 +42,13 @@ trait SQLpgModelAdapter {
      * join
      *
      * @param $way
-     * @param cmsModelAbstact $join
+     * @param cmsModelAbstract $join
      * @param string $prefix
      * @param array $condition
      * @return $this
      * @throws DBException
      */
-    private function _join($way,cmsModelAbstact $join,$prefix = '',$condition = []) {
+    private function _join($way, cmsModelAbstract $join, $prefix = '', $condition = []) {
         $anotherStruct = $join->zzJoinData();
         $_query_join = '';
 
@@ -98,65 +98,65 @@ trait SQLpgModelAdapter {
     /**
      * Join Inner
      *
-     * @param cmsModelAbstact $join
+     * @param cmsModelAbstract $join
      * @param string $prefix
      * @param array $condition
      * @return $this|$this[]
      * @throws DBException
      */
-    public function join(cmsModelAbstact $join,$prefix = '',$condition = []){
+    public function join(cmsModelAbstract $join, $prefix = '', $condition = []){
         return $this->_join('INNER',$join,$prefix,$condition);
     }
 
     /**
      * Join Inner
      *
-     * @param cmsModelAbstact $join
+     * @param cmsModelAbstract $join
      * @param string $prefix
      * @param array $condition
      * @return $this|$this[]
      * @throws DBException
      */
-    public function joinInner(cmsModelAbstact $join,$prefix = '',$condition = []){
+    public function joinInner(cmsModelAbstract $join, $prefix = '', $condition = []){
         return $this->_join('INNER',$join,$prefix,$condition);
     }
 
     /**
      * Join Left
      *
-     * @param cmsModelAbstact $join
+     * @param cmsModelAbstract $join
      * @param string $prefix
      * @param array $condition
      * @return $this|$this[]
      * @throws DBException
      */
-    public function joinLeft(cmsModelAbstact $join,$prefix = '',$condition = []){
+    public function joinLeft(cmsModelAbstract $join, $prefix = '', $condition = []){
         return $this->_join('LEFT',$join,$prefix,$condition);
     }
 
     /**
      * Join Right
      *
-     * @param cmsModelAbstact $join
+     * @param cmsModelAbstract $join
      * @param string $prefix
      * @param array $condition
      * @return $this|$this[]
      * @throws DBException
      */
-    public function joinRight(cmsModelAbstact $join,$prefix = '',$condition = []){
+    public function joinRight(cmsModelAbstract $join, $prefix = '', $condition = []){
         return $this->_join('RIGHT',$join,$prefix,$condition);
     }
 
     /**
      * Join Outer
      *
-     * @param cmsModelAbstact $join
+     * @param cmsModelAbstract $join
      * @param string $prefix
      * @param array $condition
      * @return $this|$this[]
      * @throws DBException
      */
-    public function joinOuter(cmsModelAbstact $join,$prefix = '',$condition = []){
+    public function joinOuter(cmsModelAbstract $join, $prefix = '', $condition = []){
         return $this->_join('OUTER',$join,$prefix,$condition);
     }
 
@@ -189,50 +189,99 @@ trait SQLpgModelAdapter {
 
     /**
      * Generate where string
+     *
+     * field = value
+     *
+     * field =ANY [values]
+     *
+     * field BETWEEN 1 2
+     *
+     * [where] AND [where] AND [...] | set of and wheres
+     *
+     * id
+     *
+     * instanceof cmsModelAbstract
+     *
      * @param array $where
      * @return string
      * @throws DBException
      */
     private function _where(array $where = []) {
-        if (count($where)==3 && is_string($where[1])) {
+        if (count($where) == 3 && is_string($where[1])) {
+            // field = value
+            // field =ANY [values]
             $field = @$this->struct['fields'][$this->struct['fieldsDB'][$where[0]]];
-            if ($field!==NULL) {
-                $type = is_object($where[2])?get_class($where[2]):gettype($where[2]);
-                if ($type==RAWSQL) return $where[0].' '.$where[1].' '.$where[2];
-                $FieldClass = 'CMS'.$field['FIELD_CLASS'];
-                if (strcasecmp($where[1],'IN')===0) $where[1] = '=ANY';
+            if ($field !== NULL) {
+                $type = is_object($where[2]) ? get_class($where[2]) : gettype($where[2]);
+                if ($type == RAWSQL) return $where[0] . ' ' . $where[1] . ' ' . $where[2];
+                $FieldClass = 'CMS' . $field['FIELD_CLASS'];
+                if (strcasecmp($where[1], 'IN') === 0) $where[1] = '=ANY';
                 /* @var CMSFieldAbstract */
-                if (preg_match('/^(\=|\<|\>)ANY$/iu',$where[1])) {
+                if (preg_match('/^(\=|\<|\>)ANY$/iu', $where[1])) {
                     if (!is_array($where[2])) $where[2] = [$where[2]];
                     $f = [];
-                    foreach ($where[2] as $f_) {$f[] = '('.$FieldClass::quote($this->sql,$f_).')';}
-                    return $where[0].$where[1].'(VALUES'.implode(',',$f).')';
-                }
-                else return $where[0].' '.$where[1].' '.$FieldClass::quote($this->sql,$where[2]);
-            } else throw new DBException('Where field not found '.$where[0]);
+                    foreach ($where[2] as $f_) {
+                        $f[] = '(' . $FieldClass::quote($this->sql, $f_) . ')';
+                    }
+                    return $where[0] . $where[1] . '(VALUES' . implode(',', $f) . ')';
+                } else return $where[0] . ' ' . $where[1] . ' ' . $FieldClass::quote($this->sql, $where[2]);
+            } else throw new DBException('Where field not found ' . $where[0]);
 
-        } else
-        if (count($where)==4 && is_string($where[1])) {
+        } elseif (count($where) == 4 && is_string($where[1])) {
+            // field BETWEEN 1 2
             $field = @$this->struct['fields'][$this->struct['fieldsDB'][$where[0]]];
-            if ($field!==NULL) {
-                $FieldClass = 'CMS'.$field['FIELD_CLASS'];
+            if ($field !== NULL) {
+                $FieldClass = 'CMS' . $field['FIELD_CLASS'];
                 /* @var CMSFieldAbstract */
-                return $where[0].' BETWEEN '.$FieldClass::quote($this->sql,$where[2]).' AND '.$FieldClass::quote($this->sql,$where[3]);
-            } else throw new DBException('Where field not found '.$where[0]);
+                return $where[0] . ' BETWEEN ' . $FieldClass::quote($this->sql, $where[2]) . ' AND ' . $FieldClass::quote($this->sql, $where[3]);
+            } else throw new DBException('Where field not found ' . $where[0]);
 
-        } else if (count($where)>0 && is_array($where[0])){
+        } elseif (count($where) > 0 && is_array($where[0])) {
+            // [where] AND [where] AND [...] | set of and wheres
             $f = [];
             foreach ($where as $w) {
                 $f[] = $this->_where($w);
             }
-            $where = implode(' AND ',$f);
+            $where = implode(' AND ', $f);
             return $where;
+        } elseif (count($where) === 1 && is_numeric($where[0])) {
+            // id
+            $primary = $this->struct['primary'];
+            if ($primary=='') throw new DBException('No primary for '.__CLASS__);
+            $this->__set($primary,$where[0]);
+            $where = $this->_pr_whereID();
+            //var_dump__($where);
+            return $where;
+        }elseif (count($where) === 1 && $where[0] instanceof cmsModelAbstract) {
+            $anotherStruct = $where[0]->zzJoinData();
+            // cmsModelAbstract - filter another by them primary key
+            foreach ($this->struct['fields'] as $fieldName=>$field) {
+                $FieldClass = 'CMS' . $field['FIELD_CLASS'];
+                if (isset($field['RELATE_TO']) && $field['RELATE_TO']==$anotherStruct['table'] && $anotherStruct['primary']!='') {
+                    $where = "$field[COLUMN_NAME]=".$FieldClass::quote($this->sql,$where[0]->__get($anotherStruct['primary']));
+                    return $where;
+                }
+            }
+            throw new DBException('relation '.get_class($this).' to '.get_class($where[0]).' not found');
         }
+        throw new DBException('unknown where');
     }
 
 
     /**
      * Set query where
+     *
+     * field = value
+     *
+     * field =ANY [values]
+     *
+     * field BETWEEN 1 2
+     *
+     * [where] AND [where] AND [...] | set of and wheres
+     *
+     * id
+     *
+     * instanceof cmsModelAbstract
      *
      * @param array|string|int $where id value may be only int. Otherwise go another way
      * @return $this|$this[]
@@ -247,6 +296,19 @@ trait SQLpgModelAdapter {
 
     /**
      * And where ...
+     *
+     * field = value
+     *
+     * field =ANY [values]
+     *
+     * field BETWEEN 1 2
+     *
+     * [where] AND [where] AND [...] | set of and wheres
+     *
+     * id
+     *
+     * instanceof cmsModelAbstract
+     *
      * @param array $where
      * @return $this|$this[]
      * @throws DBException
@@ -260,6 +322,19 @@ trait SQLpgModelAdapter {
 
     /**
      * Or where ...
+     *
+     * field = value
+     *
+     * field =ANY [values]
+     *
+     * field BETWEEN 1 2
+     *
+     * [where] AND [where] AND [...] | set of and wheres
+     *
+     * id
+     *
+     * instanceof cmsModelAbstract
+     *
      * @param array $where
      * @return $this|$this[]
      * @throws DBException
@@ -338,10 +413,10 @@ trait SQLpgModelAdapter {
         else if (count($this->query_join)>0) $query .= ' '.implode(' ',$this->query_join); // таблицы перечислены в массиве
 
         //todo Сложные условия, указание сравнения
-        if (is_int($this->query_where)) $query .= ' WHERE '.$this->_pr_whereID($this->query_where); // Число
-        if (is_object($this->query_where) && is_subclass_of($this->query_where, 'cmsModelAbstact')) $query .= ' WHERE '.$this->query_where->_pr_whereEQ(); //Класс самого себя
         if (is_string($this->query_where) && $this->query_where!='') $query .= ' WHERE '.$this->query_where; // готовый query
-        if (is_array($this->query_where) && count($this->query_where)>0) $query .= ' WHERE '.implode(' AND ',$this->query_where); //набор готовых условий для склейки
+        elseif (is_int($this->query_where)) $query .= ' WHERE '.$this->_pr_whereID($this->query_where); // Число
+        elseif (is_object($this->query_where) && is_subclass_of($this->query_where, 'cmsModelAbstract')) $query .= ' WHERE '.$this->query_where->_pr_whereEQ(); //Класс самого себя
+        elseif (is_array($this->query_where) && count($this->query_where)>0) $query .= ' WHERE '.implode(' AND ',$this->query_where); //набор готовых условий для склейки
 
         //todo указание направления сотрировки
         if (is_array($this->query_order) && count($this->query_order)>0) $query .= ' ORDER BY '.implode(',',$this->query_order); //Условия перечислены в массиве
@@ -387,16 +462,16 @@ trait SQLpgModelAdapter {
     function __construct($any = NULL) {
         $this->sql = $GLOBALS['sql'];
         if (is_numeric($any)) {
-            $primary = $this->struct['primary'];
-            if ($primary=='') throw new DBException('No primary for '.__CLASS__);
-            $this->__set($primary,$any);
-            $any = 'SELECT * FROM '.static::$tableName.' WHERE '.$this->_pr_whereID();
+            // id
+            $this->where($any);
         }
-        elseif (is_string($any) && mb_strlen($any)>0) {
+        // !else
+        if (is_string($any) && mb_strlen($any)>0) {
+            // sql
             $this->query = $any;
-            $this->get();
         }
         elseif (is_resource($any)) {
+            // resource
             $this->sqlres=$any;
             $this->recors = pg_num_rows($this->sqlres);
         }
@@ -607,7 +682,7 @@ trait SQLpgModelAdapter {
         return $res;
     }
 
-    private function __debugInfo(){return [$this->data,$this->query];}
+    private function __debugInfo(){return ['data'=>$this->data,'query'=>$this->query,'count'=>$this->count(),'datapos'=>$this->datapos,'sqlpos'=>$this->sqlpos,'position'=>$this->position];}
 
 }
 

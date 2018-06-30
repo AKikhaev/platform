@@ -5,7 +5,7 @@
  *
  * {#properties#}
  */
-abstract class cmsModelAbstact implements SeekableIterator
+abstract class cmsModelAbstract implements SeekableIterator
 {
     public static $tableName = '{#tableName#}';
     protected $schemaName = '{#schemaName#}';

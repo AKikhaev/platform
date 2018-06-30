@@ -7,7 +7,7 @@
  * @property int     gbId Гостевая запись
  * @property int     gbtId Тег
  */
-class modelCmsGbTagsGb extends cmsModelAbstact
+class modelCmsGbTagsGb extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

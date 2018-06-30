@@ -7,7 +7,7 @@
  * @property int     secId Страница
  * @property int     glrId Галерея
  */
-class modelCmsGallerySec extends cmsModelAbstact
+class modelCmsGallerySec extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

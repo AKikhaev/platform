@@ -7,7 +7,7 @@
  * @property int     gbtId ИД
  * @property string  gbtText Тег
  */
-class modelCmsGbTags extends cmsModelAbstact
+class modelCmsGbTags extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

@@ -11,7 +11,7 @@
  * @property string  cgpCreated Дата
  * @property bool    cgpEnabled Отображать
  */
-class modelCmsGalleryPhotos extends cmsModelAbstact
+class modelCmsGalleryPhotos extends cmsModelAbstract
 {
     use SQLpgModelAdapter;
     /* static fields list */

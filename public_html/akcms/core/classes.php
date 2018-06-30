@@ -541,7 +541,7 @@ class core {
             'ip' => '127.0.0.1',
         ];
 
-        if (function_exists('exec')) {
+        if (function_exists('exec') && !core::$IS_CLI) {
             $ip = self::get_client_ip();
             exec('who| grep ' . get_current_user() . ' | grep ' . $ip, $terminalsRaw);
             foreach ($terminalsRaw as $data) {
