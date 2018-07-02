@@ -1,3 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="ITteka.ru">
+	<meta name="robots" content="noindex" />
+	<link rel="icon" href="/favicon.ico">
+
+	<title>{#title#}</title>
+
+	<!-- Bootstrap core CSS -->
+	<!--link href="http://getbootstrap.com/docs/4.1/dist/css/bootstrap.min.css" rel="stylesheet"-->
+	<link href="/akcms/css/v2/bootstrap41/bootstrap.min.css" rel="stylesheet">
+
+	<!-- Custom styles for this template -->
+	<link href="/akcms/css/v2/pages/login.css" rel="stylesheet">
+</head>
+
+<body>
+<form class="form-signin" method="post">
+	<div class="text-center mb-4">
+		<!--img class="mb-4" src="https://getbootstrap.com/docs/4.1/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72"-->
+		<h1 class="h3 mb-3 font-weight-normal">Авторизация</h1>
+		<!--p>Управление <code>платформой</code> pseudo-element. <a href="https://caniuse.com/#feat=css-placeholder-shown">Works in latest Chrome, Safari, and Firefox.</a></p-->
+	</div>
+
+	<div class="form-label-group">
+		<input type="text" id="inputLogin" class="form-control" placeholder="Имя" name="lval" size="15" required autofocus>
+		<label for="inputLogin">Имя</label>
+	</div>
+
+	<div class="form-label-group">
+		<input type="password" id="inputPassword" class="form-control" placeholder="Пароль" name="pval" size="15" required>
+		<label for="inputPassword">Пароль</label>
+	</div>
+
+	<div class="checkbox mb-3">
+		<label>
+			<input type="checkbox" value="remember-me"> Запомнить
+		</label>
+	</div>
+	<input type="hidden" id="cvil" name="cval" value="571">
+	<button class="btn btn-lg btn-primary btn-block" type="submit" name="do" >Вход</button>
+	<p class="mt-5 mb-3 text-muted text-center">&copy; 2007-2018 ITteka Platform</p>
+</form>
+<script>
+    var ax='{#cval#}';document.getElementById('cvil').value = ax.substring(4,9)+ax.substring(1,3);
+    /*
+    window.addEvent('domready', function() {
+        $('qrdiv').fade('hide').removeClass('hidden');
+        $('ar').addEvent('click',function(e){e.stop();window.location.reload();});
+        $('qrauth').addEvent('click',function(){
+            new Request.JSON({url:'/ajx/:auth/_mng', onComplete:function (c) {
+                    $('qrdiv').fade('in');$('qr').empty().grab(new Element('img',{'src':'/img/qrauth/?c='+c}));
+                    $('tbl').set('morph', {duration: 'long', transition: 'quart:out'}).morph({'padding-top': 50});
+                    (function(){$('qrdiv').fade('out');$('tbl').morph({'padding-top': 150});}).delay(500000);
+                }}).post();
+        });
+    });
+    */
+</script>
+</body>
+</html>
+
+
+
+<!--
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -78,4 +147,4 @@
 	</script>
 </body>
 </html>
-	
+-->
