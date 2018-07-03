@@ -48,11 +48,9 @@ function LOAD_CORE_CLI() {
  * @throws CmsException
  */
 function LOAD_CORE() {
-	GLOBAL $cfg,$path,$pathurl,$pathstr,$pathlen;
+	GLOBAL $cfg,$path,$pathstr,$pathlen;
 	
 	# error tracking
-	core::$isAjax = false;
-	core::$inEdit = false;
 	core::$serverName = strtolower($_SERVER['SERVER_NAME']);
 
 	if (isset($cfg['domains_redirects'][core::$serverName])) {
@@ -76,15 +74,16 @@ function LOAD_CORE() {
 	CmsUser::init();
 	core::$userAuth = CmsUser::isLogin();
 
-	if (isset($_SERVER['SCRIPT_URL']))  $pathurl = strtolower(urldecode($_SERVER['SCRIPT_URL']));
+	if (isset($_SERVER['SCRIPT_URL']))  $pathurl = urldecode($_SERVER['SCRIPT_URL']);
 	else {
-		$pathurl = strtolower(urldecode($_SERVER['REQUEST_URI']));
+		$pathurl = urldecode($_SERVER['REQUEST_URI']);
 		if (mb_strpos($pathstr,'?')!==false) $pathstr = mb_substr($pathstr,0,mb_strpos($pathstr,'?'));
 		if (mb_strpos($pathstr,'#')!==false) $pathstr = mb_substr($pathstr,0,mb_strpos($pathstr,'#'));
 		if (mb_strpos($pathstr,'&')!==false) $pathstr = mb_substr($pathstr,0,mb_strpos($pathstr,'&'));
+        $_SERVER['SCRIPT_URL'] = $pathstr;
 	}
 
-	$path = array_filter(explode('/',$pathurl));
+	$path = array_filter(explode('/',$pathurl),function ($v){return $v!=='';});
     if (@$path[1]==='ajx')
     {
         core::$isAjax = true;
@@ -102,7 +101,7 @@ function LOAD_CORE() {
     }
     elseif (substr($pathurl,-1)!='/')
     {
-        header('Location: http://'.core::$serverName.$_SERVER['SCRIPT_URL'].'/'.substr($_SERVER['REQUEST_URI'],strlen($_SERVER['SCRIPT_URL'])));
+        header('Location: '.$_SERVER['SCRIPT_URL'].'/'.substr($_SERVER['REQUEST_URI'],strlen($_SERVER['SCRIPT_URL'])));
         exit;
     }
 

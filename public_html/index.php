@@ -17,14 +17,15 @@ try {
     else {
 
         //sendTelegram($pathurl.' '.core::get_client_ip());
-        $classes = array(
+        $classes = [
             'PageUnit',
             'MngUnit',
             'SysUnit',
             //'FeedUnit',
             'TmplMapperUnit',
-            'RootFolder'
-        );
+            'RootFolder',
+            'CheckFileMoved',
+        ];
 
         /* @var  $page CmsPage */
         $page = null;
