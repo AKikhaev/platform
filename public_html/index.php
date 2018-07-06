@@ -54,7 +54,7 @@ try {
             core::$outputData = GetShape('pages/'.$pageTemplate, $shape, true);
         } else {
             $html = '';
-            #if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') var_dump__($pathstr);
+            #if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') {var_dump__($pathstr);}
             //if (core::$renderPage || !$Cacher->cache_read($pathstr,$html))
             {
                 $pagecontent = $page->getContent();

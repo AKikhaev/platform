@@ -220,10 +220,12 @@ abstract class VisualThemeAbstract
      * @param $template
      * Обязательный. Шаблон
      * @param int $howchild
-     * Как сортировать потомков
+     * Как сортировать потомков:
      * 1 - по созданию
      * 2 - с новых
      * 3 - со старых
+     * @param int $limit
+     * @param int $sec_id
      * @param string $mode
      * Режим работы:
      * a - один за одним, запуск для каждой сущности

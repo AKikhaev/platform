@@ -91,12 +91,21 @@ class TmplMapperUnit extends CmsPage {
 		);
 	}
 
-	public function prepareHtml($html){
+	private function prepareHtml($html){
 	    $html = str_replace('<br/>','<br>',$html);
         $html = str_replace('<br />','<br>',$html);
         $html = str_replace("\r\n","\n",$html);
         $html = html_entity_decode($html,ENT_NOQUOTES,'UTF-8');
 	    return $html;
+    }
+
+    private function scriptComment($html) {
+	    $html = str_replace(['<script','/script>'],['<!--script','/script-->'],$html);
+	    return $html;
+    }
+    private function scriptUnComment($html) {
+        $html = str_replace(['<!--script','/script-->'],['<script','/script>'],$html);
+        return $html;
     }
 
     public function ajxCreateRegion_undo(){
@@ -186,7 +195,7 @@ class TmplMapperUnit extends CmsPage {
 		global $pathlen;
 
 		if ($GLOBALS['path'][0] === '_tmpl') {
-            if (!core::$userAuth) throw new CmsException('login_needs');
+            if (!$this->hasRight('1',false)) throw new CmsException('login_needs');
             if (core::$isAjax) return;
             if ($pathlen==1) {
                 $templates = [];
@@ -197,14 +206,16 @@ class TmplMapperUnit extends CmsPage {
                         $item
                     );
                 }
-                echo implode('<br/>',$templates);
+                echo implode('<br/>',$templates).'<br/><br/> usage: ctrl+space, shift+space';
             } else {
                 core::$renderPage = true;
                 $this->title = 'Маппер';
                 $pageTemplate = 'tmpl_mapper';
                 $template = $GLOBALS['path'];
                 unset($template[0]);
-                echo file_get_contents(implode('/',$template).'.shtm', true);
+                echo //$this->scriptUnComment($this->scriptComment(
+                    file_get_contents(implode('/',$template).'.shtm', true);
+                //));
                 echo shp::tmpl('pages/tmpl_mapper',array('template'=>implode('/',$template)));
             }
             die();

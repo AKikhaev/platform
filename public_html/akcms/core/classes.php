@@ -69,7 +69,7 @@ abstract class AclProcessor { /* acl */
         } else {
             $needRights[] = $class.'.'.$rightName;
             $needRights[] = $class.'.*';
-            $needRights[] = '*.'.$rightName;
+            //$needRights[] = '*.'.$rightName;
         }
         //$specifiedRight = $this->isSpecifiedRight($rightName);
         //if ($specifiedRight !== null) $rightRes = $specifiedRight; // Не помню
@@ -439,7 +439,7 @@ class core {
                 //header('HTTP/1.0 401 Unauthorized');
                 header('HTTP/1.0 404 Not Found');
                 #var_dump__($e);
-                $url = $GLOBALS['pathurl']; if (trim($url,'/')==='_') $url = '/';
+                $url = $_SERVER['SCRIPT_URL']; if (trim($url,'/')==='_') $url = '/';
                 $shape['metas'] = '<meta http-equiv="Refresh" content="0; URL=/_auth/?url='.urlencode($url).'">';
                 $errorPageTemplate = 'error_pageauthneeds';
                 $shape['title'] = 'Страница не найдена';
@@ -557,7 +557,19 @@ class core {
             }
         }
 
-        return self::$terminals = array_reverse($out);
+        //return self::$terminals = array_reverse($out);
+        usort($out,function($a,$b){
+            //var_dump__($a);
+            if ($a['date']==$b['date']) {
+                if ($a['time']==$b['time']) {
+                    return 0;
+                } else
+                    return ($a['time'] > $b['time']) ? -1 : 1;
+            } else
+                return ($a['date'] > $b['date']) ? -1 : 1;
+
+        });
+        return self::$terminals = $out;
     }
     public static function terminalWrite($data, $terminal=null){
         if ($terminal==null) {
