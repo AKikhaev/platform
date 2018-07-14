@@ -39,11 +39,11 @@ body {
 	cursor: auto;
 }
 .inedit .admcntrl img.admlogo {
-    padding: 0 61px 0 0 !important;
+    margin-right: 30px !important;
 	margin-top: -1px;
 }
 .inedit .admcntrl {
-	width: 1053px;
+	max-width: 930px;
     text-align: left !important;
 }
 

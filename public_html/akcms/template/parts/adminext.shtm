@@ -145,5 +145,7 @@
         console.log('ITteka platforma: loaded');
     });
 </script>
-<link rel="stylesheet" type="text/css" href="/akcms/js/v1/fancybox/jquery.fancybox.css"><script src="/akcms/js/v1/fancybox/jquery.fancybox.js"></script><script src='/akcms/js/v2/tinymce/tinymce.min.js'></script>
+<link rel="stylesheet" type="text/css" href="/akcms/js/v1/fancybox/jquery.fancybox.css">
+<script src="/akcms/js/v1/fancybox/jquery.fancybox.js"></script>
+<script src='/akcms/js/v2/tinymce/tinymce.min.js'></script>
 <div id="te_editor_place" style="display: none"></div>

@@ -255,7 +255,7 @@ function checkFormAssoc(&$var, &$checkRule, $permissionOk = true) {
 }
 
 /* Преобразует ассоциативный массив в массив массивов для ajax */
-function assocArray2ajax($arr) {
+function assocArray2KeyValue($arr) {
 	$narr = array();
 	foreach ($arr as $k=>$v) $narr[] = array('k'=>$k,'v'=>$v);
 	return $narr;

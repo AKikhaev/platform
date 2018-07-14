@@ -126,14 +126,13 @@ class PageUnit extends CmsPage {
                 //throw new CmsException('login_needs_');
             }
             $pageTemplate = 'editpage';
+            //if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') $pageTemplate = 'editpage2';
         }
 
 		$this->title = $this->page['sec_title'] !== '' ? $this->page['sec_title'] : $this->page['sec_namefull'].' - '.$cfg['site_title'];
-		#if ($this->hasRight()) var_dump_($this->page['sec_title']);
 
 		//$this->getMenu();
 		$this->getBreadcrumbs();
-		#var_dump($this->getMenu()); exit;
 
 		$unitsCount = 0;
 		if (trim($this->page['sec_units']) !== '') foreach (explode(',',$this->page['sec_units']) as $pgUnitClass)
@@ -1214,6 +1213,50 @@ class PageUnit extends CmsPage {
         return json_encode(array('error' => $checkResult));
     }
 
+    /** Формируем меню для TreeView
+     * @param $item
+     */
+    function menuToTreeView(&$item){
+       if (isset($item[0])) foreach ($item as &$subitem) $this->menuToTreeView($subitem);
+       else {
+           $item['id'] = $item['section_id'];
+           $item['text'] = $item['sec_nameshort'];
+           $item['href'] = $item['sec_url_full'];
+           if ($item['sec_enabled']=='f') $item['icon'] = 'fa fa-times-circle';
+           else if ($item['sec_hidden']=='t') $item['icon'] = 'fa fa-eye-slash';
+           else if (strtotime($item['sec_from'])>time()) $item['icon'] = 'fa fa-clock-o';
+
+//           $item['tags'] = '';
+           unset($item['section_id']);
+           unset($item['sec_parent_id']);
+           unset($item['sec_url_full']);
+           unset($item['sec_url']);
+           unset($item['sec_nameshort']);
+           unset($item['sec_namefull']);
+           unset($item['sec_imgfile']);
+           unset($item['sec_showinmenu']);
+           unset($item['sec_openfirst']);
+           unset($item['sec_to_news']);
+           unset($item['sec_enabled']);
+           unset($item['sec_title']);
+           unset($item['sec_keywords']);
+           unset($item['sec_description']);
+           unset($item['sec_units']);
+           unset($item['sec_from']);
+           unset($item['sec_howchild']);
+           unset($item['sec_page']);
+           unset($item['sec_page_child']);
+           unset($item['sec_hidden']);
+
+           $item['tags'] = '';
+           if (isset($item['_children'])) {
+               $item['nodes'] = $item['_children'];
+               unset($item['_children']);
+               $item['tags'] = [count($item['nodes'])];
+               foreach ($item['nodes'] as &$subitem) $this->menuToTreeView($subitem);
+           }
+       }
+    }
 
 	#Content
 	public function getContent()
@@ -1241,6 +1284,8 @@ class PageUnit extends CmsPage {
             #Теги
             $secTags = implode(',',$this->getSecTags());
 
+            $shape['pageMainUri'] = $this->pageMainUri;
+
 			$vieweditLink = "new Element('a',{'href':'/".$this->pageMainUri."'+'?'+new Date().getTime()}).inject(usrcntrldiv).grab(new Element('img',{'src':'/img/edt/btnview.png','title':'Просмотреть страницу'}));";
 
 			$shape['jses']  .= "
@@ -1258,7 +1303,12 @@ class PageUnit extends CmsPage {
 			});
 			</script>';
 			$this->_buildPageSections($this->getMenu($this->inEditCan));
-			
+			//$this->_buildPageSections($this->getAllMenu($this->inEditCan));
+
+			$treeViewData = $this->pageAllMenu;
+
+            $this->menuToTreeView($treeViewData);
+
             #Заполняем массивы модулей
             $sec_all_units = array();
             $sec_units_array = explode(',',$this->page['sec_units']);
@@ -1285,11 +1335,12 @@ class PageUnit extends CmsPage {
 				'sec_tags'=>$secTags,
 				'all_tags'=>$this->getAllTags(),
 				'secs'=>$this->pageSections,
+				'treeViewData'=>$treeViewData,
 				'glr_id'=>$this->page['sec_glr_id'],
 				'sec_all_units'=>$sec_all_units,
 				'sec_units'=>$sec_units,
                 'sec_page_child'=>$this->page['sec_page_child'],
-				'sec_pages'=>assocArray2ajax($cfg['pages']))).';
+				'sec_pages'=>assocArray2KeyValue($cfg['pages']))).';
 			function tinyBrowser (field_name, url, type, win) {
 				var cmsURL = "/akcms/js/v1/plupload/_ub.html" + "?type=" + type + "&url='.($this->pageUri!==''?$this->pageUri:'/').'&rnd=" + Math.random(1,999999);
 				tinyMCE.activeEditor.windowManager.open({
