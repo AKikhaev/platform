@@ -1,4 +1,4 @@
 <!-- tmpl_mapper -->
 <script>window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></'+"script>");</script>
-<script>var _akcms = _akcms || {}; _akcms.template = '{#template#}';</script><script src="/akcms/js/v2/tmpl_mapper.js"></script>
+<script>var _akcms = _akcms || {}; _akcms.template = '{#template#}';</script><script src="/akcms/assets/pages/tmpl_mapper.js"></script>
 <!-- /tmpl_mapper -->

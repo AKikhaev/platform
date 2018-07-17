@@ -12,10 +12,10 @@
 
 	<!-- Bootstrap core CSS -->
 	<!--link href="http://getbootstrap.com/docs/4.1/dist/css/bootstrap.min.css" rel="stylesheet"-->
-	<link href="/akcms/css/v2/bootstrap41/bootstrap.min.css" rel="stylesheet">
+	<link href="/akcms/assets/bootstrap41/bootstrap.min.css" rel="stylesheet">
 
 	<!-- Custom styles for this template -->
-	<link href="/akcms/css/v2/pages/login.css" rel="stylesheet">
+	<link href="/akcms/assets/pages/login.css" rel="stylesheet">
 </head>
 
 <body>

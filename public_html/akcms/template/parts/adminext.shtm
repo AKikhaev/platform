@@ -1,4 +1,4 @@
-<link href="/akcms/css/v1/style_adm_cntrl.css" rel="stylesheet" type="text/css"/>
+<link href="/akcms/assets/pages/style_adm_cntrl.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript">
     var _akcms = _akcms || {};
     _akcms.uri = '{#pageMainUri#}';
@@ -142,10 +142,10 @@
             if (evt.which === 17) update_editable_visible(false);
         });
         //parent.jQuery.fancybox.close();
-        console.log('ITteka platforma: loaded');
+        console.log('ITteka platform: loaded');
     });
 </script>
 <link rel="stylesheet" type="text/css" href="/akcms/js/v1/fancybox/jquery.fancybox.css">
 <script src="/akcms/js/v1/fancybox/jquery.fancybox.js"></script>
-<script src='/akcms/js/v2/tinymce/tinymce.min.js'></script>
+<script src='/akcms/assets/tinymce/tinymce.min.js'></script>
 <div id="te_editor_place" style="display: none"></div>

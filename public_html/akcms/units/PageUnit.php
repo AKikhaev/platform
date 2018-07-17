@@ -54,6 +54,8 @@ class PageUnit extends CmsPage {
                 'func' => 'ajxFileRemove'),
             '_smdmstk' => array(
                 'func' => 'ajxSendMistake'),
+            '_sec_data' => array(
+                'func' => 'ajxSecData'),
             '_sse' => array(
                 'func' => 'ajxSSELoad'),
             '_sse_save' => array(
@@ -126,7 +128,7 @@ class PageUnit extends CmsPage {
                 //throw new CmsException('login_needs_');
             }
             $pageTemplate = 'editpage';
-            //if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') $pageTemplate = 'editpage2';
+            if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') $pageTemplate = 'editpage2';
         }
 
 		$this->title = $this->page['sec_title'] !== '' ? $this->page['sec_title'] : $this->page['sec_namefull'].' - '.$cfg['site_title'];
@@ -275,7 +277,7 @@ class PageUnit extends CmsPage {
 			$showHidden = false, $prefix = false, $markSelected = false, $markCurrent = false, $expByPath = false, $deep = 999) {
 		global $sql;
 		if ($deep===0) return false;
-		$order = $this->_howchildToOrder($howchild); if ($order===false) return false;
+		$order = $this->_howchildToOrder($howchild); if ($order===false && !$showHidden) return false;
 		$mnulist = $this->_getMenuItems($parentId,$howchild,$showHidden,$prefix);
 		if ($mnulist!==false) {
 			$putInto = $mnulist;
@@ -306,7 +308,7 @@ class PageUnit extends CmsPage {
 		return true;
 	}
  
-	/* Вся структура меню для карты */
+	/* Вся структура меню для карты и админки*/
 	public function getAllMenu($showHidden = false)
 	{
 		if (count($this->pageAllMenu) != 0) return $this->pageAllMenu;
@@ -317,9 +319,8 @@ class PageUnit extends CmsPage {
 
 	/* структура, начиная от url */
 	public function getMenuSubByPath(&$putInto, $menuPath='', $markSelected = false, $markCurrent = false, $expByPath = false, $deep = 999, $howchild = 1) {
-		if ($menuPath==='') {
-			$parentId = 0;
-		} else {
+		if ($menuPath==='') $parentId = 0;
+		else {
 			$parentSec = $this->_getMenuItemByUrl($menuPath,true);
 			$parentId = $parentSec['section_id'];
 			$howchild = $parentSec['sec_howchild'];
@@ -1076,7 +1077,7 @@ class PageUnit extends CmsPage {
 		} 
 		return json_encode(array('error'=>$checkResult));
 	}
-	
+
 	public function ajxFileUpload()
 	{
 		global $cfg;
@@ -1136,7 +1137,7 @@ class PageUnit extends CmsPage {
 		return json_encode(array('error'=>$checkResult));
 	}
 
-	public static function buildAdminMenu(&$subItems, $urlprefix='', $ul='', $li='')
+	public static function buildAdminMenu($subItems, $urlprefix='', $ul='', $li='')
 	{
 		$str = '<ul class="mnu_ul'.$ul.'">';
 		foreach($subItems as $subItem) {
@@ -1219,14 +1220,23 @@ class PageUnit extends CmsPage {
     function menuToTreeView(&$item){
        if (isset($item[0])) foreach ($item as &$subitem) $this->menuToTreeView($subitem);
        else {
+           //if (!isset($item['section_id'])) return;
            $item['id'] = $item['section_id'];
            $item['text'] = $item['sec_nameshort'];
-           $item['href'] = $item['sec_url_full'];
-           if ($item['sec_enabled']=='f') $item['icon'] = 'fa fa-times-circle';
-           else if ($item['sec_hidden']=='t') $item['icon'] = 'fa fa-eye-slash';
-           else if (strtotime($item['sec_from'])>time()) $item['icon'] = 'fa fa-clock-o';
+           $item['href'] = '/'.$item['sec_url_full'];
+           if ($item['sec_enabled']=='f') {
+               $item['icon'] = 'fa fa-times-circle';
+               //$item['color'] = '#DD6A2F';
+           }
+           else if ($item['sec_hidden']=='t') {
+               $item['icon'] = 'fa fa-eye-slash';
+               //$item['color'] = '#DD6A2F';
+           }
+           else if (strtotime($item['sec_from'])>time()) {
+               $item['icon'] = 'fa fa-clock-o';
+               //$item['color'] = '#DD6A2F';
+           }
 
-//           $item['tags'] = '';
            unset($item['section_id']);
            unset($item['sec_parent_id']);
            unset($item['sec_url_full']);
@@ -1258,7 +1268,57 @@ class PageUnit extends CmsPage {
        }
     }
 
-	#Content
+    private function variables(){
+        global $cfg;
+
+        $secTags = implode(',',$this->getSecTags());
+
+        if ($this->page['section_id']!=1) {
+            $pageEdt = $this->page;
+            $pageEdt['_selected']=true;
+            unset($pageEdt['sec_content'], $pageEdt['sec_sort'], $pageEdt['sec_created'], $pageEdt['sec_system'], $pageEdt['sec_glr_id'], $pageEdt['sec_contshort'], $pageEdt['sec_lst_modify'], $pageEdt['sec_url_priority'], $pageEdt['sec_params']);
+            $this->pageSections[$pageEdt['section_id']]=$pageEdt;
+        }
+
+        $sec_all_units = array();
+        $sec_units_array = explode(',',$this->page['sec_units']);
+        $sec_units = array();
+        if (trim($this->page['sec_units']) !== '')
+            foreach ($sec_units_array as $k)
+                $sec_units[]=array('k'=>$k,'v'=>$cfg['pgunits'][$k]);
+        foreach ($cfg['pgunits'] as $k=>$v)
+            if (!in_array($k, $sec_units_array, true))
+                if (!isset($cfg['pgunits_hidden'][$k]))
+                    $sec_all_units[]=array('k'=>$k,'v'=>$v);
+
+        return [
+            'pageurl'=>$this->pageUri,
+            'pagemainurl'=>$this->pageMainUri,
+            'sec_contshort'=>$this->page['sec_contshort'],
+            'id'=>$this->page['section_id'],
+            'sec_tags'=>$secTags,
+            'all_tags'=>$this->getAllTags(),
+            'glr_id'=>$this->page['sec_glr_id'],
+            'sec_all_units'=>$sec_all_units,
+            'sec_units'=>$sec_units,
+            'sec_page_child'=>$this->page['sec_page_child'],
+            'sec_pages'=>assocArray2KeyValue($cfg['pages'])
+        ];
+    }
+
+    public function ajxSecData()
+    {
+        global $cfg;
+        $checkRule = array();
+        $checkResult = checkForm($_GET,$checkRule,$this->hasRight());
+        if (count($checkResult)===0) {
+            return json_encode($this->variables());
+        }
+        return json_encode(array('error'=>$checkResult));
+    }
+
+
+    #Content
 	public function getContent()
 	{
 		global $shape,$cfg;
@@ -1282,65 +1342,27 @@ class PageUnit extends CmsPage {
 
 		if ($adminPart) {
             #Теги
-            $secTags = implode(',',$this->getSecTags());
-
+            #Меню
             $shape['pageMainUri'] = $this->pageMainUri;
 
-			$vieweditLink = "new Element('a',{'href':'/".$this->pageMainUri."'+'?'+new Date().getTime()}).inject(usrcntrldiv).grab(new Element('img',{'src':'/img/edt/btnview.png','title':'Просмотреть страницу'}));";
-
-			$shape['jses']  .= "
-			<link href=\"/akcms/css/v1/style_adm_cntrl.css\" rel=\"stylesheet\" type=\"text/css\"/>
-			<script type=\"text/javascript\">
-			window.addEvent('domready', function() {
-				var userControl = function() {
-					var usrcntrldiv = new Element('nobr').inject(new Element('div',{'class':'admcntrl','id':'admcntrl'}).inject(new Element('div',{'class':'admcntrl_cnt".(core::$inEdit?' inedit':'')."'}).inject(document.body)));
-					new Element('img',{'src':'/img/adm/adm_logo.png','class':'admlogo','width':212,'height':19}).inject(usrcntrldiv);
-					new Element('img',{'src':'/img/edt/btnlgout.png','title':'Выход'}).inject(usrcntrldiv).addEvent('click',function() { if (confirm('Выйти из панели управления?')) document.location='/_logout/'; });
-					new Element('a',{'href':'/_/'}).inject(usrcntrldiv).grab(new Element('img',{'src':'/img/edt/btnhome.png','title':'На главную редактора'}));
-					".$vieweditLink. '
-				};
-				userControl();
-			});
-			</script>';
-			$this->_buildPageSections($this->getMenu($this->inEditCan));
-			//$this->_buildPageSections($this->getAllMenu($this->inEditCan));
-
-			$treeViewData = $this->pageAllMenu;
-
+            $treeViewData = $this->getMenu($this->inEditCan);
             $this->menuToTreeView($treeViewData);
+            //$this->_buildPageSections($this->getMenu($this->inEditCan));
+            $this->_buildPageSections($this->getMenu($this->inEditCan));
 
-            #Заполняем массивы модулей
-            $sec_all_units = array();
-            $sec_units_array = explode(',',$this->page['sec_units']);
-            $sec_units = array();
-            if (trim($this->page['sec_units']) !== '') foreach ($sec_units_array as $k)
-                $sec_units[]=array('k'=>$k,'v'=>$cfg['pgunits'][$k]);
-            foreach ($cfg['pgunits'] as $k=>$v)
-                if (!in_array($k, $sec_units_array, true))
-                    if (!isset($cfg['pgunits_hidden'][$k]))
-                        $sec_all_units[]=array('k'=>$k,'v'=>$v);
+            $akcms = [
+                'currpage'      => $this->variables(),
+                'treeViewData'  => $treeViewData,
+                'secs'          => $this->pageSections
+            ];
 
-			if ($this->page['section_id']!=1) {
-				$pageEdt = $this->page;
-				$pageEdt['_selected']=true;
-                unset($pageEdt['sec_content'], $pageEdt['sec_sort'], $pageEdt['sec_created'], $pageEdt['sec_system'], $pageEdt['sec_glr_id'], $pageEdt['sec_contshort'], $pageEdt['sec_lst_modify'], $pageEdt['sec_url_priority'], $pageEdt['sec_params']);
-                $this->pageSections[$pageEdt['section_id']]=$pageEdt;
-			}
+            //todo remove currpage, js function
+            $GLOBALS['shape']['menuedit'] = self::buildAdminMenu($this->getMenu($this->inEditCan),'_/'); #todo remove old menu
+            $currpage = $this->variables();
+            $currpage['secs'] = $this->pageSections;
+
 			$shape['jses']  .= '
-			<script type="text/javascript">currpage='.json_encode(array(
-				'pageurl'=>$this->pageUri,
-				'pagemainurl'=>$this->pageMainUri,
-				'sec_contshort'=>$this->page['sec_contshort'],
-				'id'=>$this->page['section_id'],
-				'sec_tags'=>$secTags,
-				'all_tags'=>$this->getAllTags(),
-				'secs'=>$this->pageSections,
-				'treeViewData'=>$treeViewData,
-				'glr_id'=>$this->page['sec_glr_id'],
-				'sec_all_units'=>$sec_all_units,
-				'sec_units'=>$sec_units,
-                'sec_page_child'=>$this->page['sec_page_child'],
-				'sec_pages'=>assocArray2KeyValue($cfg['pages']))).';
+			<script type="text/javascript">document.akcms='.json_encode($akcms).';currpage='.json_encode($currpage).';
 			function tinyBrowser (field_name, url, type, win) {
 				var cmsURL = "/akcms/js/v1/plupload/_ub.html" + "?type=" + type + "&url='.($this->pageUri!==''?$this->pageUri:'/').'&rnd=" + Math.random(1,999999);
 				tinyMCE.activeEditor.windowManager.open({
@@ -1361,9 +1383,7 @@ class PageUnit extends CmsPage {
 			</script>		
 			';//,'glrsall'=>$this->getGalleriesList()
 			
-			#Меню
-			$shape['menuedit'] = self::buildAdminMenu($this->pageMenu,(core::$inEdit?'_/':'')); #
-		} 
+		}
 		if (!core::$inEdit) {
 			VisualTheme::buildPageExtension($this); // Расширение страницы под конкретный сайт находится в теме
 		}

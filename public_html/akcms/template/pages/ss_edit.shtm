@@ -5,8 +5,8 @@
     <meta name="robots" content="noindex, nofollow, noarchive"/>
 	<title></title>
     <link href="/akcms/css/v1/style_u.css" rel="stylesheet" type="text/css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    </script><script src='/akcms/js/v2/tinymce/tinymce.min1.js'></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/javascript" src='/akcms/assets/tinymce/tinymce.min1.js'></script>
     <script type="text/javascript">
         var te_fullscreen_on = function myCustomInitInstance(ed) {
             if(ed.editorId !== 'mce_fullscreen') ed.execCommand('mceFullScreen');

@@ -69,6 +69,7 @@
 		hierarchicalCheck: false,
 		propagateCheckEvent: false,
 		wrapNodeText: false,
+		links: false,
 
 		// Event handlers
 		onLoading: undefined,
@@ -970,13 +971,18 @@
 		}
 
 		// Add text
-		if (this._options.wrapNodeText) {
-			var wrapper = this._template.text.clone();
-			node.$el.append(wrapper);
-			wrapper.append(node.text);
-		} else {
-			node.$el.append(node.text);
-		}
+        if (this._options.wrapNodeText) {
+            var wrapper = this._template.text.clone();
+            node.$el.append(wrapper);
+            wrapper.append(node.text);
+        } else
+        	if (this._options.links) {
+				var wrapper = this._template.link.clone();
+				node.$el.append(wrapper.prop('href','/_'+node.href).click(function(e){e.preventDefault();}));
+				wrapper.append(node.text);
+			} else {
+				node.$el.append(node.text);
+			}
 
 		// Add tags as badges
 		if (this._options.showTags && node.tags) {
@@ -1136,7 +1142,7 @@
 				innerStyle += 'background-color:' + this._options.selectedBackColor + ';';
 			}
 
-			style += '.node-' + this._elementId + '.node-selected{' + innerStyle + '}';
+			style += '.node-' + this._elementId + '.node-selected,' + '.node-' + this._elementId + '.node-selected a {' + innerStyle + '}';
 			style += '.node-' + this._elementId + '.node-selected:hover{' + innerStyle + '}';
 		}
 
@@ -1180,7 +1186,8 @@
 		},
 		image: $('<span class="image"></span>'),
 		badge: $('<span></span>'),
-		text: $('<span class="text"></span>')
+		text: $('<span class="text"></span>'),
+		link: $('<a class="text" href="#"></a>')
 	};
 
 	Tree.prototype._css = '.treeview .list-group-item{cursor:pointer}.treeview span.indent{margin-left:10px;margin-right:10px}.treeview span.icon{width:12px;margin-right:5px}.treeview .node-disabled{color:silver;cursor:not-allowed}'

@@ -10,10 +10,13 @@
 
 	<title>{#title#}</title>
 
-	<link href="/akcms/css/v2/bootstrap41/bootstrap.min.css" rel="stylesheet">
-	<link href="/akcms/css/v1/style_adm_cntrl.css" rel="stylesheet" type="text/css"/>
-	<link href="/akcms/css/v2/bootstrap41/plugins/bootstrap-treeview.css" rel="stylesheet" type="text/css"/>
-	<link href="/akcms/css/v2/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+	<link href="/akcms/assets/bootstrap41/bootstrap.min.css" rel="stylesheet">
+	<link href="/akcms/assets/pages/style_adm_cntrl.css" rel="stylesheet" type="text/css"/>
+	<link href="/akcms/assets/bootstrap41/plugins/bootstrap-treeview.css" rel="stylesheet" type="text/css"/>
+	<link href="/akcms/assets/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+	<link href="/akcms/assets/Zebra_Datepicker/zebra_datepicker.min.css" rel="stylesheet" type="text/css"/>
+
+	<link href="/akcms/assets/pages/loader.css" rel="stylesheet" type="text/css"/>
 
 	<style>
 		.container {
@@ -33,9 +36,14 @@
 			/*float: right;*/
 			margin: 3px 0 3px 3px;
 		}
-
 		.node-treeAdmMenu {
 			position: relative;
+		}
+		.node-treeAdmMenu .fa-times-circle,.node-treeAdmMenu .fa-eye-slash,.node-treeAdmMenu .fa-clock-o{
+			color:red;
+		}
+		.node-treeAdmMenu a {
+			text-decoration: none;
 		}
 		.node-buttons {
 			background-color: inherit;
@@ -54,6 +62,12 @@
 		.bg-sec {
 			background-color: #e7e7e7;
 		}
+		.emptyIcon {
+			display: none;
+		}
+		#e_sec_from {
+			background-color: #fff !important;
+		}
 
 	</style>
 </head>
@@ -62,213 +76,164 @@
 
 	<div class="container">
 		<div class="row">
-			<div class="col-sm-4 bg-sec">
+			<div class="col-md-4 bg-sec">
 				<div id="treeAdmMenu" class=""></div>
 			</div>
-			<div class="col-sm-8">
+			<div class="col-md-8">
 
 
 
-				<div class="py-5 text-center">
-					<h2>Checkout form</h2>
-					<p class="lead">Below is an example form built entirely with Bootstrap's form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
+				<div class="py-3 text-center">
+					<h2>Редактирование страницы</h2>
 				</div>
 
 				<div class="row">
-					<div class="col-md-4 order-md-2 mb-4">
-						<h4 class="d-flex justify-content-between align-items-center mb-3">
-							<span class="text-muted">Your cart</span>
-							<span class="badge badge-secondary badge-pill">3</span>
-						</h4>
-						<ul class="list-group mb-3">
-							<li class="list-group-item d-flex justify-content-between lh-condensed">
-								<div>
-									<h6 class="my-0">Product name</h6>
-									<small class="text-muted">Brief description</small>
-								</div>
-								<span class="text-muted">$12</span>
-							</li>
-							<li class="list-group-item d-flex justify-content-between lh-condensed">
-								<div>
-									<h6 class="my-0">Second product</h6>
-									<small class="text-muted">Brief description</small>
-								</div>
-								<span class="text-muted">$8</span>
-							</li>
-							<li class="list-group-item d-flex justify-content-between lh-condensed">
-								<div>
-									<h6 class="my-0">Third item</h6>
-									<small class="text-muted">Brief description</small>
-								</div>
-								<span class="text-muted">$5</span>
-							</li>
-							<li class="list-group-item d-flex justify-content-between bg-light">
-								<div class="text-success">
-									<h6 class="my-0">Promo code</h6>
-									<small>EXAMPLECODE</small>
-								</div>
-								<span class="text-success">-$5</span>
-							</li>
-							<li class="list-group-item d-flex justify-content-between">
-								<span>Total (USD)</span>
-								<strong>$20</strong>
-							</li>
-						</ul>
-
-						<form class="card p-2">
-							<div class="input-group">
-								<input type="text" class="form-control" placeholder="Promo code">
-								<div class="input-group-append">
-									<button type="submit" class="btn btn-secondary">Redeem</button>
-								</div>
-							</div>
-						</form>
-					</div>
-					<div class="col-md-8 order-md-1">
-						<h4 class="mb-3">Billing address</h4>
+					<div class="col-md-12 order-md-1">
 						<form class="needs-validation" novalidate>
-							<div class="row">
-								<div class="col-md-6 mb-3">
-									<label for="firstName">First name</label>
-									<input type="text" class="form-control" id="firstName" placeholder="" value="" required>
+
+							<div class="form-group  mt-3">
+								<label for="e_sec_namefull">Название</label>
+								<div class="input-group mb-2">
+									<input type="text" class="form-control" id="e_sec_namefull" name="e_sec_namefull" placeholder="" required>
+									<div class="input-group-append">
+										<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="Отображается при переходе на страницу"></i></div>
+									</div>
 									<div class="invalid-feedback">
-										Valid first name is required.
+										Укажите название страницы.
 									</div>
 								</div>
-								<div class="col-md-6 mb-3">
-									<label for="lastName">Last name</label>
-									<input type="text" class="form-control" id="lastName" placeholder="" value="" required>
+							</div>
+
+							<div class="form-group  mt-3">
+								<label for="e_sec_nameshort">Краткое название</label>
+								<div class="input-group mb-2">
+									<input type="text" class="form-control" id="e_sec_nameshort" name="e_sec_nameshort" placeholder="" required>
+									<div class="input-group-append">
+										<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="Отображается в меню и заголовках на других страницах"></i></div>
+									</div>
 									<div class="invalid-feedback">
-										Valid last name is required.
+										Укажите краткое название страницы.
 									</div>
 								</div>
 							</div>
 
-							<div class="mb-3">
-								<label for="username">Username</label>
-								<div class="input-group">
-									<div class="input-group-prepend">
-										<span class="input-group-text">@</span>
+							<div class="form-group  mt-3">
+								<label for="e_sec_url">Путь</label>
+								<div class="input-group mb-2">
+									<input type="text" class="form-control" id="e_sec_url" name="e_sec_url" placeholder="" required>
+									<div class="input-group-append">
+										<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="Текущие имя страницы латинскими буквами. Генериется автоматически"></i></div>
 									</div>
-									<input type="text" class="form-control" id="username" placeholder="Username" required>
-									<div class="invalid-feedback" style="width: 100%;">
-										Your username is required.
+									<div class="invalid-feedback">
+										Укажите адресы страницы.
 									</div>
 								</div>
 							</div>
 
-							<div class="mb-3">
-								<label for="email">Email <span class="text-muted">(Optional)</span></label>
-								<input type="email" class="form-control" id="email" placeholder="you@example.com">
-								<div class="invalid-feedback">
-									Please enter a valid email address for shipping updates.
+							<div class="form-row">
+								<div class="col-sm-4 form-group mt-3">
+									<label for="e_sec_from">Публиковать с</label>
+									<div class="input-group mb-2">
+										<input type="datetime-local" class="form-control d-block" id="e_sec_from" placeholder="" required>
+										<div class="input-group-append">
+											<div class="input-group-text"><i class="fa fa-calendar" data-toggle="tooltip" data-placement="left" title="Определеяет начальную дату появления страницы на сайте"></i></div>
+										</div>
+										<div class="invalid-feedback">
+											Укажите дату и время отображения публикации.
+										</div>
+									</div>
 								</div>
-							</div>
-
-							<div class="mb-3">
-								<label for="address">Address</label>
-								<input type="text" class="form-control" id="address" placeholder="1234 Main St" required>
-								<div class="invalid-feedback">
-									Please enter your shipping address.
-								</div>
-							</div>
-
-							<div class="mb-3">
-								<label for="address2">Address 2 <span class="text-muted">(Optional)</span></label>
-								<input type="text" class="form-control" id="address2" placeholder="Apartment or suite">
-							</div>
-
-							<div class="row">
-								<div class="col-md-5 mb-3">
-									<label for="country">Country</label>
-									<select class="custom-select d-block w-100" id="country" required>
-										<option value="">Choose...</option>
-										<option>United States</option>
+								<div class="col-sm-4 form-group mt-3">
+									<label for="e_sec_howchild">Отображение потомков</label>
+									<select class="form-control d-block w-100" id="e_sec_howchild" required>
+										<option value="">По порядку</option>
+										<option value="">По дате с новых</option>
+										<option value="">По дате со старых</option>
+										<option value="">Не отображать</option>
 									</select>
 									<div class="invalid-feedback">
-										Please select a valid country.
+										Выберите способ отображения потомков страницы.
 									</div>
 								</div>
-								<div class="col-md-4 mb-3">
-									<label for="state">State</label>
-									<select class="custom-select d-block w-100" id="state" required>
-										<option value="">Choose...</option>
-										<option>California</option>
+								<div class="col-sm-4 form-group mt-3">
+									<label for="e_sec_page">Оформление</label>
+									<select class="form-control d-block w-100" id="e_sec_page" required>
+										<option value="">Новости</option>
+										<option>Публикации</option>
 									</select>
 									<div class="invalid-feedback">
-										Please provide a valid state.
-									</div>
-								</div>
-								<div class="col-md-3 mb-3">
-									<label for="zip">Zip</label>
-									<input type="text" class="form-control" id="zip" placeholder="" required>
-									<div class="invalid-feedback">
-										Zip code required.
+										Укажите оформление страницы.
 									</div>
 								</div>
 							</div>
-							<hr class="mb-4">
-							<div class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" id="same-address">
-								<label class="custom-control-label" for="same-address">Shipping address is the same as my billing address</label>
+							<!--<hr class="mb-4">-->
+							<div class="">
+								<a class="btn btn-dark" data-toggle="collapse" href="#collapseSeoFields" role="button" aria-expanded="false" aria-controls="collapseSeoFields">
+									SEO поля
+								</a>
 							</div>
-							<div class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" id="save-info">
-								<label class="custom-control-label" for="save-info">Save this information for next time</label>
-							</div>
-							<hr class="mb-4">
 
-							<h4 class="mb-3">Payment</h4>
+							<div class="collapse mb-3" id="collapseSeoFields">
+								<div class="card card-body">
 
-							<div class="d-block my-3">
-								<div class="custom-control custom-radio">
-									<input id="credit" name="paymentMethod" type="radio" class="custom-control-input" checked required>
-									<label class="custom-control-label" for="credit">Credit card</label>
-								</div>
-								<div class="custom-control custom-radio">
-									<input id="debit" name="paymentMethod" type="radio" class="custom-control-input" required>
-									<label class="custom-control-label" for="debit">Debit card</label>
-								</div>
-								<div class="custom-control custom-radio">
-									<input id="paypal" name="paymentMethod" type="radio" class="custom-control-input" required>
-									<label class="custom-control-label" for="paypal">PayPal</label>
+									<div class="form-group mt-3">
+										<label for="e_sec_title">SEO Заголовок</label>
+										<div class="input-group mb-2">
+											<input type="text" class="form-control" id="e_sec_title" name="e_sec_title" placeholder="">
+											<div class="input-group-append">
+												<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="SEO: Генерируется: название + стандарт, если пусто"></i></div>
+											</div>
+											<div class="invalid-feedback">
+												Укажите краткое название страницы.
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group mt-3">
+										<label for="e_sec_description">SEO Описание</label>
+										<div class="input-group mb-2">
+											<input type="text" class="form-control" id="e_sec_description" name="e_sec_description" placeholder="">
+											<div class="input-group-append">
+												<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="SEO: описание. Слова через зяпятую"></i></div>
+											</div>
+											<div class="invalid-feedback">
+												Укажите краткое название страницы.
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group mt-3">
+										<label for="e_sec_keywords">SEO слова</label>
+										<div class="input-group mb-2">
+											<input type="text" class="form-control" id="e_sec_keywords" name="e_sec_keywords" placeholder="">
+											<div class="input-group-append">
+												<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="SEO: ключевые слова"></i></div>
+											</div>
+											<div class="invalid-feedback">
+												Укажите краткое название страницы.
+											</div>
+										</div>
+									</div>
+
 								</div>
 							</div>
-							<div class="row">
-								<div class="col-md-6 mb-3">
-									<label for="cc-name">Name on card</label>
-									<input type="text" class="form-control" id="cc-name" placeholder="" required>
-									<small class="text-muted">Full name as displayed on card</small>
-									<div class="invalid-feedback">
-										Name on card is required
-									</div>
+
+							<div class="form-group mt-3">
+								<div class="custom-control custom-checkbox">
+									<input type="checkbox" class="custom-control-input" id="e_sec_showinmenu">
+									<label class="custom-control-label" for="e_sec_showinmenu" data-toggle="tooltip" data-placement="top" title="Показывает страницу в меню и в рубрикаторах">Отображать страницу</label>
 								</div>
-								<div class="col-md-6 mb-3">
-									<label for="cc-number">Credit card number</label>
-									<input type="text" class="form-control" id="cc-number" placeholder="" required>
-									<div class="invalid-feedback">
-										Credit card number is required
-									</div>
+								<div class="custom-control custom-checkbox">
+									<input type="checkbox" class="custom-control-input" id="e_sec_openfirst">
+									<label class="custom-control-label" for="e_sec_openfirst" data-toggle="tooltip" data-placement="top" title="Открыть первый подраздел при переходе на эту страницы">Открыть первый подраздел</label>
+								</div>
+								<div class="custom-control custom-checkbox">
+									<input type="checkbox" class="custom-control-input" id="e_sec_enabled">
+									<label class="custom-control-label" for="e_sec_enabled" data-toggle="tooltip" data-placement="top" title="Наличие галочки включает страницу. Иначе страница не будет доступна для просмотра">Опубликован</label>
 								</div>
 							</div>
-							<div class="row">
-								<div class="col-md-3 mb-3">
-									<label for="cc-expiration">Expiration</label>
-									<input type="text" class="form-control" id="cc-expiration" placeholder="" required>
-									<div class="invalid-feedback">
-										Expiration date required
-									</div>
-								</div>
-								<div class="col-md-3 mb-3">
-									<label for="cc-cvv">CVV</label>
-									<input type="text" class="form-control" id="cc-cvv" placeholder="" required>
-									<div class="invalid-feedback">
-										Security code required
-									</div>
-								</div>
-							</div>
-							<hr class="mb-4">
-							<button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
+
+							<button class="btn btn-primary btn-lg btn-block" type="submit">Сохранить</button>
 						</form>
 					</div>
 				</div>
@@ -284,9 +249,9 @@
 		<footer class="my-5 pt-5 text-muted text-center text-small">
 			<p class="mb-1">&copy; 2007-2018 ITteka Platform</p>
 			<ul class="list-inline">
-				<li class="list-inline-item"><a href="#">Privacy</a></li>
-				<li class="list-inline-item"><a href="#">Terms</a></li>
-				<li class="list-inline-item"><a href="#">Support</a></li>
+				<li class="list-inline-item"><a href="#">Политика</a></li>
+				<li class="list-inline-item"><a href="#">Условия</a></li>
+				<li class="list-inline-item"><a href="#">Поддержка</a></li>
 			</ul>
 		</footer>
 	</div>
@@ -296,22 +261,32 @@
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
 	<script>window.jQuery || document.write('<script src="/akcms/js/v2/jquery-3.3.1.min.js"><\/script>')</script>
-	<script src="/akcms/js/v2/popper.min.js"></script>
-	<script src="/akcms/css/v2/bootstrap41/bootstrap.min.js"></script>
-	<script src="/akcms/css/v2/bootstrap41/plugins/bootstrap-treeview.js"></script>
+	<script src="/akcms/assets/bootstrap41/popper.min.js"></script>
+	<script src="/akcms/assets/bootstrap41/bootstrap.min.js"></script>
+	<script src="/akcms/assets/bootstrap41/plugins/bootstrap-treeview.js"></script>
+	<script src="/akcms/assets/Zebra_Datepicker/zebra_datepicker.min.js"></script>
 	{#jses#}
 	<script>
-		// Example starter JavaScript for disabling form submissions if there are invalid fields
 		(function() {
 			'use strict';
 
-            $(document.body).append($('<div class="admcntrl_cnt inedit"><div id="admcntrl" class="admcntrl"><nobr><img class="admlogo" width="212" height="19" src="/img/adm/adm_logo.png" alt=""><img id="admexit" src="/img/edt/btnlgout.png" title="Выход"><a href="/_/"><img src="/img/edt/btnhome.png" title="На главную редактора"></a><a href="/{#pageMainUri#}/?'+(new Date().getTime())+'"><img src="/img/edt/btnview.png" title="Посмотреть страницу"></a></nobr></div></div>'));
+			var loadaing = {
+			    template:$('<div class="loading"></div>'),
+				tag:null,
+				start: function(){this.tag = this.template.clone().appendTo(document.body);},
+				finish: function(){if (this.tag!==null) this.tag.remove();}
+			};
+
+			loadaing.start();
+
+            $(document.body).append($('<div class="admcntrl_cnt inedit"><div id="admcntrl" class="admcntrl"><nobr><img class="admlogo" width="212" height="19" src="/img/adm/adm_logo.png" alt=""><img id="admexit" src="/img/edt/btnlgout.png" title="Выход"><a href="/_/"><img src="/img/edt/btnhome.png" title="На главную редактора"></a><a href="/{#pageMainUri#}?'+(new Date().getTime())+'"><img src="/img/edt/btnview.png" title="Посмотреть страницу"></a></nobr></div></div>'));
             $('#admexit').click(function(){if (confirm('Выйти из панели управления?')) document.location='/_logout/';});
 
 			//https://fontawesome.com/v4.7.0/icons/
             var treeLoaded = false,$treeview = $('#treeAdmMenu').treeview({
                 expandIcon: "node-button fa fa-plus-square",
                 collapseIcon: "node-button fa fa-minus-square",
+                emptyIcon: 'emptyIcon',
                 nodeIcon: "fa fa-file-text-o",
                 color: "#593196",
                 backColor: "#F9F8FC",
@@ -323,9 +298,26 @@
                 selectedColor: "white",
                 selectedBackColor: "#4c3880",
                 enableLinks: true,
+                links:true,
+                preventUnselect:true,
                 tagsClass:'badge badge-secondary',
                 onNodeSelected: function(event, node) {
-                    if (treeLoaded) document.location.href='/_/'+node.href;
+                    if (treeLoaded) {
+                        history.pushState(null, null, '/_'+node.href);
+                        loadaing.start();
+                        $.ajax({
+                            type: 'POST',
+                            url: '/ajx'+node.href+'/_sec_data',
+                            data: [],
+                            success: function (sres) {
+                                document.akcms.currpage = sres;
+                                console.log(document.akcms);
+                                loadaing.finish();
+                            },
+                            dataType: 'json'
+                        });
+                        //document.location.href=node.href;
+                    }
                     //console.log(node);
                 },
                 onRendered:function(e){
@@ -347,11 +339,25 @@
                     $('.sec_edit').click(function(e){
                         e.preventDefault();
                         e.stopPropagation();
+
                     });
                     treeLoaded = true;
+                    loadaing.finish();
 				},
-                data: currpage.treeViewData
+                data: document.akcms.treeViewData
             }).treeview(true);
+
+            $('#e_sec_from').Zebra_DatePicker({
+                'format': 'Y-m-d H:i',
+                default_position:'below',
+                show_icon:false,
+                show_week_number: 'Нед',
+                months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+                //days: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Субота'],
+                days_abbr: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+                lang_clear_date: 'Очистить',
+                show_select_today: 'Сегодня'
+            });
 
 			window.addEventListener('load', function() {
 
@@ -368,6 +374,8 @@
 						form.classList.add('was-validated');
 					}, false);
 				});
+
+                $('[data-toggle="tooltip"]').tooltip()
 			}, false);
 		})();
 	</script>

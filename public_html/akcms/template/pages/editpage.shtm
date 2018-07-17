@@ -10,6 +10,19 @@
 	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link href="/akcms/css/v1/style_adm.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="/akcms/js/v1/mootools-adm.js"></script>
+	<link href="/akcms/css/v1/style_adm_cntrl.css" rel="stylesheet" type="text/css"/>
+	<script type="text/javascript">
+        window.addEvent('domready', function() {
+            var userControl = function() {
+                var usrcntrldiv = new Element('nobr').inject(new Element('div',{'class':'admcntrl','id':'admcntrl'}).inject(new Element('div',{'class':'admcntrl_cnt inedit'}).inject(document.body)));
+                new Element('img',{'src':'/img/adm/adm_logo.png','class':'admlogo','width':212,'height':19}).inject(usrcntrldiv);
+                new Element('img',{'src':'/img/edt/btnlgout.png','title':'Выход'}).inject(usrcntrldiv).addEvent('click',function() { if (confirm('Выйти из панели управления?')) document.location='/_logout/'; });
+                new Element('a',{'href':'/_/'}).inject(usrcntrldiv).grab(new Element('img',{'src':'/img/edt/btnhome.png','title':'На главную редактора'}));
+                new Element('a',{'href':'/{#pageMainUri#}'+'?'+new Date().getTime()}).inject(usrcntrldiv).grab(new Element('img',{'src':'/img/edt/btnview.png','title':'Просмотреть страницу'}));
+            };
+            userControl();
+        });
+	</script>
 	{#jses#}
 	<script type="text/javascript" src="/akcms/js/v1/modalbox.js"></script>
 	<script type="text/javascript" src="/akcms/js/v1/errortips.js"></script>

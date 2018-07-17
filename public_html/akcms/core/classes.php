@@ -346,8 +346,9 @@ class core {
         return $ip;
     }
     private static function hidePathForError($filename) {
-		if (isset($_SERVER) && strpos($filename,$_SERVER['DOCUMENT_ROOT'])!==false)
-    		$filename = substr($filename,strlen($_SERVER['DOCUMENT_ROOT']));
+		if (isset($_SERVER) && strpos($filename,$_SERVER['DOCUMENT_ROOT'])!==false) {
+            $filename = substr($filename, strlen($_SERVER['DOCUMENT_ROOT']));
+        }
     	else $filename = basename($filename);
 		return $filename;
 	}
@@ -390,13 +391,21 @@ class core {
                     if (isset($d['type'])) $i  .= ' '.$d['type'];
                     if (isset($d['function'])) $i .= ' '.$d['function'];
                     if (isset($d['args'])) {
-                        $d['args'] = array_map(function($v){
+                        $d['args'] = array_map(function($v) use ($d){
                             switch (gettype($v)) {
                                 case 'boolean': return $v===true?'TRUE':FALSE;
                                 case 'integer':
                                 case 'double':
                                 case 'float': return GetTruncString($v,20);
-                                case 'string': return '\''.GetTruncString($v,20).'\'';
+                                case 'string': {
+                                    if (isset($d['function']) && (in_array($d['function'],['require_once','require']) || strrpos($d['function'],'file_')===0))
+                                    {
+                                        if (isset($_SERVER) && strpos($v,$_SERVER['DOCUMENT_ROOT'])!==false) {
+                                            $v = substr($v, strlen($_SERVER['DOCUMENT_ROOT']));
+                                        }
+                                    }
+                                    return '\''.GetTruncString($v,20).'\'';
+                                }
                                 case 'object': return '{'.get_class($v).'}';
                             }
                             return gettype($v);
