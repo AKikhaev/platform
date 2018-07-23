@@ -2,8 +2,6 @@
 define('CMS_VERSION','3.0');
 define('CMS_OBJOWNER','owner');
 define('CMS_ADMIN','admin');
-$cfg['debug']=true;
-
 
 require_once 'akcms/core/functs.php';
 require_once 'akcms/u/config/config.php';

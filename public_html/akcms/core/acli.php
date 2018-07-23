@@ -24,7 +24,7 @@ class cliUnit {
     /** Shows detailed help
      * @throws ReflectionException
      */
-    private function helpAction(){
+    protected function helpAction(){
         $rc = new ReflectionClass($this);
         $comment = $rc->getDocComment();
         if ($rc->getDocComment()!==false) foreach (explode("\r",$comment) as $line) echo mb_trim($line,'\/\*\s');
