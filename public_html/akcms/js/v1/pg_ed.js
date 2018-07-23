@@ -305,7 +305,7 @@ window.addEvent('domready', function() {
 		}
 	};ru2lt.init();
 	var MakeEditSec = function(parentId,secId,closeEvent) {
-		if (closeEvent==undefined) closeEvent = null;
+		if (closeEvent===undefined) closeEvent = null;
         var ajaxUrl = '/ajx/';
 		if (secId!==0) ajaxUrl += currpage.secs[secId]['sec_url_full'];
 		else if (parentId!==0) ajaxUrl += currpage.secs[parentId]['sec_url_full'];

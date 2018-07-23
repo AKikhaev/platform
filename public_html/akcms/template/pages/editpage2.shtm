@@ -68,177 +68,216 @@
 		#e_sec_from {
 			background-color: #fff !important;
 		}
-
+        #alertContainer {
+            position: fixed;
+            right: 3rem;
+            top: 3rem;
+            width: 20rem;
+            z-index: 1;
+        }
 	</style>
 </head>
 
 <body class="bg-light">
-
+    <div id="alertContainer"></div>
 	<div class="container">
 		<div class="row">
 			<div class="col-md-4 bg-sec">
-				<div id="treeAdmMenu" class=""></div>
+				<div id="treeAdmMenu" class="modalMakeEditSec"></div>
 			</div>
 			<div class="col-md-8">
 
+				<div class="modal-content collapse" id="modalMakeEditSec">
+						<div class="modal-header">
+							<h5 class="modal-title" id="e_sec__head">Редактирование страницы</h5>
+							<button type="button" class="close" data-toggle="collapse" href="#modalMakeEditSec" data-dismiss="modal" aria-label="Close" >
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
 
+							<div class="row">
+								<div class="col-md-12 order-md-1">
+									<form class="needs-validation" novalidate>
 
-				<div class="py-3 text-center">
-					<h2>Редактирование страницы</h2>
-				</div>
-
-				<div class="row">
-					<div class="col-md-12 order-md-1">
-						<form class="needs-validation" novalidate>
-
-							<div class="form-group  mt-3">
-								<label for="e_sec_namefull">Название</label>
-								<div class="input-group mb-2">
-									<input type="text" class="form-control" id="e_sec_namefull" name="e_sec_namefull" placeholder="" required>
-									<div class="input-group-append">
-										<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="Отображается при переходе на страницу"></i></div>
-									</div>
-									<div class="invalid-feedback">
-										Укажите название страницы.
-									</div>
-								</div>
-							</div>
-
-							<div class="form-group  mt-3">
-								<label for="e_sec_nameshort">Краткое название</label>
-								<div class="input-group mb-2">
-									<input type="text" class="form-control" id="e_sec_nameshort" name="e_sec_nameshort" placeholder="" required>
-									<div class="input-group-append">
-										<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="Отображается в меню и заголовках на других страницах"></i></div>
-									</div>
-									<div class="invalid-feedback">
-										Укажите краткое название страницы.
-									</div>
-								</div>
-							</div>
-
-							<div class="form-group  mt-3">
-								<label for="e_sec_url">Путь</label>
-								<div class="input-group mb-2">
-									<input type="text" class="form-control" id="e_sec_url" name="e_sec_url" placeholder="" required>
-									<div class="input-group-append">
-										<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="Текущие имя страницы латинскими буквами. Генериется автоматически"></i></div>
-									</div>
-									<div class="invalid-feedback">
-										Укажите адресы страницы.
-									</div>
-								</div>
-							</div>
-
-							<div class="form-row">
-								<div class="col-sm-4 form-group mt-3">
-									<label for="e_sec_from">Публиковать с</label>
-									<div class="input-group mb-2">
-										<input type="datetime-local" class="form-control d-block" id="e_sec_from" placeholder="" required>
-										<div class="input-group-append">
-											<div class="input-group-text"><i class="fa fa-calendar" data-toggle="tooltip" data-placement="left" title="Определеяет начальную дату появления страницы на сайте"></i></div>
-										</div>
-										<div class="invalid-feedback">
-											Укажите дату и время отображения публикации.
-										</div>
-									</div>
-								</div>
-								<div class="col-sm-4 form-group mt-3">
-									<label for="e_sec_howchild">Отображение потомков</label>
-									<select class="form-control d-block w-100" id="e_sec_howchild" required>
-										<option value="">По порядку</option>
-										<option value="">По дате с новых</option>
-										<option value="">По дате со старых</option>
-										<option value="">Не отображать</option>
-									</select>
-									<div class="invalid-feedback">
-										Выберите способ отображения потомков страницы.
-									</div>
-								</div>
-								<div class="col-sm-4 form-group mt-3">
-									<label for="e_sec_page">Оформление</label>
-									<select class="form-control d-block w-100" id="e_sec_page" required>
-										<option value="">Новости</option>
-										<option>Публикации</option>
-									</select>
-									<div class="invalid-feedback">
-										Укажите оформление страницы.
-									</div>
-								</div>
-							</div>
-							<!--<hr class="mb-4">-->
-							<div class="">
-								<a class="btn btn-dark" data-toggle="collapse" href="#collapseSeoFields" role="button" aria-expanded="false" aria-controls="collapseSeoFields">
-									SEO поля
-								</a>
-							</div>
-
-							<div class="collapse mb-3" id="collapseSeoFields">
-								<div class="card card-body">
-
-									<div class="form-group mt-3">
-										<label for="e_sec_title">SEO Заголовок</label>
-										<div class="input-group mb-2">
-											<input type="text" class="form-control" id="e_sec_title" name="e_sec_title" placeholder="">
-											<div class="input-group-append">
-												<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="SEO: Генерируется: название + стандарт, если пусто"></i></div>
-											</div>
-											<div class="invalid-feedback">
-												Укажите краткое название страницы.
+										<div class="form-group">
+											<label for="e_sec_namefull">Название</label>
+											<div class="input-group mb-2">
+												<input type="text" class="form-control" id="e_sec_namefull" name="e_sec_namefull" placeholder="" required>
+												<div class="input-group-append">
+													<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="Отображается при переходе на страницу"></i></div>
+												</div>
+												<div class="invalid-feedback">
+													Укажите название страницы.
+												</div>
 											</div>
 										</div>
-									</div>
 
-									<div class="form-group mt-3">
-										<label for="e_sec_description">SEO Описание</label>
-										<div class="input-group mb-2">
-											<input type="text" class="form-control" id="e_sec_description" name="e_sec_description" placeholder="">
-											<div class="input-group-append">
-												<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="SEO: описание. Слова через зяпятую"></i></div>
-											</div>
-											<div class="invalid-feedback">
-												Укажите краткое название страницы.
+										<div class="form-group  mt-3">
+											<label for="e_sec_nameshort">Краткое название</label>
+											<div class="input-group mb-2">
+												<input type="text" class="form-control" id="e_sec_nameshort" name="e_sec_nameshort" placeholder="" required>
+												<div class="input-group-append">
+													<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="Отображается в меню и заголовках на других страницах"></i></div>
+												</div>
+												<div class="invalid-feedback">
+													Укажите краткое название страницы.
+												</div>
 											</div>
 										</div>
-									</div>
 
-									<div class="form-group mt-3">
-										<label for="e_sec_keywords">SEO слова</label>
-										<div class="input-group mb-2">
-											<input type="text" class="form-control" id="e_sec_keywords" name="e_sec_keywords" placeholder="">
-											<div class="input-group-append">
-												<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="SEO: ключевые слова"></i></div>
-											</div>
-											<div class="invalid-feedback">
-												Укажите краткое название страницы.
+										<div class="form-group  mt-3">
+											<label for="e_sec_url">Путь</label>
+											<div class="input-group mb-2">
+												<input type="text" class="form-control" id="e_sec_url" name="e_sec_url" placeholder="" required>
+												<div class="input-group-append">
+													<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="Текущие имя страницы латинскими буквами. Генериется автоматически"></i></div>
+												</div>
+												<div class="invalid-feedback">
+													Укажите адресы страницы.
+												</div>
 											</div>
 										</div>
-									</div>
 
+										<div class="form-row">
+											<div class="col-sm-4 form-group mt-3">
+												<label for="e_sec_from">Публиковать с</label>
+												<div class="input-group mb-2">
+													<input type="text" class="form-control d-block" id="e_sec_from" placeholder="" required>
+													<div class="input-group-append">
+														<div class="input-group-text"><i class="fa fa-calendar" data-toggle="tooltip" data-placement="left" title="Определеяет начальную дату появления страницы на сайте"></i></div>
+													</div>
+													<div class="invalid-feedback">
+														Укажите дату и время отображения публикации.
+													</div>
+												</div>
+											</div>
+											<div class="col-sm-4 form-group mt-3">
+												<label for="e_sec_howchild">Отображение потомков</label>
+												<select class="form-control d-block w-100" id="e_sec_howchild" required><option value="">Загрузка...</option></select>
+												<div class="invalid-feedback">
+													Выберите способ отображения потомков страницы.
+												</div>
+											</div>
+											<div class="col-sm-4 form-group mt-3">
+												<label for="e_sec_page">Оформление</label>
+												<select class="form-control d-block w-100" id="e_sec_page" required><option value="">Загрузка...</option></select>
+												<div class="invalid-feedback">
+													Укажите оформление страницы.
+												</div>
+											</div>
+										</div>
+										<!--<hr class="mb-4">-->
+										<div class="">
+											<a class="btn btn-dark" data-toggle="collapse" href="#collapseSeoFields" role="button" aria-expanded="false" aria-controls="collapseSeoFields">
+												SEO поля
+											</a>
+										</div>
+
+										<div class="collapse mb-3" id="collapseSeoFields">
+											<div class="card card-body">
+
+												<div class="form-group mt-3">
+													<label for="e_sec_title">SEO Заголовок</label>
+													<div class="input-group mb-2">
+														<input type="text" class="form-control" id="e_sec_title" name="e_sec_title" placeholder="">
+														<div class="input-group-append">
+															<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="SEO: Генерируется: название + стандарт, если пусто"></i></div>
+														</div>
+														<div class="invalid-feedback">
+															Укажите краткое название страницы.
+														</div>
+													</div>
+												</div>
+
+												<div class="form-group mt-3">
+													<label for="e_sec_description">SEO Описание</label>
+													<div class="input-group mb-2">
+														<input type="text" class="form-control" id="e_sec_description" name="e_sec_description" placeholder="">
+														<div class="input-group-append">
+															<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="SEO: описание. Слова через зяпятую"></i></div>
+														</div>
+														<div class="invalid-feedback">
+															Укажите краткое название страницы.
+														</div>
+													</div>
+												</div>
+
+												<div class="form-group mt-3">
+													<label for="e_sec_keywords">SEO слова</label>
+													<div class="input-group mb-2">
+														<input type="text" class="form-control" id="e_sec_keywords" name="e_sec_keywords" placeholder="">
+														<div class="input-group-append">
+															<div class="input-group-text"><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="SEO: ключевые слова"></i></div>
+														</div>
+														<div class="invalid-feedback">
+															Укажите краткое название страницы.
+														</div>
+													</div>
+												</div>
+
+											</div>
+										</div>
+
+										<div class="form-row">
+											<div class="col-sm-5 form-group mt-3">
+												<div class="custom-control custom-checkbox">
+													<input type="checkbox" class="custom-control-input" id="e_sec_showinmenu">
+													<label class="custom-control-label" for="e_sec_showinmenu" data-toggle="tooltip" data-placement="top" title="Показывает страницу в меню и в рубрикаторах">Отображать страницу</label>
+												</div>
+												<div class="custom-control custom-checkbox">
+													<input type="checkbox" class="custom-control-input" id="e_sec_openfirst">
+													<label class="custom-control-label" for="e_sec_openfirst" data-toggle="tooltip" data-placement="top" title="Открыть первый подраздел при переходе на эту страницы">Открыть первый подраздел</label>
+												</div>
+												<div class="custom-control custom-checkbox">
+													<input type="checkbox" class="custom-control-input" id="e_sec_enabled">
+													<label class="custom-control-label" for="e_sec_enabled" data-toggle="tooltip" data-placement="top" title="Наличие галочки включает страницу. Иначе страница не будет доступна для просмотра">Опубликован</label>
+												</div>
+											</div>
+											<div class="col-sm-auto form-group mt-3">
+												<label for="e_sec_imgfile">Картинка страницы <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="left" title="Изображение используется в рубрикаторах, где необходимы превьюшки страниц"></i></label><br/>
+												<div class="form-row">
+													<div class="col-auto">
+														<img id="e_sec_imgfile" width="100" height="100" src=""/>
+													</div>
+													<div class="col-auto">
+														<div class="">
+															<button class="btn btn-sm btn-secondary btn-block" type="button"><i class="fa fa-cloud-upload"></i> Загрузить с адреса</button>
+														</div>
+														<div class="mt-2">
+															<button class="btn btn-sm btn-secondary  btn-block" type="button"><i class="fa fa-upload"></i> Загрузить</button>
+														</div>
+														<div class="mt-2">
+															<button class="btn btn-sm btn-danger btn-block" type="button"><i class="fa fa-trash-o"></i> Удалить</button>
+														</div>
+													</div>
+													<!--input type="image" class="custom-control-input" id="e_sec_imgfile"-->
+												</div>
+											</div>
+
+										</div>
+										<button class="btn btn-primary btn-lg btn-block" type="submit" id="makeEditPageGo">Сохранить</button>
+									</form>
 								</div>
 							</div>
 
-							<div class="form-group mt-3">
-								<div class="custom-control custom-checkbox">
-									<input type="checkbox" class="custom-control-input" id="e_sec_showinmenu">
-									<label class="custom-control-label" for="e_sec_showinmenu" data-toggle="tooltip" data-placement="top" title="Показывает страницу в меню и в рубрикаторах">Отображать страницу</label>
-								</div>
-								<div class="custom-control custom-checkbox">
-									<input type="checkbox" class="custom-control-input" id="e_sec_openfirst">
-									<label class="custom-control-label" for="e_sec_openfirst" data-toggle="tooltip" data-placement="top" title="Открыть первый подраздел при переходе на эту страницы">Открыть первый подраздел</label>
-								</div>
-								<div class="custom-control custom-checkbox">
-									<input type="checkbox" class="custom-control-input" id="e_sec_enabled">
-									<label class="custom-control-label" for="e_sec_enabled" data-toggle="tooltip" data-placement="top" title="Наличие галочки включает страницу. Иначе страница не будет доступна для просмотра">Опубликован</label>
-								</div>
-							</div>
-
-							<button class="btn btn-primary btn-lg btn-block" type="submit">Сохранить</button>
-						</form>
+						</div>
 					</div>
-				</div>
 
+				<div class="modal-content">
+						<div class="modal-header" data-toggle="collapse" href="#doc_how_edit">
+							<h5 class="modal-title"><i class="fa fa-question-circle-o" data-toggle="tooltip" data-placement="bottom" title="Кликните чтобы узнать как пользоваться редактором"></i> Как редактировать</h5>
+						</div>
+						<div class="modal-body collapse" id="doc_how_edit">
 
+							<div class="row">
+								<div class="col-md-12">
+									Меню в левой части - ваш главный навигатор панели управления
+								</div>
+							</div>
+
+						</div>
+					</div>
 
 			</div>
 		</div>
@@ -246,7 +285,7 @@
 
 
 	<div class="container">
-		<footer class="my-5 pt-5 text-muted text-center text-small">
+		<footer class="my-5 text-muted text-center text-small">
 			<p class="mb-1">&copy; 2007-2018 ITteka Platform</p>
 			<ul class="list-inline">
 				<li class="list-inline-item"><a href="#">Политика</a></li>
@@ -261,123 +300,15 @@
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
 	<script>window.jQuery || document.write('<script src="/akcms/js/v2/jquery-3.3.1.min.js"><\/script>')</script>
-	<script src="/akcms/assets/bootstrap41/popper.min.js"></script>
+	<script src="/akcms/assets/libs/popper.min.js"></script>
 	<script src="/akcms/assets/bootstrap41/bootstrap.min.js"></script>
 	<script src="/akcms/assets/bootstrap41/plugins/bootstrap-treeview.js"></script>
-	<script src="/akcms/assets/Zebra_Datepicker/zebra_datepicker.min.js"></script>
+	<script src="/akcms/assets/Zebra_Datepicker/zebra_datepicker.src.js"></script>
+	<script src="/akcms/assets/libs/holder.min.js"></script>
+	<script src="/akcms/assets/pages/editpage.js"></script>
 	{#jses#}
 	<script>
-		(function() {
-			'use strict';
-
-			var loadaing = {
-			    template:$('<div class="loading"></div>'),
-				tag:null,
-				start: function(){this.tag = this.template.clone().appendTo(document.body);},
-				finish: function(){if (this.tag!==null) this.tag.remove();}
-			};
-
-			loadaing.start();
-
-            $(document.body).append($('<div class="admcntrl_cnt inedit"><div id="admcntrl" class="admcntrl"><nobr><img class="admlogo" width="212" height="19" src="/img/adm/adm_logo.png" alt=""><img id="admexit" src="/img/edt/btnlgout.png" title="Выход"><a href="/_/"><img src="/img/edt/btnhome.png" title="На главную редактора"></a><a href="/{#pageMainUri#}?'+(new Date().getTime())+'"><img src="/img/edt/btnview.png" title="Посмотреть страницу"></a></nobr></div></div>'));
-            $('#admexit').click(function(){if (confirm('Выйти из панели управления?')) document.location='/_logout/';});
-
-			//https://fontawesome.com/v4.7.0/icons/
-            var treeLoaded = false,$treeview = $('#treeAdmMenu').treeview({
-                expandIcon: "node-button fa fa-plus-square",
-                collapseIcon: "node-button fa fa-minus-square",
-                emptyIcon: 'emptyIcon',
-                nodeIcon: "fa fa-file-text-o",
-                color: "#593196",
-                backColor: "#F9F8FC",
-                onhoverColor: "#a991d4",
-                borderColor: "#ddd",
-                showBorder: true,
-                showTags: true,
-                highlightSelected: true,
-                selectedColor: "white",
-                selectedBackColor: "#4c3880",
-                enableLinks: true,
-                links:true,
-                preventUnselect:true,
-                tagsClass:'badge badge-secondary',
-                onNodeSelected: function(event, node) {
-                    if (treeLoaded) {
-                        history.pushState(null, null, '/_'+node.href);
-                        loadaing.start();
-                        $.ajax({
-                            type: 'POST',
-                            url: '/ajx'+node.href+'/_sec_data',
-                            data: [],
-                            success: function (sres) {
-                                document.akcms.currpage = sres;
-                                console.log(document.akcms);
-                                loadaing.finish();
-                            },
-                            dataType: 'json'
-                        });
-                        //document.location.href=node.href;
-                    }
-                    //console.log(node);
-                },
-                onRendered:function(e){
-                    //$(e.target).treeview("collapseAll", { silent: true })
-                    $treeview.collapseAll();
-					$.each($treeview.getNodes(),function (n,node) {
-					    if (currpage.id==node.id) {
-					        $treeview.revealNode(node);
-                            $treeview.selectNode(node);
-                        }
-                        node.$el.append($('<div class="node-buttons"><i class="node-button sec_new fa fa-plus-square"></i> <i class="node-button sec_edit fa fa-pencil-square"></i></div>'));
-						//console.log(node);
-                    });
-
-                    $('.sec_new').click(function(e){
-                        e.preventDefault();
-                        e.stopPropagation();
-                    });
-                    $('.sec_edit').click(function(e){
-                        e.preventDefault();
-                        e.stopPropagation();
-
-                    });
-                    treeLoaded = true;
-                    loadaing.finish();
-				},
-                data: document.akcms.treeViewData
-            }).treeview(true);
-
-            $('#e_sec_from').Zebra_DatePicker({
-                'format': 'Y-m-d H:i',
-                default_position:'below',
-                show_icon:false,
-                show_week_number: 'Нед',
-                months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
-                //days: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Субота'],
-                days_abbr: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-                lang_clear_date: 'Очистить',
-                show_select_today: 'Сегодня'
-            });
-
-			window.addEventListener('load', function() {
-
-				// Fetch all the forms we want to apply custom Bootstrap validation styles to
-				var forms = document.getElementsByClassName('needs-validation');
-
-				// Loop over them and prevent submission
-				var validation = Array.prototype.filter.call(forms, function(form) {
-					form.addEventListener('submit', function(event) {
-						if (form.checkValidity() === false) {
-							event.preventDefault();
-							event.stopPropagation();
-						}
-						form.classList.add('was-validated');
-					}, false);
-				});
-
-                $('[data-toggle="tooltip"]').tooltip()
-			}, false);
-		})();
+		_akcms.editPage.init();
 	</script>
 </body>
 </html>

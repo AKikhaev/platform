@@ -8,7 +8,7 @@
     };
     jQuery(document).ready(function(){
         var editable_visible = false;
-        $(document.body).append($('<div class="admcntrl_cnt"><div id="admcntrl" class="admcntrl"><nobr><img class="admlogo" width="212" height="19" src="/img/adm/adm_logo.png" alt=""><img id="admexit" src="/img/edt/btnlgout.png" title="Выход"><a href="/_/"><img src="/img/edt/btnhome.png" title="На главную редактора"></a><a href="/_/{#pageMainUri#}"><img src="/img/edt/btnadm.gif" title="Редактировать страницу"></a></nobr></div></div>'));
+        $(document.body).append($('<div class="admcntrl_cnt"><div id="admcntrl" class="admcntrl"><nobr><img class="admlogo" width="212" height="19" src="/img/adm/adm_logo.png" alt=""><img id="admexit" src="/img/edt/btnlgout.png" title="Выход"><a href="/_/?'+Math.random()+'"><img src="/img/edt/btnhome.png" title="На главную редактора"></a><a href="/_/{#pageMainUri#}?'+Math.random()+'"><img src="/img/edt/btnadm.gif" title="Редактировать страницу"></a></nobr></div></div>'));
         $('#admexit').click(function(){if (confirm('Выйти из панели управления?')) document.location='/_logout/';});
         //Редактор
 
@@ -108,13 +108,26 @@
                 e.stopPropagation();
                 $.fancybox.open({
                     'type':'iframe',
-                    'href':'/ajx/'+$(this).data('edt-uri')+'_sse?code='+$(this).data('code')+'&mult='+$(this).data('mult'),
-                    'width': $(document).width()*.9,
-                    'height': $(document).height()*.9,
+                    'src':'/ajx/'+$(this).data('edt-uri')+'_sse?code='+$(this).data('code')+'&mult='+$(this).data('mult'),
+                    //'width': $(window).width()*.8,
+                    //'height': $(window).height()*.8,
                     'top':40,
-                    //'autoScale':true,
-                    //'autoSize':true,
-                    //'autoDimensions':true,
+                    smallBtn:true,
+                    clickSlide : false,
+                    'autoScale':true,
+                    'autoSize':true,
+                    'autoDimensions':true,
+                    fullScreen : {
+                        autoStart: true,
+                        requestOnStart : true
+                    },
+                    iframe : {
+                        css : {
+                            'width': $(window).width()*.9+'px',
+                            'height': $(window).height()*.9+'px',
+                            'border': '3px solid #f9f8fc'
+                        }
+                    },
                     helpers : {
                         overlay : {
                             locked : false,
@@ -145,7 +158,11 @@
         console.log('ITteka platform: loaded');
     });
 </script>
+<!--
 <link rel="stylesheet" type="text/css" href="/akcms/js/v1/fancybox/jquery.fancybox.css">
 <script src="/akcms/js/v1/fancybox/jquery.fancybox.js"></script>
-<script src='/akcms/assets/tinymce/tinymce.min.js'></script>
+-->
+<link rel="stylesheet" type="text/css" href="/akcms/assets/fancybox/jquery.fancybox.min.css">
+<script src="/akcms/assets/fancybox/jquery.fancybox.min.js"></script>
+<script src='/akcms/assets/tinymce/tinymce.min1.js'></script>
 <div id="te_editor_place" style="display: none"></div>

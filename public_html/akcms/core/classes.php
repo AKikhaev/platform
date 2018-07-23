@@ -294,6 +294,7 @@ class core {
     public static $serverName = '';
     public static $testServer = false;
     public static $prodServer = false;
+    public static $devTest = false; // Developer test mode. New looks, for example
     public static $userAuth = false;
     public static $time_start = 0;
     private static $sharedObj = array();
@@ -447,6 +448,8 @@ class core {
             if ($e->getMessage()=='login_needs') {
                 //header('HTTP/1.0 401 Unauthorized');
                 header('HTTP/1.0 404 Not Found');
+                header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+                header('Expires: 0');
                 #var_dump__($e);
                 $url = $_SERVER['SCRIPT_URL']; if (trim($url,'/')==='_') $url = '/';
                 $shape['metas'] = '<meta http-equiv="Refresh" content="0; URL=/_auth/?url='.urlencode($url).'">';

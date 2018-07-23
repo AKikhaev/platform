@@ -128,6 +128,7 @@ class PageUnit extends CmsPage {
                 //throw new CmsException('login_needs_');
             }
             $pageTemplate = 'editpage';
+            if (core::$devTest) $pageTemplate = 'editpage2';
             if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') $pageTemplate = 'editpage2';
         }
 
@@ -1302,7 +1303,6 @@ class PageUnit extends CmsPage {
             'sec_all_units'=>$sec_all_units,
             'sec_units'=>$sec_units,
             'sec_page_child'=>$this->page['sec_page_child'],
-            'sec_pages'=>assocArray2KeyValue($cfg['pages'])
         ];
     }
 
@@ -1341,25 +1341,29 @@ class PageUnit extends CmsPage {
 		$shape['keywords'] = $this->page['sec_keywords'];
 
 		if ($adminPart) {
+            header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+            header('Expires: 0');
             #Теги
             #Меню
             $shape['pageMainUri'] = $this->pageMainUri;
 
-            $treeViewData = $this->getMenu($this->inEditCan);
+            $treeViewData = $this->getAllMenu($this->inEditCan);
             $this->menuToTreeView($treeViewData);
             //$this->_buildPageSections($this->getMenu($this->inEditCan));
-            $this->_buildPageSections($this->getMenu($this->inEditCan));
+            $this->_buildPageSections($this->getAllMenu($this->inEditCan));
 
             $akcms = [
                 'currpage'      => $this->variables(),
                 'treeViewData'  => $treeViewData,
-                'secs'          => $this->pageSections
+                'secs'          => $this->pageSections,
+                'sec_pages'     => assocArray2KeyValue($cfg['pages']),
             ];
 
             //todo remove currpage, js function
             $GLOBALS['shape']['menuedit'] = self::buildAdminMenu($this->getMenu($this->inEditCan),'_/'); #todo remove old menu
             $currpage = $this->variables();
             $currpage['secs'] = $this->pageSections;
+            $currpage['sec_pages'] = assocArray2KeyValue($cfg['pages']);
 
 			$shape['jses']  .= '
 			<script type="text/javascript">document.akcms='.json_encode($akcms).';currpage='.json_encode($currpage).';

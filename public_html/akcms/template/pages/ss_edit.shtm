@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="robots" content="noindex, nofollow, noarchive"/>
 	<title></title>
-    <link href="/akcms/css/v1/style_u.css" rel="stylesheet" type="text/css">
+    <!--link href="/akcms/css/v1/style_u.css" rel="stylesheet" type="text/css"-->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script type="text/javascript" src='/akcms/assets/tinymce/tinymce.min1.js'></script>
     <script type="text/javascript">
@@ -110,7 +110,7 @@
                 //invalid_elements:'p,div,table,tr,td,th,ul,ol,li,blockquote'
                 file_browser_callback_types: 'file image media',
                 file_browser_callback : function(field_name, url, type, win) {
-                    var cmsURL = "/akcms/js/v2/plupload/_ub.html" + "?type=" + type + "&url="+parent.window['editdiv'].data('edt-uri')+"&rnd=" + Math.random(1,999999);
+                    var cmsURL = "/akcms/assets/plupload/_ub.html" + "?type=" + type + "&url="+parent.window['editdiv'].data('edt-uri')+"&rnd=" + Math.random(1,999999);
                     tinyMCE.EditorManager.activeEditor.windowManager.open({
                         file : cmsURL,
                         title : "ITteka Browser",
@@ -230,7 +230,6 @@
         });
     </script>
 </head>
-
 <body>
         <textarea id="valueedit"></textarea>
         <div style="text-align: right"><input class="btnsave" type="button" value="Сохранить"/></div>
