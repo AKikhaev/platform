@@ -5,11 +5,8 @@ php_flag	magic_quotes_gpc	off
 
 #AuthName "Restricted" 
 #AuthType Basic 
-#AuthUserFile /home/p/parablru/georghram.ru/.htpasswd 
+#AuthUserFile /path/.htpasswd
 #Require valid-user
-
-#ExpiresActive On
-#ExpiresByType image/x-icon "access plus 1 month"
 
 <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|swf|js|css|JPG)$">
 	Header set Cache-Control "public, max-age=604800"
@@ -39,4 +36,3 @@ RewriteRule . akcms/getimage.php [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . index.php [L]
-
