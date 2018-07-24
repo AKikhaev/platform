@@ -1,5 +1,4 @@
-scriptsDir=$(dirname "$(readlink -f "$0")")
-. $scriptsDir/getProjectData.sh
+scriptsDir=$(dirname "$(readlink -f "$0")") && . $scriptsDir/loadProjectData.sh
 
 # mount and crate needs tree
 mkdir -p /data/nfs/$projectName/dev/pts
