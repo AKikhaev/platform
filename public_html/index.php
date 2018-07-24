@@ -2,6 +2,7 @@
 #core::$time_start = microtime(true);
 # error tracking
 try {
+    var_dump(__LINE__); die;
     require_once 'akcms/core/core.php'; LOAD_CORE(); # init core
     /* @var $sql pgdb */
 
@@ -9,39 +10,31 @@ try {
     $pageClass = '';
     $pageTemplate = '';
 
-    if($pathlen===1 && $path[0]==='bot_test') {
-        $tb = new TelegramBot();
-        $tb->webHook();
-        die('.');
-    }
-    else {
-
-        //sendTelegram($pathurl.' '.core::get_client_ip());
-        $classes = [
-            'PageUnit',
-            'MngUnit',
-            'SysUnit',
-            //'FeedUnit',
-            'TmplMapperUnit',
-            'RootFolder',
-            'CheckFileMoved',
-        ];
-
-        /* @var  $page CmsPage */
-        $page = null;
-        foreach ($classes as $pageClass) {
-            try {
-                $page = new $pageClass($pageTemplate);
-                break;
-            } catch (Exception $e) {
-                $page = null;
-                if ($e->getMessage() !== 'page_not_found') {
-                    throw $e;
-                }
+    //sendTelegram($pathurl.' '.core::get_client_ip());
+    $classes = [
+        'PageUnit',
+        'MngUnit',
+        'SysUnit',
+        //'FeedUnit',
+        'TmplMapperUnit',
+        'RootFolder',
+        'CheckFileMoved',
+    ];
+    /* @var  $page CmsPage */
+    $page = null;
+    foreach ($classes as $pageClass) {
+        try {
+            $page = new $pageClass($pageTemplate);
+            break;
+        } catch (Exception $e) {
+            $page = null;
+            if ($e->getMessage() !== 'page_not_found') {
+                throw $e;
             }
         }
-        if ($page === null) throw $e;
     }
+    if ($page === null) throw $e;
+
 
     if (core::$isAjax) {
         core::$outputData .= core::proceedAjax();

@@ -1,11 +1,10 @@
 ##Платформа itTeka 1.0
 ##### Что это?
-Странице-ориентированная компонентная среда развертывания web-проектов. Особенности:
+Страница-ориентированная компонентная среда развертывания web-проектов. Особенности:
 * позволяет разворачивать эффективно работающие сайты быстро
 * расширяемость модулями,  пользовательскими конфигурациями
 * Время холодной генерации <30 мсек, горячей <10 мсек
 * Редактор-интегрированнный шаблонизатор 
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 ##### Как развернуть?
 * Извлечь
@@ -18,6 +17,22 @@
 * Не предназначено для публичного распространения
 * Передача прав на использование платформы не исключительная и 
   не предпологает использование вне проектов, реализованых itTeka 
+
+##### Требования
+* PHP 7+: [supported-versions](http://php.net/supported-versions.php)
+```bash
+dpkg -l | grep php
+
+sudo add-apt-repository ppa:ondrej/php
+sudo apt update
+
+apt-get install php7.2-cli php7.2-common php7.2-curl php7.2-fpm php7.2-gd php7.2-json php7.2-mbstring php7.2-mcrypt php7.2-mysql php7.2-pgsql
+
+apt-get install php7.2-zip php7.2-readline php7.2-opcache 
+```
+###### Важно знать
+* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo), [Markdown-Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
+
 
 ###### TODO
 * Встраиваемые фотографии
