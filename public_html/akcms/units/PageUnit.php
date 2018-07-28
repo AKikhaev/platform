@@ -79,7 +79,7 @@ class PageUnit extends CmsPage {
 	{
 
         global $sql,$cfg;
-		define('MENU_FIELDS','select section_id,sec_parent_id,sec_url_full,sec_url,sec_nameshort,sec_namefull,sec_imgfile,sec_showinmenu,sec_openfirst,sec_to_news,sec_enabled,sec_title,sec_keywords,sec_description,sec_units,sec_from,sec_howchild,sec_page,sec_page_child, not sec_enabled or not sec_showinmenu as sec_hidden ');
+		define('MENU_FIELDS','section_id,sec_parent_id,sec_url_full,sec_url,sec_nameshort,sec_namefull,sec_imgfile,sec_showinmenu,sec_openfirst,sec_to_news,sec_enabled,sec_title,sec_keywords,sec_description,sec_units,sec_from,sec_howchild,sec_page,sec_page_child, not sec_enabled or not sec_showinmenu as sec_hidden ');
 
 		$pathstr_str = $GLOBALS['pathstr'];
 
@@ -234,7 +234,7 @@ class PageUnit extends CmsPage {
     private function _getMenuItemByUrl($urlFull,$showHidden = false,$prefix=false)
     {
         global $sql;
-        $query = sprintf (MENU_FIELDS.' from cms_sections where sec_url_full=%s '.($showHidden?'':'and sec_enabled and sec_showinmenu and now()>sec_from').';',
+        $query = sprintf ('SELECT '.MENU_FIELDS.' from cms_sections where sec_url_full=%s '.($showHidden?'':'and sec_enabled and sec_showinmenu and now()>sec_from').';',
             $sql->t($urlFull));
         $dataset = $sql->query_first_assoc($query);
         if ($prefix!==false && $dataset!==false) $dataset['sec_url_full'] = $prefix.$dataset['sec_url_full'];
@@ -243,7 +243,7 @@ class PageUnit extends CmsPage {
     private function _getMenuItem($Id,$showHidden = false,$prefix=false)
     {
         global $sql;
-        $query = sprintf (MENU_FIELDS.' from cms_sections where section_id=%d '.($showHidden?'':'and sec_enabled and sec_showinmenu and now()>sec_from').';',
+        $query = sprintf ('SELECT '.MENU_FIELDS.' from cms_sections where section_id=%d '.($showHidden?'':'and sec_enabled and sec_showinmenu and now()>sec_from').';',
             $Id);
         $dataset = $sql->query_first_assoc($query);
         if ($prefix!==false && $dataset!==false) $dataset['sec_url_full'] = $prefix.$dataset['sec_url_full'];
@@ -264,10 +264,10 @@ class PageUnit extends CmsPage {
 		}
 		$fields = MENU_FIELDS;
         if ($parentId<0) {
-			$query = sprintf ($fields.' from cms_sections inner join cms_menu_items ON (mnui_sec_id=section_id) where mnui_mnu_id=%d '.$wherespec.' order by mnui_sort,'.$order,
+			$query = sprintf ('SELECT '.$fields.' from cms_sections inner join cms_menu_items ON (mnui_sec_id=section_id) where mnui_mnu_id=%d '.$wherespec.' order by mnui_sort,'.$order,
 				-$parentId);
 		} else 
-		$query = sprintf ($fields.' from cms_sections where sec_parent_id=%d '.$wherespec.' order by '.$order,
+		$query = sprintf ('SELECT '.$fields.' from cms_sections where sec_parent_id=%d '.$wherespec.' order by '.$order,
             $parentId);
         $dataset = $sql->query_all($query);
         if ($prefix!==false && $dataset!==false) foreach ($dataset as $data) $data['sec_url_full'] = $prefix.$data['sec_url_full'];
@@ -782,7 +782,8 @@ class PageUnit extends CmsPage {
             else
                 $query = $sql->pr_i('cms_sections',$data);
 
-            $query .= ' RETURNING section_id,sec_url,sec_url_full,sec_enabled,sec_nameshort,sec_namefull,sec_title,sec_content,sec_keywords,sec_description;';
+            $query .= ' RETURNING '.MENU_FIELDS.',sec_content';
+
             $res = false;
 			try {
                 $res = @$sql->query_fa($query);
@@ -796,7 +797,13 @@ class PageUnit extends CmsPage {
 			        $this->reindex($res);
                     $this->buildSiteMapXml();
                 }
-                return json_encode(array('r'=>$res!==false?'t':'f','url'=>$res['sec_url_full']));
+
+                $icon = 'fa fa-file-text-o';
+                if ($res['sec_enabled']=='f') $icon = 'fa fa-times-circle';
+                else if ($res['sec_hidden']=='t') $icon = 'fa fa-eye-slash';
+                else if (strtotime($res['sec_from'])>time()) $icon = 'fa fa-clock-o';
+
+                return json_encode(array('r'=>$res!==false?'t':'f','url'=>$res['sec_url_full'],'id'=>$res['section_id'],'icon'=>$icon));
 			}
 			
 		}
@@ -937,7 +944,7 @@ class PageUnit extends CmsPage {
 		);
 		$checkRule = array();
 		$checkRule[] = array('section_id', '/^\d+$/');
-		$checkRule[] = array('url'       ,'/^http:\/\//');
+		$checkRule[] = array('url'       ,'/^(http|https):\/\//');
 		$checkResult = checkForm($_POST,$checkRule,$this->hasRight());
 		if (count($checkResult)==0)
 		{
@@ -1225,18 +1232,9 @@ class PageUnit extends CmsPage {
            $item['id'] = $item['section_id'];
            $item['text'] = $item['sec_nameshort'];
            $item['href'] = '/'.$item['sec_url_full'];
-           if ($item['sec_enabled']=='f') {
-               $item['icon'] = 'fa fa-times-circle';
-               //$item['color'] = '#DD6A2F';
-           }
-           else if ($item['sec_hidden']=='t') {
-               $item['icon'] = 'fa fa-eye-slash';
-               //$item['color'] = '#DD6A2F';
-           }
-           else if (strtotime($item['sec_from'])>time()) {
-               $item['icon'] = 'fa fa-clock-o';
-               //$item['color'] = '#DD6A2F';
-           }
+           if ($item['sec_enabled']=='f') $item['icon'] = 'fa fa-times-circle';
+           else if ($item['sec_hidden']=='t') $item['icon'] = 'fa fa-eye-slash';
+           else if (strtotime($item['sec_from'])>time()) $item['icon'] = 'fa fa-clock-o';
 
            unset($item['section_id']);
            unset($item['sec_parent_id']);

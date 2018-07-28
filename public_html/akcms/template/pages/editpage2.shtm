@@ -55,7 +55,7 @@
 			font-weight: normal;
 			padding: 0.1rem 0.1rem;
 		}
-		.node-button {cursor: context-menu;}
+		.node-button {cursor: context-menu;color:white;}
 		.node-treeAdmMenu:hover .node-buttons {
 			display: block !important;
 		}
@@ -75,6 +75,10 @@
             width: 20rem;
             z-index: 1;
         }
+		#btn_sec_new_root {
+			color:#593196;
+			margin-left: 1rem;
+		}
 	</style>
 </head>
 
@@ -84,6 +88,7 @@
 		<div class="row">
 			<div class="col-md-4 bg-sec">
 				<div id="treeAdmMenu" class="modalMakeEditSec"></div>
+				<i id="btn_sec_new_root" class="fa fa-plus-square" data-toggle="tooltip" data-placement="top" title="" data-original-title="Создать корневую страницу"></i>
 			</div>
 			<div class="col-md-8">
 
@@ -242,13 +247,14 @@
 													</div>
 													<div class="col-auto">
 														<div class="">
-															<button class="btn btn-sm btn-secondary btn-block" type="button"><i class="fa fa-cloud-upload"></i> Загрузить с адреса</button>
+															<input type="file" class="d-none" id="e_sec_imgfile_inp" name="uplfile" data-url="/ajx/_seciupl">
+															<button id="e_sec_imgfile_btn" class="btn btn-sm btn-secondary  btn-block" type="button"><i class="fa fa-upload"></i> Загрузить</button>
 														</div>
 														<div class="mt-2">
-															<button class="btn btn-sm btn-secondary  btn-block" type="button"><i class="fa fa-upload"></i> Загрузить</button>
+															<button id="e_sec_imgfile_btn_url" class="btn btn-sm btn-secondary btn-block" type="button"><i class="fa fa-cloud-upload"></i> Загрузить с адреса</button>
 														</div>
 														<div class="mt-2">
-															<button class="btn btn-sm btn-danger btn-block" type="button"><i class="fa fa-trash-o"></i> Удалить</button>
+															<button id="e_sec_imgfile_btn_drop" class="btn btn-sm btn-danger btn-block" type="button"><i class="fa fa-trash-o"></i> Удалить</button>
 														</div>
 													</div>
 													<!--input type="image" class="custom-control-input" id="e_sec_imgfile"-->
@@ -256,7 +262,14 @@
 											</div>
 
 										</div>
-										<button class="btn btn-primary btn-lg btn-block" type="submit" id="makeEditPageGo">Сохранить</button>
+										<div class="row">
+											<div class="col-9 order-2 mt-3 ml-0 pl-0">
+												<button class="btn btn-primary btn-lg btn-block" type="submit" id="makeEditPageGo">Сохранить</button>
+											</div>
+											<div class="col-3 order-1 mt-3 mr-0 pr-0">
+												<button class="btn btn-danger btn-lg btn-block" type="button" id="makeEditPageDrop"><i class="fa fa-trash-o"></i></button>
+											</div>
+										</div>
 									</form>
 								</div>
 							</div>
@@ -305,6 +318,10 @@
 	<script src="/akcms/assets/bootstrap41/plugins/bootstrap-treeview.js"></script>
 	<script src="/akcms/assets/Zebra_Datepicker/zebra_datepicker.src.js"></script>
 	<script src="/akcms/assets/libs/holder.min.js"></script>
+	<script src="/akcms/assets/jQuery-File-Upload/jquery.ui.widget.js"></script>
+	<script src="/akcms/assets/jQuery-File-Upload/jquery.iframe-transport.js"></script>
+	<script src="/akcms/assets/jQuery-File-Upload/jquery.fileupload.js"></script>
+
 	<script src="/akcms/assets/pages/editpage.js"></script>
 	{#jses#}
 	<script>
