@@ -2,7 +2,6 @@
 #core::$time_start = microtime(true);
 # error tracking
 try {
-    var_dump(__LINE__); die;
     require_once 'akcms/core/core.php'; LOAD_CORE(); # init core
     /* @var $sql pgdb */
 

@@ -16,6 +16,7 @@ projectNameShort=`echo $name | sed 's/[ \t\.-]//g'`
 
 perform_socket_query()
 {
+phpSocket=/data/nfs/$projectName/tmp/php-fpm-${projectName}.sock
 
 SCRIPT_FILENAME="$1" \
 SCRIPT_NAME="$1" \
@@ -34,6 +35,6 @@ REMOTE_PORT=7777 \
 SERVER_ADDR=127.0.0.1 \
 SERVER_PORT=80 \
 SERVER_NAME=knpz-ken.ru.local \
-cgi-fcgi -bind -connect /data/nfs/$projectName/tmp/php-fpm-${projectName}.sock
+cgi-fcgi -bind -connect "$phpSocket"
 
 }
