@@ -26,9 +26,9 @@ dpkg -l | grep php
 sudo add-apt-repository ppa:ondrej/php
 sudo apt update
 
-apt-get install php7.2-cli php7.2-common php7.2-curl php7.2-fpm php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-pgsql
+apt-get install php7.2-fpm php7.2-cli php7.2-common php7.2-curl php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-pgsql
 
-apt-get install php7.2-zip php7.2-readline php7.2-opcache  
+apt-get install php7.2-zip php7.2-opcache  
 apt-get install php7.2-mcrypt 
 ```
 
@@ -39,7 +39,7 @@ apt-get install php7.2-mcrypt
 При работе нескольких сайтов ocpache не различает пулы php-fpm допуская запуск кода одних пулов 
 в рабочих каталогах других пулов.
 ```bash
-/etc/php7.2/fpm/conf.d/10-opcache.ini добавить строки:
+/etc/php/7.2/fpm/conf.d/10-opcache.ini добавить строки:
 opcache.enable=1
 opcache.use_cwd=1
 opcache.revalidate_path=1
