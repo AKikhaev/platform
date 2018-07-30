@@ -36,13 +36,13 @@ class getStarted extends cliUnit {
      */
     public function nginxAction(){
         global $cfg;
-        $path = '../tmp/etc/nginx/sites-enabled';
-        if (!file_exists($path)) mkdir($path,0755,true);
+        $path = '/etc/nginx/sites-enabled';
+        //if (!file_exists($path)) mkdir($path,0755,true);
         $data = file_get_contents('../server/nginx/project_name.conf');
         $data = str_replace('project_name',$this->projectName,$data);
         $data = str_replace('{#domain#}',$cfg['server_prod'][0],$data);
         file_put_contents($path.'/'.$this->projectName.'.conf',$data);
-        echo "  Nginx confutation saved to $path/*. Move to it to destination manually.\n";
+        echo "  Nginx confutation saved to $path/*.\n";
     }
 
     /**
@@ -51,12 +51,12 @@ class getStarted extends cliUnit {
      */
     public function phpAction(){
         global $cfg;
-        $path = '../tmp/etc/php/7.0/fpm/pool.d';
-        if (!file_exists($path)) mkdir($path,0755,true);
+        $path = '/etc/php/7.2/fpm/pool.d';
+        //if (!file_exists($path)) mkdir($path,0755,true);
         $data = file_get_contents('../server/php-fpm/project_name.conf');
         $data = str_replace('project_name',$this->projectName,$data);
         $data = str_replace('{#domain#}',$cfg['server_prod'][0],$data);
         file_put_contents($path.'/'.$this->projectName.'.conf',$data);
-        echo "  php-fpm confutation saved to $path/*. Move to it to destination manually.\n";
+        echo "  php-fpm confutation saved to $path/*.\n";
     }
 }
