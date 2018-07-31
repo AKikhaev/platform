@@ -21,7 +21,7 @@
 ##### Требования
 * nginx
 ```bash
-apt-get nginx
+apt nginx
 ```
 * PHP 7+: [supported-versions](http://php.net/supported-versions.php)
 ```bash
@@ -30,16 +30,16 @@ dpkg -l | grep php
 sudo add-apt-repository ppa:ondrej/php
 sudo apt update
 
-apt-get install mc nginx php7.2-fpm php7.2-cli php7.2-common php7.2-curl php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-pgsql
+apt install libfcgi-bin mc nginx php7.2-fpm php7.2-cli php7.2-common php7.2-curl php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-pgsql
 
-apt-get install php7.2-zip php7.2-opcache  
-apt-get install php7.2-mcrypt
+apt install php7.2-zip php7.2-opcache  
+apt install php7.2-mcrypt
 ```
 
 * Базовая настройка сервера
 
 ```bash
-adduser --system --no-create-home www-user
+adduser --system --no-create-home --group www-user
 adduser mstr
 
 ## prepare project deploy

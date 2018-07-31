@@ -16,7 +16,8 @@ projectNameShort=`echo $name | sed 's/[ \t\.-]//g'`
 
 perform_socket_query()
 {
-phpSocket=/data/nfs/$projectName/tmp/php-fpm-${projectName}.sock
+#phpSocket=/data/nfs/$projectName/tmp/php-fpm-${projectName}.sock
+phpSocket=/tmp/php-fpm-${projectName}.sock
 
 SCRIPT_FILENAME="$1" \
 SCRIPT_NAME="$1" \
