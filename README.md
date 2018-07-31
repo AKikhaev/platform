@@ -19,6 +19,10 @@
   не предпологает использование вне проектов, реализованых itTeka 
 
 ##### Требования
+* nginx
+```bash
+apt-get nginx
+```
 * PHP 7+: [supported-versions](http://php.net/supported-versions.php)
 ```bash
 dpkg -l | grep php
@@ -26,10 +30,33 @@ dpkg -l | grep php
 sudo add-apt-repository ppa:ondrej/php
 sudo apt update
 
-apt-get install php7.2-fpm php7.2-cli php7.2-common php7.2-curl php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-pgsql
+apt-get install mc nginx php7.2-fpm php7.2-cli php7.2-common php7.2-curl php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-pgsql
 
 apt-get install php7.2-zip php7.2-opcache  
-apt-get install php7.2-mcrypt 
+apt-get install php7.2-mcrypt
+```
+
+* Базовая настройка сервера
+
+```bash
+adduser --system --no-create-home www-user
+adduser mstr
+
+## prepare project deploy
+mkdir -p /data/nfs
+chmod 0777 /data/nfs
+su mstr
+git clone --bare https://itteka_deploy@bitbucket.org/itteka/cms.git /home/mstr/cms.git
+git --git-dir=/home/mstr/cms.git worktree add /data/nfs/project_name
+#exit
+chmod 0755 /data/nfs
+##
+
+### connect as mstr  ###
+cat server/.bash_aliases > ~/.bash_aliases
+first time: git config credential.helper store
+git pull && git fetch
+
 ```
 
 ##### Известные проблемы
@@ -65,3 +92,4 @@ opcache.validate_root=1
   `section_string` в `section_storage`
 * [Оптимизация](https://github.com/jupeter/clean-code-php), 
   [по-русски](https://github.com/peter-gribanov/clean-code-php)
+* [auto deploy](https://gist.github.com/noelboss/3fe13927025b89757f8fb12e9066f2fa#file-post-receive)
