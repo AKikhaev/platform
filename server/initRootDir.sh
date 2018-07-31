@@ -8,7 +8,9 @@ mount --bind /dev/pts /data/nfs/$projectName/dev/pts
 mkdir -p /data/nfs/$projectName/cache
 mkdir -p /data/nfs/$projectName/logs
 mkdir -p /data/nfs/$projectName/tmp
+chmod 0777 /data/nfs/$projectName/tmp
 mkdir -p /data/nfs/$projectName/var/lib/php/sessions
+chmod 0777 /data/nfs/$projectName/var/lib/php/sessions
 
 mkdir -p /data/nfs/$projectName/etc
 cp /etc/hosts /data/nfs/$projectName/etc/
