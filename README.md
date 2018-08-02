@@ -30,10 +30,22 @@ dpkg -l | grep php
 sudo add-apt-repository ppa:ondrej/php
 sudo apt update
 
-apt install libfcgi-bin mc nginx php7.2-fpm php7.2-cli php7.2-common php7.2-curl php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-pgsql
+apt install libfcgi-bin mc nginx php7.2-fpm php7.2-cli php7.2-common php7.2-curl php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-pgsql php7.2-xml
 
 apt install php7.2-zip php7.2-opcache  
 apt install php7.2-mcrypt
+```
+
+* Postgresql
+
+```bash
+apt-get install postgresql-10
+service postgresql stop
+mkdir -p /data/db
+cp -r -p /var/lib/postgresql/10/main /data/db/pg10
+
+/etc/postgresql/10/main/postgresql.conf:
+replace /var/lib/postgresql/10/main to /data/db/pg10
 ```
 
 * Базовая настройка сервера
