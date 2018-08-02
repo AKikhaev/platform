@@ -1,5 +1,5 @@
 <?php
-    $shape['js_admin'] = (isset($shape['js_admin'])?$shape['js_admin']:'').(shp::$editMode?GetShape('parts/adminext',array('pageMainUri'=>$page->pageMainUri)):'');
+    $shape['js_admin'] = (isset($shape['js_admin'])?$shape['js_admin']:'').(shp::$editMode?shp::tmpl('parts/adminext',array('pageMainUri'=>$page->pageMainUri)):'');
 	$res .= '<div id="glrs">
 	<style>
 	.glritm {

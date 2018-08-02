@@ -78,7 +78,7 @@ class Pg_Search extends PgUnitAbstract {
 						$shp['ha_d_0'] = $snippet;
 						$shp['ha_i_0'] = $dataitem['news_id'].'.jpg';
 						$shp['ha_dt_0'] = VisualTheme::date2str(strtotime($dataitem['stamp']));
-						$html .= GetShape('_PgUnits/Pg_SubSecLst/2_s',$shp);
+						$html .= shp::tmpl('_PgUnits/Pg_SubSecLst/2_s',$shp);
 
 						//$html .= '<div class="srchr_r"><a target="_blank" href="/'.$dataitem['url'].'" title="'.$atitle.'">'.$title.'</a><div class="srchr_rs">'.$snippet.' </div></div>';
 					$html .= '</li>';
@@ -90,6 +90,6 @@ class Pg_Search extends PgUnitAbstract {
 				}
 			} else $html .= '<p>Результатов по вашему запросу не найдено</p>';
 		} else $html .= '<br/><p">Введите ваш запрос чтобы начать поиск</p>';
-		return GetShape('search', array('html'=>$html,'qsrch'=>htmlentities($shape['qsrch'],ENT_QUOTES,'UTF-8')));
+		return shp::tmpl('search', array('html'=>$html,'qsrch'=>htmlentities($shape['qsrch'],ENT_QUOTES,'UTF-8')));
 	}
 }

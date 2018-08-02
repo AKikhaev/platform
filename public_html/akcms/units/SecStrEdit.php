@@ -35,7 +35,7 @@ class SecStrEdit extends PgUnitAbstract {
             $sqldata = $sql->query_first('SELECT secs_str,secs_multiline FROM cms_sections_string WHERE secs_id='.$sql->d($data['id']));
             $data['value'] = $sqldata['secs_str'];
             $data['multiline'] = $sqldata['secs_multiline'];
-			return GetShape('pages/ss_edit',$data);
+			return shp::tmpl('pages/ss_edit',$data);
 		}
 		return json_encode(array('error'=>$checkResult));
 	}

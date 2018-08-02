@@ -43,7 +43,7 @@ try {
             $shape['content'] = $page->getContent();
             $shape['title'] = $page->getTitle();
             #$shape['worktime'] = (microtime(true)-core::$time_start);
-            core::$outputData = GetShape('pages/'.$pageTemplate, $shape, true);
+            core::$outputData = shp::tmpl('pages/'.$pageTemplate, $shape, true);
         } else {
             $html = '';
             #if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') {var_dump__($pathstr);}
@@ -73,7 +73,7 @@ try {
     echo core::$outputData;
 
 } catch(Exception $e) {
-    if (class_exists('core') && function_exists('GetShape')) core::InTryErrorHandler($e);
+    if (class_exists('core')) core::InTryErrorHandler($e);
     else echo '<script>console.log('.json_encode(sprintf("%s, %s(%s)",$e->getMessage(),basename($e->getFile(),'php'),$e->getLine())).')</script>';
     unset($e);
 }

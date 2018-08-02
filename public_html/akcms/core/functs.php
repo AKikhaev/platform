@@ -469,42 +469,10 @@ function morph($n, $f1, $f2, $f5) {
 
 function load_filecheck($filepath,$use_include=false) // Чтение файла с проверкой существования
 {
-	if (file_exists($filepath) || $use_include)
-		return file_get_contents($filepath,$use_include);
-	else return '['.$filepath.']';
+	$str = @file_get_contents($filepath, $use_include);
+	if ($str===false) return '['.$filepath.']';
+	else return $str;
 }
-
-function AddFinalSlash($dirpath) // Добавляет слэши в конце строки
-{
-	if (substr($dirpath,-1)<>'/' and substr($dirpath,-1)<>'\\') return $dirpath.'/';
-		else return $dirpath;
-}
-
-function GetShapeString($html, $vars, $replace_once = false) //Возвращает готовый HTML код
-{
-	foreach ($vars as $key => $val) if ($replace_once) {
-		$html=preg_replace('/{#'.$key.'#}/',$val,$html,1);
-		$html=str_replace('{#'.$key.'#}','',$html);
-	} else {
-		$html=str_replace('{#'.$key.'#}',$val,$html);
-	}
-	return $html;
-}
-
-
-function GetShape($shape, $vars=array(), $replace_once = false) //Возвращает готовый HTML код
-{
-	global $shapes;
-
-	if (empty($shapes[$shape]))
-		//$shapes[$shape]=load_filecheck('u/themes/'.$GLOBALS['cfg']['site_theme'].'/shapes/'.$shape.'.shtm');
-        $shapes[$shape]=load_filecheck($shape.'.shtm',true);
-	$html=$shapes[$shape];
-	
-	$html=GetShapeString($html, $vars, $replace_once);
-	return $html;
-}
-
 
 Function SendMailKoi8r($emilto,$emailfrom,$emailsbj,$mailcontent) // Отправляет Email
 {

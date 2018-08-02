@@ -525,7 +525,7 @@ class PageUnit extends CmsPage {
 			$uform['title']		= htmlentities(strip_tags(isset($_POST['title'])?$_POST['title']:''),ENT_QUOTES,'UTF-8');
 			$uform['ip']		= $_SERVER['REMOTE_ADDR'];
 			$title=$_SERVER['HTTP_HOST'].' ошика на странице';
-			$htmlform = GetShape('sndmstk_mail', $uform);
+			$htmlform = shp::tmpl('sndmstk_mail', $uform);
 			$res = sendMailHTML($cfg['email_moderator'], $title, $htmlform,'',$cfg['email_from']);//email_moderator email_error
 			return json_encode($res?'t':'f');
 		} 
@@ -1165,7 +1165,7 @@ class PageUnit extends CmsPage {
         $checkResult = checkForm($_GET,$checkRule);
         if (count($checkResult)==0)
         {
-            return GetShape('pages/ss_edit');
+            return shp::tmpl('pages/ss_edit');
         }
         return json_encode(array('error'=>$checkResult));
     }

@@ -98,7 +98,7 @@ class Pg_Comments extends PgUnitAbstract {
 						$uform['ip'] = $_SERVER['REMOTE_ADDR']; 
 						$uform['url'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 						$uform['urlhref'] = 'http://'.$_SERVER['SERVER_NAME'].'/_/'.$page->pageMainUri.'#cmnt'.$res[0];
-						$htmlform = GetShape('cmnt_mail_send', $uform);
+						$htmlform = shp::tmpl('cmnt_mail_send', $uform);
 						sendMailHTML($cfg['email_moderator'], $title, $htmlform,'',$cfg['email_from']);
 						
 						$uform['name'] = ''; $uform['email'] = ''; $uform['text'] = ''; 
@@ -108,7 +108,7 @@ class Pg_Comments extends PgUnitAbstract {
 			} else {
 				$uform['name'] = ''; $uform['email'] = ''; $uform['text'] = '';
 			}
-			$htmlform = GetShape('cmnt_send', $uform);
+			$htmlform = shp::tmpl('cmnt_send', $uform);
 
 			$pgNum = 1;	if (count($this->unitParam)==1) $pgNum = $this->unitParam[0]>0?$this->unitParam[0]:1;
 			$pgSize = 10; 

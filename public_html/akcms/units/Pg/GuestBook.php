@@ -56,7 +56,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 					$uform = array();
 					$uform['urlhref'] = 'http://'.$_SERVER['SERVER_NAME'].'/'.$page->pageMainUri.'#gbia'.$_POST['gb_id'];
 					$uform['url'] = 'http://'.$_SERVER['SERVER_NAME'].'/'.$page->pageMainUri;
-					$htmlform = GetShape('gb_mail_user', $uform);
+					$htmlform = shp::tmpl('gb_mail_user', $uform);
 					sendMailHTML($dataset[0]['gb_email'], $title, $htmlform,'',$cfg['email_from_user']);
 				}
 			}
@@ -160,7 +160,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 						$uform['ip'] = $_SERVER['REMOTE_ADDR']; 
 						$uform['url'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 						$uform['urlhref'] = 'http://'.$_SERVER['SERVER_NAME'].'/_/'.$page->pageMainUri.'#gbia'.$res[0];
-						$htmlform = GetShape('gb_mail_moder', $uform);
+						$htmlform = shp::tmpl('gb_mail_moder', $uform);
 						sendMailHTML($cfg['email_moderator'], $title, $htmlform,'',$cfg['email_from']);
 						
 						$uform['name'] = ''; $uform['email'] = ''; $uform['phone'] = ''; $uform['text'] = ''; 
@@ -170,7 +170,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 			} else {
 				$uform['name'] = ''; $uform['email'] = ''; $uform['phone'] = ''; $uform['text'] = '';
 			}
-			$htmlform = GetShape('gb_send', $uform);
+			$htmlform = shp::tmpl('gb_send', $uform);
 
 			$pgNum = 1;	if (count($this->unitParam)==1) $pgNum = $this->unitParam[0]>0?$this->unitParam[0]:1;
 			$pgSize = 10; 

@@ -438,7 +438,7 @@ class core {
         $errorPageTemplate = 'error_page';
         $shape['title'] = 'Произошла ошибка';
         $shape['metas'] = '';
-        $shape['gajs'] = self::$prodServer?GetShape('parts/counters'):'';
+        $shape['gajs'] = self::$prodServer?shp::tmpl('parts/counters'):'';
         if ($e->getMessage()=='page_not_found') {
             header('HTTP/1.0 404 Not Found');
             //header('Location: /',true,404);
@@ -461,7 +461,7 @@ class core {
         $shape['worktime'] = (microtime(true)- self::$time_start);
         $shape['reason'] = $e->getMessage();
         @ob_end_flush();
-        echo GetShape('errors/'.$errorPageTemplate, $shape);
+        echo shp::tmpl('errors/'.$errorPageTemplate, $shape);
     }
     public static function ShutdownHandler()
     {
@@ -667,7 +667,6 @@ class shp{
     public static function tmpl($shape, $vars=array(), $replace_once = false) //Возвращает готовый HTML код
     {
         global $shapes;
-
         if (empty($shapes[$shape]))
             $shapes[$shape]=load_filecheck($shape.'.shtm',true);
         $html=$shapes[$shape];
