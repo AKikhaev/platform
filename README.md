@@ -74,8 +74,10 @@ chmod 0755 /data/nfs
 ### connect as mstr  ###
 cat server/.bash_aliases > ~/.bash_aliases
 first time: git config credential.helper store
-git pull && git fetch
+git fetch && git pull
 
+## update production
+git reset --hard && git pull
 ```
 
 ##### Известные проблемы
