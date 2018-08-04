@@ -43,9 +43,16 @@ apt-get install postgresql-10
 service postgresql stop
 mkdir -p /data/db
 cp -r -p /var/lib/postgresql/10/main /data/db/pg10
-
 /etc/postgresql/10/main/postgresql.conf:
 replace /var/lib/postgresql/10/main to /data/db/pg10
+
+# Каждый сайт
+service postgresql start
+su postgres
+psql
+CREATE ROLE astr NOINHERIT LOGIN PASSWORD 'password';
+CREATE DATABASE astr WITH OWNER = astr ENCODING = 'UTF8';
+ALTER DATABASE astr SET timezone TO 'Europe/Moscow';
 ```
 
 * Базовая настройка сервера

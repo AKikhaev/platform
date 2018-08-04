@@ -23,4 +23,4 @@ TRUNCATE cms_tags_sections;
 DELETE from cms_users where id_usr>=9;			ALTER SEQUENCE adv_users_id_usr_seq RESTART 10;
 SELECT set_config('myapp.psw', md5(random()::text), true);
 UPDATE cms_users SET usr_password_md5 = md5('dU%f:' || current_setting('myapp.psw')); --go to /_users/ to change it
-SELECT current_setting('myapp.psw');
+SELECT 'All system user has password: ' || current_setting('myapp.psw');

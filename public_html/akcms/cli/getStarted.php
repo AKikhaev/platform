@@ -9,6 +9,7 @@ class getStarted extends cliUnit {
     public function __construct()
     {
         $this->projectName = $this->getProjectName();
+        if(PHP_SAPI!=='cli')die('<!-- not allowed -->');
     }
 
     public function getProjectName(){
@@ -28,6 +29,7 @@ class getStarted extends cliUnit {
     public function allAction(){
         $this->phpAction();
         $this->nginxAction();
+        $this->postgresAction();
     }
 
     /**
@@ -43,6 +45,24 @@ class getStarted extends cliUnit {
         $data = str_replace('{#domain#}',$cfg['server_prod'][0],$data);
         file_put_contents($path.'/'.$this->projectName.'.conf',$data);
         echo "  Nginx confutation saved to $path/*.\n";
+    }
+
+    /**
+     * Команды создания БД
+     */
+    public function postgresAction() {
+        global $cfg;
+        $data = <<<SQL
+  su postgres
+  psql
+  CREATE ROLE user_name NOINHERIT LOGIN PASSWORD 'password_raw';
+  CREATE DATABASE database_name WITH OWNER = user_name ENCODING = 'UTF8';
+  ALTER DATABASE database_name SET timezone TO 'Europe/Moscow';
+SQL;
+        $data = str_replace('database_name',$cfg['db'][1]['database'],$data);
+        $data = str_replace('user_name',$cfg['db'][1]['username'],$data);
+        $data = str_replace('password_raw',str_replace('\'','\\\'',$cfg['db'][1]['password']),$data);
+        echo $data.PHP_EOL;
     }
 
     /**
