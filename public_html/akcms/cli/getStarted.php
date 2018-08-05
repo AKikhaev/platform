@@ -68,7 +68,8 @@ class getStarted extends cliUnit {
   psql -c "ALTER SCHEMA newsite RENAME TO schema_name" database_name
   
   #reset system passwords:
-  psql -c "UPDATE schema_name.cms_users SET usr_password_md5 = md5('password_salt:' || set_config('myapp.psw', md5(random()::text), true)) WHERE id_usr<10;SELECT array_to_string(array(SELECT usr_login FROM schema_name.cms_users),',') || ':' || current_setting('myapp.psw');" database_name
+  psql -c "UPDATE schema_name.cms_users SET usr_password_md5 = md5('password_salt' || set_config('myapp.psw', md5(random()::text), true)) WHERE id_usr<10;SELECT array_to_string(array(SELECT usr_login FROM schema_name.cms_users),',') || ':' || current_setting('myapp.psw');" database_name
+  acli getStarted resetDvPassword
 
   # backup:
   su postgres
@@ -97,5 +98,11 @@ SQL;
         $data = str_replace('{#domain#}',$cfg['server_prod'][0],$data);
         file_put_contents($path.'/'.$this->projectName.'.conf',$data);
         echo "  php-fpm confutation saved to $path/*.\n";
+    }
+
+    public function resetDvPasswordAction(){
+        $password = md5(random_bytes(20));
+        CmsUser::setNewPassword('dv',$password);
+        echo $password.PHP_EOL;
     }
 }
