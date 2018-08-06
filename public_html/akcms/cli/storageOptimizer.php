@@ -171,7 +171,7 @@ class storageOptimizer extends cliUnit {
     }
 
     /**
-     * Do a main process
+     * Полная оптимизация
      */
     public function runAction(){
         $this->dropOldFoldersAction();
@@ -214,8 +214,7 @@ class storageOptimizer extends cliUnit {
      * @throws DBException
      */
     public function packAllAction(){
-        global $sql;
-        profiler::showOverallTimeToTerminal();
+        //profiler::showOverallTimeToTerminal();
 
         $cmsSections = (new modelCmsSections())
             ->fields('section_id,sec_content,sec_url_full')

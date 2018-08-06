@@ -5,6 +5,7 @@
  */
 class getStarted extends cliUnit {
     public $projectName = '';
+    protected $options_available = ['-bash_completion','--silence_greetings'];
 
     public function __construct()
     {
@@ -16,10 +17,6 @@ class getStarted extends cliUnit {
         $path = explode(DIRECTORY_SEPARATOR,getcwd());
         $projectName = $path[count($path)-2];
         return $projectName;
-    }
-
-    public function runAction(){
-        $this->helpAction();
     }
 
     /**

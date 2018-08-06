@@ -8,16 +8,65 @@ require_once('akcms/core/core.php'); LOAD_CORE_CLI();
  * Class cliUnit
  */
 class cliUnit {
-    private $runMethod = 'runAction';
+    protected $runMethod = 'helpAction';
+    protected $options_available = [];
+    protected $options = [];
+
+    private function extractOptions(&$commands)
+    {
+        $lastOption = '';
+        foreach ($commands as $i=>$command) {
+            if (mb_strpos($command,'--')===0) {
+                $command = mb_substr($command,2);
+                $this->options[$command] = false;
+                $lastOption = $command;
+                unset($commands[$i]);
+            }
+            elseif (mb_strpos($command,'-')===0) {
+                $command = mb_substr($command,1);
+                $this->options[$command] = false;
+                $lastOption = $command;
+                unset($commands[$i]);
+            }
+            elseif ($lastOption!==''){
+                $this->options[$lastOption] = ($this->options[$lastOption] === false ? $command : $this->options[$lastOption].' '.$command);
+                unset($commands[$i]);
+            }
+        }
+    }
+
     public function run(){
         $commands = func_get_args();
-        if (count($commands)>0) {
-            $this->runMethod = $commands[0].'Action';
+        $this->extractOptions($commands);
+        if (isset($this->options['bash_completion'])) $this->runMethod = 'bash_completion';
+        elseif (count($commands)>0) {
+            $this->runMethod = $commands[0] . 'Action';
             unset($commands[0]);
         }
         if (method_exists($this,$this->runMethod)) {
             $this->{$this->runMethod}(...$commands);
-        } else echo "Command not found!\n";
+        } else echo "Cli sub command not found!\n";
+    }
+
+    protected function bash_completion()
+    {
+        $commands = func_get_args();
+        $bash_completion_cword = $this->options['bash_completion_cword'];
+        $commands_list = [];
+        $rc = new ReflectionClass($this);
+        foreach ($rc->getMethods() as $method) {
+            if (mb_substr($method->getName(), -6) === 'Action' && $method->getDocComment() !== false)
+                $commands_list[] = mb_substr($method->getName(), 0, -6);
+        }
+//        $contain = false;
+//        if ($bash_completion_cword!==false) foreach ($commands_list as $commands_list_item) {
+//            if (mb_strpos($commands_list_item,$bash_completion_cword)===0) {$contain = true; break;}
+//        }
+
+        if (count($commands)<($bash_completion_cword==false?1:2))
+            echo implode(' ',array_merge($commands_list,$this->options_available));
+        else
+            echo implode(' ',$this->options_available);
     }
 
     /** Shows detailed help
@@ -55,7 +104,6 @@ class cli {
     }
     public static function run(){
         self::getRootCommandList();
-
         $command = $_SERVER['argv'];
         unset($command[0]);
         if (count($command)===0) {
@@ -75,10 +123,10 @@ class cli {
             unset($command[1]);
             if (isset(self::$rootCmdList[$rootCommand])) {
                 require_once self::$rootCmdList[$rootCommand];
-                $cliUnit = new $rootCommand;
+                $cliUnit = new $rootCommand();
                 $cliUnit->run(...$command);
 //                call_user_func([$rootCommand,'run']);
-            } else echo "Command not found\n";
+            } else echo "Cli command not found\n";
         }
     }
 }

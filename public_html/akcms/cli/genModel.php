@@ -381,9 +381,6 @@ class genModel extends cliUnit {
         else toLogInfo('Нет подходящих таблиц');
     }
 
-    /**
-     * @throws DBException
-     */
     public function runAction(){
         global $sql,$cfg;
 
