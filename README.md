@@ -27,8 +27,8 @@ apt nginx
 ```bash
 dpkg -l | grep php
 
-sudo add-apt-repository ppa:ondrej/php
-sudo apt update
+add-apt-repository ppa:ondrej/php
+apt update
 
 apt install libfcgi-bin mc nginx php7.2-fpm php7.2-cli php7.2-common php7.2-curl php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-pgsql php7.2-xml
 
@@ -66,7 +66,7 @@ mkdir -p /data/nfs
 chmod 0777 /data/nfs
 su mstr
 git clone --bare https://itteka_deploy@bitbucket.org/itteka/cms.git /home/mstr/cms.git
-git --git-dir=/home/mstr/cms.git worktree add /data/nfs/project_name
+read -p "Enter project name: " project_name; git --git-dir=/home/mstr/cms.git worktree add /data/nfs/$project_name
 #exit
 chmod 0755 /data/nfs
 ##

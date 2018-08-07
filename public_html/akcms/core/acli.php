@@ -30,8 +30,13 @@ class cliUnit {
         $commands_list = [];
         $rc = new ReflectionClass($this);
         foreach ($rc->getMethods() as $method) {
-            if (mb_substr($method->getName(), -6) === 'Action' && $method->getDocComment() !== false)
-                $commands_list[] = mb_substr($method->getName(), 0, -6);
+            if (mb_substr($method->getName(), -6) === 'Action')
+                if ($method->getDocComment() !== false)
+                    $commands_list[] = mb_substr($method->getName(), 0, -6);
+                else {
+                    if ($bash_completion_cword !== false && mb_strpos($method->getName(),$bash_completion_cword)===0)
+                        $commands_list[] = mb_substr($method->getName(), 0, -6);
+                }
         }
         if (count($commands)<($bash_completion_cword==false?1:2))
             echo implode(' ',array_merge($commands_list,$this->options_available));

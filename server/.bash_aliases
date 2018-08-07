@@ -32,7 +32,7 @@ function _acli_complete_()
 	local PWD=$(pwd -P)
 	if  [[ "$PWD" == "/data/nfs/"* ]] ; then
 		local pwds
-		readarray -d / -t pwds <<<"$PWD/"
+		mapfile -d / -t pwds <<<"$PWD/"
 		projectName=${pwds[3]}
 
 		local cmd="${1##*/}"
