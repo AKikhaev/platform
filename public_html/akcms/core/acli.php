@@ -10,35 +10,10 @@ require_once('akcms/core/core.php'); LOAD_CORE_CLI();
 class cliUnit {
     protected $runMethod = 'helpAction';
     protected $options_available = [];
-    protected $options = [];
-
-    private function extractOptions(&$commands)
-    {
-        $lastOption = '';
-        foreach ($commands as $i=>$command) {
-            if (mb_strpos($command,'--')===0) {
-                $command = mb_substr($command,2);
-                $this->options[$command] = false;
-                $lastOption = $command;
-                unset($commands[$i]);
-            }
-            elseif (mb_strpos($command,'-')===0) {
-                $command = mb_substr($command,1);
-                $this->options[$command] = false;
-                $lastOption = $command;
-                unset($commands[$i]);
-            }
-            elseif ($lastOption!==''){
-                $this->options[$lastOption] = ($this->options[$lastOption] === false ? $command : $this->options[$lastOption].' '.$command);
-                unset($commands[$i]);
-            }
-        }
-    }
 
     public function run(){
         $commands = func_get_args();
-        $this->extractOptions($commands);
-        if (isset($this->options['bash_completion'])) $this->runMethod = 'bash_completion';
+        if (isset(cli::$options['bash_completion_cword'])) $this->runMethod = 'bash_completion';
         elseif (count($commands)>0) {
             $this->runMethod = $commands[0] . 'Action';
             unset($commands[0]);
@@ -51,18 +26,13 @@ class cliUnit {
     protected function bash_completion()
     {
         $commands = func_get_args();
-        $bash_completion_cword = $this->options['bash_completion_cword'];
+        $bash_completion_cword = cli::$options['bash_completion_cword'];
         $commands_list = [];
         $rc = new ReflectionClass($this);
         foreach ($rc->getMethods() as $method) {
             if (mb_substr($method->getName(), -6) === 'Action' && $method->getDocComment() !== false)
                 $commands_list[] = mb_substr($method->getName(), 0, -6);
         }
-//        $contain = false;
-//        if ($bash_completion_cword!==false) foreach ($commands_list as $commands_list_item) {
-//            if (mb_strpos($commands_list_item,$bash_completion_cword)===0) {$contain = true; break;}
-//        }
-
         if (count($commands)<($bash_completion_cword==false?1:2))
             echo implode(' ',array_merge($commands_list,$this->options_available));
         else
@@ -96,6 +66,29 @@ class cliUnit {
 
 class cli {
     private static $rootCmdList = [];
+    public static $options = [];
+    private static function extractOptions(&$commands)
+    {
+        $lastOption = '';
+        foreach ($commands as $i=>$command) {
+            if (mb_strpos($command,'--')===0) {
+                $command = mb_substr($command,2);
+                self::$options[$command] = false;
+                $lastOption = $command;
+                unset($commands[$i]);
+            }
+            elseif (mb_strpos($command,'-')===0) {
+                $command = mb_substr($command,1);
+                self::$options[$command] = false;
+                $lastOption = $command;
+                unset($commands[$i]);
+            }
+            elseif ($lastOption!==''){
+                self::$options[$lastOption] = (self::$options[$lastOption] === false ? $command : self::$options[$lastOption].' '.$command);
+                unset($commands[$i]);
+            }
+        }
+    }
     private static function getRootCommandList(){
         if (count(self::$rootCmdList)==0)
             foreach (glob('{akcms/cli/*.php,akcms/u/cli/*.php}',GLOB_BRACE) as $item)
@@ -104,9 +97,14 @@ class cli {
     }
     public static function run(){
         self::getRootCommandList();
-        $command = $_SERVER['argv'];
-        unset($command[0]);
-        if (count($command)===0) {
+        $commands = $_SERVER['argv']; unset($commands[0]);
+        self::extractOptions($commands);
+
+        if (isset(cli::$options['bash_completion_cword']) && count($commands)<(cli::$options['bash_completion_cword']==false?1:2)) {
+            die(implode(' ',array_keys(self::$rootCmdList)));
+        }
+
+        if (count($commands)===0) {
             echo "Command list:\n";
             $maxLenght = 0;
             foreach (self::$rootCmdList as $cmd=>$path) {
@@ -119,12 +117,12 @@ class cli {
                 echo '  '.str_pad($cmd,$maxLenght).' - '.$description."\n";
             }
         } else {
-            $rootCommand = $command[1];
-            unset($command[1]);
+            $rootCommand = $commands[1];
+            unset($commands[1]);
             if (isset(self::$rootCmdList[$rootCommand])) {
                 require_once self::$rootCmdList[$rootCommand];
                 $cliUnit = new $rootCommand();
-                $cliUnit->run(...$command);
+                $cliUnit->run(...$commands);
 //                call_user_func([$rootCommand,'run']);
             } else echo "Cli command not found\n";
         }
