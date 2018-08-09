@@ -30,6 +30,8 @@ mkdir -p /data/nfs/$projectName/usr/share/zoneinfo/Europe
 cp /usr/share/zoneinfo/Europe/Moscow /data/nfs/$projectName/usr/share/zoneinfo/Europe/
 
 chown -R mstr:www-user /data/nfs/$projectName/public_html/s/
+chown -R mstr:www-user /data/nfs/$projectName/public_html/img/gallery/
+chown -R mstr:www-user /data/nfs/$projectName/public_html/img/pages/
 
 echo
 echo "Add this line to /etc/fstab (for auto terminal notification feature):"

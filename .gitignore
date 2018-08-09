@@ -1,6 +1,8 @@
 /.idea
 /public_html/assets
 /public_html/akcms/u/*
+/public_html/img/gallery/*
+/public_html/img/pages/*
 /htmls
 /export
 /public_html/sitemap.xml
