@@ -8,9 +8,9 @@ require_once 'akcms/u/config/config.php';
 //require_once 'akcms/core/pgdb.php';
 require_once 'akcms/core/classes.php'; core::init();
 
-//if ($cfg['debug']===true) core::terminalClear();
+//if ($cfg['debug']===true) CmsLogger::clearScreen();
 //if ($cfg['debug']===true) profiler::showOverallTimeToTerminal();
-//if ($cfg['debug']===true) core::terminalWrite('===>>> '.$_SERVER['SCRIPT_URL']);
+//if ($cfg['debug']===true) CmsLogger::write('===>>> '.$_SERVER['SCRIPT_URL']);
 
 $sql = new pgdb();
 $Cacher = new CacheController();

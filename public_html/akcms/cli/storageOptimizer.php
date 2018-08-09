@@ -39,7 +39,7 @@ class CmsPageOptimizer {
                 $result = _getUrlContent($img_src);
                 if ($result['code']==200) {
                     file_put_contents($pathnew,$result['data']);
-                    if (core::$IS_CLI) toLogInfo($img_src.' => '.$pathnew.' '.(filesize($pathnew)/1024).' кб');
+                    if (core::$IS_CLI) CmsLogger::logInfo($img_src.' => '.$pathnew.' '.(filesize($pathnew)/1024).' кб');
                     return '/'.$pathnew;
                 }
                 return $img_src;
@@ -59,7 +59,7 @@ class CmsPageOptimizer {
                         $newSize = @filesize($img_src);
                         $this->saved += $size - $newSize;
 
-                        if (core::$IS_CLI) toLogInfo("$img_src $img_width $img_height ".($this->saved/1024).' кб');
+                        if (core::$IS_CLI) CmsLogger::logInfo("$img_src $img_width $img_height ".($this->saved/1024).' кб');
                     }
                 }
                 $this->images[] = $img_src;
@@ -84,7 +84,7 @@ class CmsPageOptimizer {
                         $newSize = @filesize($file_src_7z);
                         $this->saved += $size - $newSize;
                         //unlink($file_src);
-                        if (core::$IS_CLI) toLogInfo($file_src.' => '.$file_src_7z.' '.($this->saved/1024).' кб');
+                        if (core::$IS_CLI) CmsLogger::logInfo($file_src.' => '.$file_src_7z.' '.($this->saved/1024).' кб');
                         $this->files[] = $file_src_7z;
                         return $file_src_7z;
                     }
@@ -108,7 +108,7 @@ class CmsPageOptimizer {
             $this->saved += @filesize($folderFile);
             $this->removed += 1;
             unlink($folderFile);
-            if (core::$IS_CLI) toLogError($folderFile);
+            if (core::$IS_CLI) CmsLogger::logError($folderFile);
         }
     }
 
@@ -118,7 +118,7 @@ class CmsPageOptimizer {
             $this->saved += @filesize($folderFile);
             $this->removed += 1;
             unlink($folderFile);
-            if (core::$IS_CLI) toLogError($folderFile);
+            if (core::$IS_CLI) CmsLogger::logError($folderFile);
         }
     }
 
@@ -185,26 +185,26 @@ class storageOptimizer extends cliUnit {
         global $sql;
         $ids_all = $sql->query_all_column('SELECT section_id FROM cms_sections');
 
-        toLogInfo('Удаление ненужных каталогов ресурсов');
+        CmsLogger::logInfo('Удаление ненужных каталогов ресурсов');
         $dirs = glob('s/{images,files}/*/*',GLOB_BRACE | GLOB_ONLYDIR);
         foreach ($dirs as $dir) {
             if (preg_match('~(\\d++/\\d++)$~',$dir,$match)) {
                 $id = (string)(int)str_replace('/','',$match[1]);
                 if (!in_array($id,$ids_all)) {
                     $this->removed += $this->rrmdir($dir);
-                    toLogError('Папка без раздела: ' . $dir);
+                    CmsLogger::logError('Папка без раздела: ' . $dir);
                 }
             }
         }
 
-        toLogInfo('Удаление ненужных картинок разделов');
+        CmsLogger::logInfo('Удаление ненужных картинок разделов');
         $files = glob('img/pages/{*,*/*}',GLOB_BRACE);
         foreach ($files as $file) if (is_file($file)) {
             $id = basename($file,'.jpg');
             if (!in_array($id,$ids_all)) {
                 $this->removed += @filesize($file);
                 unlink($file);
-                toLogError('Файл без раздела: ' . $file);
+                CmsLogger::logError('Файл без раздела: ' . $file);
             }
         }
     }
@@ -223,7 +223,7 @@ class storageOptimizer extends cliUnit {
 
         $remain = new remainCalc();
         $remain->init($cmsSections->count(),'processing',0);
-        toLogInfo('Оптимизация разделов: '.$cmsSections->count());
+        CmsLogger::logInfo('Оптимизация разделов: '.$cmsSections->count());
 
         foreach ($cmsSections as $cmsSection) {
             $optimizer = new CmsPageOptimizer($cmsSection);

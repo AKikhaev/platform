@@ -151,7 +151,7 @@ class TmplMapperUnit extends CmsPage {
             $data['locate_count_'] = substr_count($html,$data['locate']);
 
             file_put_contents('../page.txt',$html);
-            core::terminalClear();
+            CmsLogger::clearScreen();
 
             $label = str_replace('!','',$data['label'],$replaceAnchor);
             $label = str_replace('*','',$label,$withoutClose);
@@ -183,7 +183,7 @@ class TmplMapperUnit extends CmsPage {
             }
             //$data['html_places'] = mb_strpos_all($data['locate'],$data['html']);
 
-            var_log_terminal($data);
+            CmsLogger::var_log($data);
             return json_encode($result);
         }
         return json_encode(array('error'=>$checkResult));

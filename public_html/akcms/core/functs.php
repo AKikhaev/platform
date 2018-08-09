@@ -62,45 +62,6 @@ function html_arrIdValPairs_toOptions($data,$idVal,$idName,$valSeected,$idStyle=
 	return $res;
 }
 
-function gzipOutput(&$data) {
-	$acceptEncodings = (isset($_SERVER['HTTP_ACCEPT_ENCODING'])?$_SERVER['HTTP_ACCEPT_ENCODING']:'').' '.(isset($_SERVER['HTTP_TE'])?$_SERVER['HTTP_TE']:'');
-	if(strpos($acceptEncodings, 'x-gzip') !== false ){
-	  $encoding = 'x-gzip';
-	}elseif(strpos($acceptEncodings,'gzip') !== false ){
-	  $encoding = 'gzip';
-	}else{
-	  $encoding = false;
-	}
-	/*
-	$search = array(
-		'/\>[^\S ]+/s', //strip whitespaces after tags, except space
-		'/[^\S ]+\</s', //strip whitespaces before tags, except space
-		'/(\s)+/s'  // shorten multiple whitespace sequences
-	);
-	$replace = array(
-		'>',
-		'<',
-		'\\1'
-	);
-	$data = preg_replace($search, $replace, $data);	
-	*/
-	
-	/*
-	require_once 'Minify/HTML.php';
-	require_once 'Minify/CSS.php';
-	$data = Minify_HTML::minify($data, array(
-		'cssMinifier' => array('Minify_CSS', 'minify'),
-		//'cssMinifier' => array('cssMin', 'minify'),
-		'jsMinifier' => array('jsMinifier', 'minify')
-		//'jsMinifier' => array('jsMin', 'minify')
-	));	
-	*/
-	if ($encoding) {
-		header('Content-Encoding: '.$encoding);
-		echo gzencode($data, 6);
-	} else echo $data;	
-}
-
 function sendMailHTML($to, $subject, $message, $headersAdds = '', $from = 'noreply@beside.ru') {
   $headers  = 'MIME-Version: 1.0' . "\r\n";
   $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
@@ -184,32 +145,9 @@ function var_export__($var) {
     exit();
 }
 
-function var_log_js() {
+function var_log_js($var) {
     $var = func_get_args();
-    ///$stacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS); $line = $stacktrace['line'];
-        echo '<script>console.log('.json_encode(count($var)==1?$var[0]:$var).');</script>';
-    //else die(json_encode($var));
-}
-
-function var_log_export() {
-    $var = func_get_args();
-    $var = count($var)===1?$var[0]:$var;
-    $printVar = print_r($var,true);
-    $printVar = preg_replace('/Array\n\s*/','Array',$printVar);
-    $printVar = preg_replace('/\n\s+\(/','(',$printVar);
-    $printVar = preg_replace('/\n\s+\)/',')',$printVar);
-    $printVar = str_replace('[GLOBALS] => Array*RECURSION*','',$printVar);
-    $printVar = preg_replace('/\n\s*\n/',"\n",$printVar);
-    return $printVar;
-}
-
-function var_log_terminal() {
-    core::terminalBeep();
-    core::terminalWrite(var_log_export(...func_get_args()));
-}
-function var_log_terminal__($var) {
-    var_log_terminal(...func_get_args());
-    exit();
+    echo '<script>console.log('.json_encode(count($var)==1?$var[0]:$var).');</script>';
 }
 
 function print_r_($var) {
@@ -261,37 +199,12 @@ function assocArray2KeyValue($arr) {
 	return $narr;
 }
 
-function mb_strpos_all($haystack, $needle) {
-    $s = 0;
-    $i = 0;
-    while(is_int($i)) {
-
-        $i = mb_strpos($haystack, $needle, $s);
-
-        if(is_int($i)) {
-            $aStrPos[] = $i;
-            $s = $i + mb_strlen($needle);
-        }
-    }
-
-    if(isset($aStrPos)) {
-        return $aStrPos;
-    } else {
-        return false;
-    }
-}
 
 function messagesToErrorArray($messages,$errors) {
 	$narr = array();
 	foreach ($errors as $k=>$v)
 		$narr[] = array('f'=>'e_'.$k,'m'=>isset($messages[$k.'-'.$v])?$messages[$k.'-'.$v]:$v);
 	return $narr;
-}
-
-Function reindexArray($arr) {
-  $newArr = array();
-  foreach ($arr as $value) $newArr[] = &$value;
-  return $newArr;
 }
 
 Function convertArrayEncoding__(&$item, &$key, $encodeFromTo) {
@@ -394,6 +307,27 @@ function intervalToWords($sec) {
 	return $sec.' '.RightWordForm($sec,array('секунду','секунды','секунд'));
 }
 
+
+function mb_strpos_all($haystack, $needle) {
+    $s = 0;
+    $i = 0;
+    while(is_int($i)) {
+
+        $i = mb_strpos($haystack, $needle, $s);
+
+        if(is_int($i)) {
+            $aStrPos[] = $i;
+            $s = $i + mb_strlen($needle);
+        }
+    }
+
+    if(isset($aStrPos)) {
+        return $aStrPos;
+    } else {
+        return false;
+    }
+}
+
 if (!function_exists('mb_ucfirst') && extension_loaded('mbstring'))
 {
     /**
@@ -454,10 +388,6 @@ function num2str($num) {
     return trim(preg_replace('/ {2,}/', ' ', implode(' ',$out)));
 }
 
-/**
- * Склоняем словоформу
- * @ author runcore
- */
 function morph($n, $f1, $f2, $f5) {
     $n = abs((int)$n) % 100;
     if ($n>10 && $n<20) return $f5;
@@ -703,13 +633,18 @@ function _ls($code = '0'){
     //http://ascii-table.com/ansi-escape-sequences-vt-100.php
 	return "\e[".$code."m"; // \e = \x1b = \033
 }
-function toTitle($msg){ echo("\033]0;$msg\007"); }
-function toLog($msg){ echo "\r\e[K"._ls(35).date('H:i:s ')._ls().$msg._ls().PHP_EOL; }
-function toLogProcess($msg){ echo "\r\e[K"._ls(35).date('H:i:s ')._ls(37)._ls(1).$msg._ls(); }
-function toLogError($msg){ echo "\r\e[K"._ls(35).date('H:i:s ')._ls(31)._ls(1).$msg._ls().PHP_EOL; }
-function toLogDie__($msg){ die("\r\e[K"._ls(35).date('H:i:s ')._ls(31)._ls(1).$msg._ls(36).' DIE'._ls().PHP_EOL); }
-function toLogInfo($msg){ echo "\r\e[K"._ls(35).date('H:i:s ')._ls(32).$msg._ls().PHP_EOL; }
 
+/**
+ * @param $url Адрес
+ * @param array $headers_add Доп. Заголовки
+ * @param array $GET
+ * @param array $POST
+ * @param bool $followlocation разрешить редиректы
+ * @param bool $cookies
+ * @param string $cookiefile путь
+ * @param bool|string $proxy false|строка прокси
+ * @return array
+ */
 function _getUrlContent(
     $url,
     $headers_add = array(),

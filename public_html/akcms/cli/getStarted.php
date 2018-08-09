@@ -2,6 +2,7 @@
 
 /**
  * getStarted - генератор начальной конфигурации
+ * Выполнение команд php, nginx требует повышенных привеллегий
  */
 class getStarted extends cliUnit {
     public $projectName = '';
@@ -48,7 +49,7 @@ class getStarted extends cliUnit {
     }
 
     /**
-     * Создаёт конфигурацию в /tmp/nginx/*
+     * Создаёт конфигурацию в /etc/nginx/*
      * @throws DBException
      */
     public function nginxAction(){
@@ -101,7 +102,7 @@ SQL;
     }
 
     /**
-     * Создаёт конфигурацию в /tmp/nginx/*
+     * Создаёт конфигурацию в /etc/php/*
      * @throws DBException
      */
     public function phpAction(){

@@ -69,6 +69,7 @@ git clone --bare https://itteka_deploy@bitbucket.org/itteka/cms.git /home/mstr/c
 read -p "Enter project name: " project_name; git --git-dir=/home/mstr/cms.git worktree add /data/nfs/$project_name
 #exit
 chmod 0755 /data/nfs
+sh server/initRootDir.sh
 ##
 
 ### connect as mstr  ###
@@ -98,6 +99,7 @@ opcache.validate_root=1
 ###### Важно знать
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo), [Markdown-Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
 * [Как работает opcache](https://habr.com/company/mailru/blog/310054/)
+* [chroot](https://wiki.debian.org/chroot)
 
 ###### TODO
 * Встраиваемые фотографии

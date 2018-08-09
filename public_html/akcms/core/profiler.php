@@ -17,14 +17,14 @@ class profiler {
         return str_pad(number_format((microtime(true) - self::$timers[$name])*1000,14,'.',''),20,' ',STR_PAD_LEFT);
     }
     public static function toLog($name = 'Overall') {
-        toLogInfo($name.': '.self::time($name).' ms '._ls(31).self::convert(memory_get_peak_usage(true))._ls());
+        CmsLogger::logInfo($name.': '.self::time($name).' ms '._ls(31).self::convert(memory_get_peak_usage(true))._ls());
     }
     public static function showOverallTime(){
         register_shutdown_function(function(){ self::toLog('Overall'); });
         self::start('Overall');
     }
     public static function toLogTerminal($message='',$name = 'Overall') {
-        core::terminalWrite(
+        CmsLogger::write(
             "\r\e[2K"._ls(32).self::time($name)._ls(0).
             " === $_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI] "._ls(35)."$_SERVER[REMOTE_ADDR] "._ls(31).
             self::convert(memory_get_peak_usage(true)).
@@ -36,13 +36,13 @@ class profiler {
         global $sql;
         $name = 'Overall';
         self::$sql_logger = function($sql) use ($name){
-            core::terminalWrite(
+            CmsLogger::write(
                 "\r\e[2K"._ls(32).self::time($name).' '._ls(0).
                 $sql._ls().PHP_EOL
             );
         };
         register_shutdown_function(function() use ($name,$sqlDebug){
-            core::terminalWrite(
+            CmsLogger::write(
                 "\r\e[2K"._ls(32).self::time($name)._ls(0).
                 " <<<<<<<<<<<<< $_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI] "._ls(35)."$_SERVER[REMOTE_ADDR] "._ls(31).
                 self::convert(memory_get_peak_usage(true)).
@@ -50,7 +50,7 @@ class profiler {
                 _ls().PHP_EOL
             );
         });
-        core::terminalWrite(
+        CmsLogger::write(
             "\r\e[2K"._ls(32).'    0.00000000000000'._ls(0).
             " >>>>>>>>>>>>> $_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI] "._ls(35)."$_SERVER[REMOTE_ADDR] "._ls(0).date('H:i:s').PHP_EOL);
         if ($sqlDebug) $sql->zzzSetDebug();

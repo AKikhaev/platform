@@ -206,7 +206,7 @@ class PageUnit extends CmsPage {
 			$query = sprintf ('select section_id,sec_parent_id,sec_url_full,sec_nameshort,sec_namefull,sec_showinmenu,sec_enabled, not sec_enabled or not sec_showinmenu as sec_hidden from cms_sections where section_id=%d limit 1;', 
 				$currNode['sec_parent_id']);
 			$dataset = $sql->query_all($query);
-			if (count($currNode)==0) {echo '.'; break;}
+			if (count($currNode)==0) break;
 			$currNode = $dataset[0];
 			$this->pagePath[] = $currNode;
 			$this->pagePath_ids[$currNode['section_id']] = $currNode;

@@ -44,14 +44,13 @@ class cliUnit {
             echo implode(' ',$this->options_available);
     }
 
-    /** Shows detailed help
+    /** Shows this help
      * @throws ReflectionException
      */
     protected function helpAction(){
         $rc = new ReflectionClass($this);
         $comment = $rc->getDocComment();
         if ($rc->getDocComment()!==false) foreach (explode("\r",$comment) as $line) echo mb_trim($line,'\/\*\s');
-        echo PHP_EOL;
         foreach ($rc->getMethods() as $method) {
             if (mb_substr($method->getName(),-6)==='Action') {
                 $comment = $method->getDocComment();

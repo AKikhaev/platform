@@ -69,9 +69,8 @@ try {
         }
     }
     #$outputData = ob_get_contents(); ob_end_clean();
-    #gzipOutput($outputData);
     echo core::$outputData;
-
+    fastcgi_finish_request();
 } catch(Exception $e) {
     if (class_exists('core')) core::InTryErrorHandler($e);
     else echo '<script>console.log('.json_encode(sprintf("%s, %s(%s)",$e->getMessage(),basename($e->getFile(),'php'),$e->getLine())).')</script>';

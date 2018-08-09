@@ -169,7 +169,7 @@ class pgCmsModelGenerator {
         $primary = ''; $primaryDB = '';
 
         $tableCommentRaw = $tableInfo['comment'];
-        if (!$tableInfo['comment']) toLogError($tableInfo['model'].' Без описания');
+        if (!$tableInfo['comment']) CmsLogger::logError($tableInfo['model'].' Без описания');
         $tableAttr = array();
         if (mb_strpos($tableInfo['comment'],'|')!==false) {
             $tableCommentInfo = explode('|',$tableInfo['comment']);
@@ -182,7 +182,7 @@ class pgCmsModelGenerator {
             $tableInfo['comment'] = $tableCommentInfo[0];
         }
         if (array_key_exists('i',$tableAttr)) {
-            toLog("  $schemaName.$tableName пропущена");
+            CmsLogger::log("  $schemaName.$tableName пропущена");
             return;
         }
 
@@ -195,7 +195,7 @@ class pgCmsModelGenerator {
 		$maxNameLength = 0; foreach ($tableInfo['fields'] as &$field) if (mb_strlen($field['MODEL_NAME'])>$maxNameLength) $maxNameLength = mb_strlen($field['MODEL_NAME']); $maxNameLength++;
 		foreach ($tableInfo['fields'] as &$field) {
 
-            if (!$field['COMMENT']) toLogError($tableInfo['model'].'.'.$field['COLUMN_NAME'].' Без описания');
+            if (!$field['COMMENT']) CmsLogger::logError($tableInfo['model'].'.'.$field['COLUMN_NAME'].' Без описания');
             $field['COMMENT'] = str_replace("\r",'',$field['COMMENT']);
             $field['COMMENT'] = str_replace(PHP_EOL,', ',$field['COMMENT']);
             $fieldAttr = array();
@@ -209,7 +209,7 @@ class pgCmsModelGenerator {
                 $field['COMMENT'] = $fieldCommentInfo[0];
             }
             if (array_key_exists('i',$fieldAttr)) {
-                toLog("  Пропуск поля $field[COLUMN_NAME]");
+                CmsLogger::log("  Пропуск поля $field[COLUMN_NAME]");
                 continue;
             } //Пропус поля
             if (array_key_exists('>',$fieldAttr)) {
@@ -335,7 +335,7 @@ class pgCmsModelGenerator {
 
 		if (!file_exists($modelPath)) {
 			file_put_contents($modelPath,$template);
-			toLogInfo('Модель '.$tableInfo['model'].' создана '.mb_strlen($template));
+            CmsLogger::logInfo('Модель '.$tableInfo['model'].' создана '.mb_strlen($template));
 		} else {
 			$splitter = '/*** customer extensions ***/';
 			$oldTemplate = explode($splitter,file_get_contents($modelPath));
@@ -343,7 +343,7 @@ class pgCmsModelGenerator {
 
 			$updateTemplate = $newTemplate[0].$splitter.$oldTemplate[1];
 			file_put_contents($modelPath,$updateTemplate);
-			toLogInfo('Модель '.$tableInfo['model'].' обновлена '.mb_strlen($updateTemplate));
+            CmsLogger::logInfo('Модель '.$tableInfo['model'].' обновлена '.mb_strlen($updateTemplate));
 		}
 	}
 }
@@ -375,10 +375,10 @@ class genModel extends cliUnit {
         $tablesNames = $sql->query_all_column($query);
         if (count($tablesNames)>0)
             foreach ($tablesNames as $tableName) {
-                toLogInfo('Генерация '.$tableName);
+                CmsLogger::logInfo('Генерация '.$tableName);
                 $md->generate($tableName,$cfg['db'][1]['schema']);
             }
-        else toLogInfo('Нет подходящих таблиц');
+        else CmsLogger::logInfo('Нет подходящих таблиц');
     }
 
     public function runAction(){
@@ -429,7 +429,7 @@ class genModel extends cliUnit {
             //$cs->insert();
 
             echo "\n";
-            toLog('Готово');
+            CmsLogger::log('Готово');
 
         } catch (Exception $e) {
             $sql->command('rollback');

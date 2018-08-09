@@ -405,7 +405,6 @@ class core {
     private static $sharedObj = array();
     private static $GlobalErrors = '';
     private static $ErrorFirstTitle = '';
-    private static $terminals = array();
     public static $outputData = '';
     public static $renderPage;
     public static $OS_WIN = false;
@@ -572,7 +571,9 @@ class core {
     {
         Global $cfg,$pathstr;
         if (self::$GlobalErrors!='') {
+            CmsLogger::getTerminalsList();
             if (mb_stripos(self::$ErrorFirstTitle,'page_not_found')!==false) {
+                return;
                 if (mb_substr($pathstr,-5,5)=='.map/') return;
                 if (mb_substr($pathstr,-5,5)=='.php/' ||
                     mb_strpos($pathstr,'admin')!==false ||
@@ -584,7 +585,6 @@ class core {
                     mb_strpos($pathstr,'login.html/')!==false
                 ) return;
             }
-            self::getTerminalsList();
 
             $emailTo = $cfg['email_error'];
             $ip = self::get_client_ip();
@@ -604,16 +604,10 @@ class core {
                 $GLOBALS['shape'], $GLOBALS['Cacher'], $GLOBALS['pagecontent'], $GLOBALS['e'], $GLOBALS['html'],
                 $GLOBALS['remain'],$GLOBALS['sql']
             );
-            $GlobalVars = var_log_export($GLOBALS);
-
-            $sent = self::terminalWrite(
-                (
-                    self::$IS_CLI?
-                        '=> ' . date('M d H:i:s ').self::$ErrorFirstTitle . PHP_EOL
-                        :
-                        "\x1b[2J\x1b[H\x1b[3J".
-                        '=> ' . date('M d H:i:s ').self::$ErrorFirstTitle . PHP_EOL
-                ) . // Clear screen, move to left upper, clear all with scroll
+            $GlobalVars = CmsLogger::var_log_export($GLOBALS);
+            $sent = CmsLogger::write(
+                ( self::$IS_CLI?'':"\x1b[2J\x1b[H\x1b[3J" ). // Clear screen, move to left upper, clear all with scroll
+                '=> ' . date('M d H:i:s ').self::$ErrorFirstTitle . PHP_EOL.
                 "\x07\033]0;".date('M d H:i:s ').self::$ErrorFirstTitle."\007" .
                 self::$GlobalErrors . $GlobalVars . '<=='.PHP_EOL
             );
@@ -646,68 +640,6 @@ class core {
         if (isset(self::$sharedObj[$obj_name])) return self::$sharedObj[$obj_name];
         else return self::$sharedObj[$obj_name] = new $obj_name();
     }
-    public static function getTerminalsList(){
-        if (count(self::$terminals)>0) return self::$terminals;
-        $out = [];
-        if (strrpos($_SERVER["DOCUMENT_ROOT"],'/')===0 && file_exists('/logs/terminal'))
-            $out[] = [
-            'user' => 'nouser',
-            'terminal' => '/logs/terminal',
-            'date' => '',
-            'time' => '',
-            'ip' => '127.0.0.1',
-        ];
-
-        if (function_exists('exec') && !core::$IS_CLI) {
-            $ip = self::get_client_ip();
-            exec('who| grep ' . get_current_user() . ' | grep ' . $ip, $terminalsRaw);
-            foreach ($terminalsRaw as $data) {
-                if (preg_match('/([A-Za-z0-9_-]+)\s+([a-zA-Z0-9\/]+)\s+([\d-]+)\s+([\d:]+)\s+\(([\d.]+)\)/iu', $data, $terminalInfo)) {
-                    $out[] = array(
-                        'user' => $terminalInfo[1],
-                        'terminal' => '/dev/'.$terminalInfo[2],
-                        'date' => $terminalInfo[3],
-                        'time' => $terminalInfo[4],
-                        'ip' => $terminalInfo[5],
-                    );
-                }
-            }
-        }
-
-        //return self::$terminals = array_reverse($out);
-        usort($out,function($a,$b){
-            //var_dump__($a);
-            if ($a['date']==$b['date']) {
-                if ($a['time']==$b['time']) {
-                    return 0;
-                } else
-                    return ($a['time'] > $b['time']) ? -1 : 1;
-            } else
-                return ($a['date'] > $b['date']) ? -1 : 1;
-
-        });
-        return self::$terminals = $out;
-    }
-    public static function terminalWrite($data, $terminal=null){
-        if ($terminal==null) {
-            if (self::$IS_CLI) {
-                echo $data;
-                return true;
-            }
-            if (!isset(self::$terminals[0])) self::getTerminalsList();
-            if (isset(self::$terminals[0])) $terminal = self::$terminals[0]['terminal'];
-            else return false;
-        }
-        //exec('who > /dev/pts/1');
-        $tty = fopen($terminal, 'a+b');
-        $r = fwrite($tty, "$data\n");
-        fclose($tty);
-        return $r !== false;
-    }
-    public static function terminalClear($terminal=null) { self::terminalWrite("\e[2J\e[H\e[3J",$terminal); }
-    public static function terminalBeep($terminal=null) { self::terminalWrite("\x07",$terminal); }
-    public static function terminalTitle($title,$terminal=null) { self::terminalWrite("\033]0;$title\007",$terminal); }
-    public static function terminalClearLine($terminal=null) { self::terminalWrite("\e[2K",$terminal); }
     public static function proceedAjax(){
         global $page;
         /* @var $page CmsPage */

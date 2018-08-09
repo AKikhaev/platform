@@ -553,7 +553,7 @@ trait SQLpgModelAdapter {
         $this->sql->query('begin');
         $res = implode("\n",$this->sql->query_all_column('EXPLAIN ANALYZE '.$this->query));
         $this->sql->query('rollback');
-        core::terminalWrite($res);
+        CmsLogger::write($res);
         return $this;
     }
 

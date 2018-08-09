@@ -70,7 +70,7 @@ class remainCalc {
             _ls(33). ' remain: ' . $remain_str .'  ' . _ls(1) . _ls(34) . $msg. _ls(0);
 		if ($num == $this->count || $printLog===1) echo "\n";
 
-        toTitle(floor($num/$this->count*100)."% $this->str $num/$this->count $remain_str $elapsed_str $msgTitle"); //Заголовок окна
+        CmsLogger::title(floor($num/$this->count*100)."% $this->str $num/$this->count $remain_str $elapsed_str $msgTitle"); //Заголовок окна
 
         @ob_flush();
         $this->nextPlot = $elapsed+5;
