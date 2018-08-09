@@ -3,9 +3,11 @@
 /public_html/akcms/u/*
 /public_html/img/gallery/*
 /public_html/img/pages/*
+/public_html/sitemap.xml
+/public_html/s/*
+
 /htmls
 /export
-/public_html/sitemap.xml
 
 /cache
 /dev
@@ -15,3 +17,5 @@
 /tmp
 /usr
 /var
+
+

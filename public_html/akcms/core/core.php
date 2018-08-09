@@ -99,9 +99,11 @@ function LOAD_CORE() {
         unset($path[1]);
         if (!core::$userAuth) throw new CmsException('login_needs');
     }
-    elseif (substr($pathurl,-1)!='/')
+    elseif (mb_substr($pathurl,-1)!='/')
     {
-        header('Location: '.$_SERVER['SCRIPT_URL'].'/'.substr($_SERVER['REQUEST_URI'],strlen($_SERVER['SCRIPT_URL'])));
+        $QUERY_STRING = $_SERVER['QUERY_STRING']!==''?'?'.$_SERVER['QUERY_STRING']:'';
+        $REQUEST_URI = rtrim($_SERVER['REQUEST_URI'],'?');
+        header('Location: '.mb_substr($REQUEST_URI,0,mb_strlen($REQUEST_URI)-mb_strlen($QUERY_STRING)).'/'.$QUERY_STRING);
         exit;
     }
 

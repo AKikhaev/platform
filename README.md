@@ -102,6 +102,7 @@ opcache.validate_root=1
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo), [Markdown-Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
 * [Как работает opcache](https://habr.com/company/mailru/blog/310054/)
 * [chroot](https://wiki.debian.org/chroot)
+* [nginx location](https://nginx.org/ru/docs/http/ngx_http_core_module.html#location)
 
 ###### TODO
 * Встраиваемые фотографии
@@ -118,3 +119,11 @@ opcache.validate_root=1
 * [Оптимизация](https://github.com/jupeter/clean-code-php), 
   [по-русски](https://github.com/peter-gribanov/clean-code-php)
 * [auto deploy](https://gist.github.com/noelboss/3fe13927025b89757f8fb12e9066f2fa#file-post-receive)
+
+##### Задачи для CRON 
+* truncate -s 0 /data/nfs/*/logs/*.log - очистка всех логов во всех проектах
+
+#### useful
+* acli getStarted nginx && service nginx configtest && service nginx reload
+* cls && acli getStarted nginx && service nginx configtest && service nginx reload && tail -n 0 -f /data/nfs/knpzken_ru/logs/*
+* cls && tail -n 0 -f /data/nfs/project_name/logs/*
