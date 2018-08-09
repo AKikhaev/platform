@@ -6,14 +6,17 @@ umount /data/nfs/$projectName/dev/pts > /dev/null
 mount --bind /dev/pts /data/nfs/$projectName/dev/pts
 #mount /dev/tty1 /data/nfs/$name/dev/tty1
 
-mknod -m 644 /data/nfs/$projectName/dev/random c 1 8
-mknod -m 644 /data/nfs/$projectName/dev/urandom c 1 9
+mknod -m 0644 /data/nfs/$projectName/dev/random c 1 8
+mknod -m 0644 /data/nfs/$projectName/dev/urandom c 1 9
 chown root:root /data/nfs/$projectName/dev/random /data/nfs/$projectName/dev/urandom
 
 mkdir -p -m 0777 /data/nfs/$projectName/cache
+chown mstr:www-user /data/nfs/$projectName/cache
 mkdir -p -m 0777 /data/nfs/$projectName/logs
-mkdir -p /data/nfs/$projectName/tmp
+mkdir -p -m 0777 /data/nfs/$projectName/tmp
+chown mstr:www-user /data/nfs/$projectName/tmp
 mkdir -p -m 0777 /data/nfs/$projectName/var/lib/php/sessions
+chown mstr:www-user /data/nfs/$projectName/var/lib/php/sessions
 
 mkdir -p /data/nfs/$projectName/etc
 cp /etc/hosts /data/nfs/$projectName/etc/
@@ -25,6 +28,8 @@ cp /lib/x86_64-linux-gnu/libnss_dns* /data/nfs/$projectName/lib/
 
 mkdir -p /data/nfs/$projectName/usr/share/zoneinfo/Europe
 cp /usr/share/zoneinfo/Europe/Moscow /data/nfs/$projectName/usr/share/zoneinfo/Europe/
+
+chown -R mstr:www-user /data/nfs/$projectName/public_html/s/
 
 echo
 echo "Add this line to /etc/fstab (for auto terminal notification feature):"
