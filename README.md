@@ -74,6 +74,8 @@ sh server/initRootDir.sh
 
 ### connect as mstr  ###
 cat server/.bash_aliases > ~/.bash_aliases
+id -u 
+# add to congif.php: $cfg['user_terminal_uid'] = 1000;
 first time: git config credential.helper store
 git fetch && git pull
 

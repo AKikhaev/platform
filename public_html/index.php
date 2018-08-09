@@ -9,19 +9,9 @@ try {
     $pageClass = '';
     $pageTemplate = '';
 
-    //sendTelegram($pathurl.' '.core::get_client_ip());
-    $classes = [
-        'PageUnit',
-        'MngUnit',
-        'SysUnit',
-        //'FeedUnit',
-        'TmplMapperUnit',
-        'RootFolder',
-        'CheckFileMoved',
-    ];
     /* @var  $page CmsPage */
     $page = null;
-    foreach ($classes as $pageClass) {
+    foreach ($cfg['CmsPages_load'] as $pageClass) {
         try {
             $page = new $pageClass($pageTemplate);
             break;
@@ -70,7 +60,7 @@ try {
     }
     #$outputData = ob_get_contents(); ob_end_clean();
     echo core::$outputData;
-    fastcgi_finish_request();
+    if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
 } catch(Exception $e) {
     if (class_exists('core')) core::InTryErrorHandler($e);
     else echo '<script>console.log('.json_encode(sprintf("%s, %s(%s)",$e->getMessage(),basename($e->getFile(),'php'),$e->getLine())).')</script>';
