@@ -1,5 +1,6 @@
 scriptsDir=$(dirname "$(readlink -f "$0")") && . $scriptsDir/loadProjectData.sh
 
+chown -R mstr:mstr /data/nfs/$projectName/public_html
 # mount and crate needs tree
 mkdir -p /data/nfs/$projectName/dev/pts
 umount /data/nfs/$projectName/dev/pts > /dev/null
