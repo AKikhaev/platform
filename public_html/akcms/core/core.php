@@ -14,7 +14,7 @@ require_once 'akcms/core/classes.php'; core::init();
 
 $sql = new pgdb();
 $Cacher = new CacheController();
-
+$shape = ['js_admin'=>''];
 
 function LOAD_CORE_CLI() {
 	GLOBAL $cfg,$CliUser;

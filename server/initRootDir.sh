@@ -22,7 +22,8 @@ chown mstr:www-user /data/nfs/$projectName/var/lib/php/sessions
 mkdir -p /data/nfs/$projectName/etc
 cp /etc/hosts /data/nfs/$projectName/etc/
 cp /etc/resolv.conf /data/nfs/$projectName/etc/
-wget -O /data/nfs/$projectName/etc/cacert.pem https://curl.haxx.se/ca/cacert.pem
+mkdir -p /data/nfs/$projectName/etc/ssl/certs/
+wget -O /data/nfs/$projectName/etc/ssl/certs/cacert.pem https://curl.haxx.se/ca/cacert.pem
 
 mkdir -p /data/nfs/$projectName/lib
 cp /lib/x86_64-linux-gnu/libnss_dns* /data/nfs/$projectName/lib/

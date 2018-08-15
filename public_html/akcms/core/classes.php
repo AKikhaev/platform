@@ -87,16 +87,6 @@ abstract class AclProcessor { /* acl */
 
 }
 
-abstract class CmsPage extends AclProcessor { /* page */
-    public $page = [];
-	protected $title;
-	protected $cacheWholePage = true;
-	public function canCache() { return $this->cacheWholePage;}
-	public function noCache() { $this->cacheWholePage=false; }
-	public function __construct(&$pageTemplate) {}
-	public function getTitle() {return $this->title;}
-	public function initAjx() {return array();}
-}
 abstract class PgUnitAbstract extends AclProcessor { /* Pg_ untits */
 	public $unitParam = array();
 	public function view($viewName) {
@@ -219,23 +209,23 @@ class CmsUser {
 
     public static function hasLogin($login) {
         global $sql;
-        $query = sprintf('select id_usr from cms_users where usr_login ilike %s;',
+        $query = sprintf('select id_usr,usr_login,usr_name,usr_admin,usr_enabled,usr_grp,usr_activated,usr_email from cms_users where usr_login ilike %s;',
             $sql->pgf_text($login));
         $datausr = $sql->query_first_assoc($query);
-        return $datausr!==false?$datausr['id_usr']:false;
+        return $datausr;
     }
 
     public static function hasEmail($email) {
         global $sql;
-        $query = sprintf('select id_usr from cms_users where usr_email ilike %s;',
+        $query = sprintf('select id_usr,usr_login,usr_name,usr_admin,usr_enabled,usr_grp,usr_activated,usr_email from cms_users where usr_email ilike %s;',
             $sql->pgf_text($email));
         $datausr = $sql->query_first_assoc($query);
-        return $datausr!==false?$datausr['id_usr']:false;
+        return $datausr;
     }
 
     public static function hasId($id) {
         global $sql;
-        $query = sprintf('select * from cms_users where id_usr = %d;',
+        $query = sprintf('select id_usr,usr_login,usr_name,usr_admin,usr_enabled,usr_grp,usr_activated,usr_email from cms_users where id_usr = %d;',
             $sql->d($id));
         $datausr = $sql->query_first_assoc($query);
         return $datausr;
@@ -256,7 +246,7 @@ class CmsUser {
 
     public static function register($login,$email,$password,$name) {
         global $sql;
-        $actcode = md5('юhuu'.(time()*2-2.899));
+        $actcode = md5('юhuu'.random_bytes(20));
         $query = sprintf('INSERT INTO cms_users (usr_login,usr_email,usr_password_md5,usr_name,usr_actcode) VALUES(%s,%s,%s,%s,%s) RETURNING id_usr;',
             $sql->pgf_text($login),
             $sql->pgf_text($email),
@@ -270,7 +260,7 @@ class CmsUser {
 
     public static function genLostcode($login) {
         global $sql;
-        $lostcode = md5('яhuu'.(time()*2-2.897));
+        $lostcode = md5('юhuu'.random_bytes(20));
         $query = sprintf('UPDATE cms_users SET usr_lostcode = %s WHERE usr_login = %s RETURNING usr_email;',
             $sql->pgf_text($lostcode),
             $sql->pgf_text($login)
@@ -537,9 +527,9 @@ class core {
         self::GlobalErrorHandler($e->getCode(),$e->getMessage(),$e->getFile(),$e->getLine(),$e->getTrace());
     }
     public static function InTryErrorHandler(Exception $e) {
-        self::GlobalErrorHandler(-1,$e->getMessage(),$e->getFile(),$e->getLine(),$e->getTrace());
-        if (self::$isAjax) return; //json_encode(array('error'=>array(array('f'=>'system','s'=>'failure'))));
-        $errorPageTemplate = 'error_page';
+		self::GlobalErrorHandler(-1,$e->getMessage(),$e->getFile(),$e->getLine(),$e->getTrace());
+		if (self::$isAjax) { http_response_code(404); return; } //json_encode(array('error'=>array(array('f'=>'system','s'=>'failure'))));
+		$errorPageTemplate = 'error_page';
         $shape['title'] = 'Произошла ошибка';
         $shape['metas'] = '';
         $shape['gajs'] = self::$prodServer?shp::tmpl('parts/counters'):'';
@@ -569,11 +559,11 @@ class core {
     }
     public static function ShutdownHandler()
     {
-        Global $cfg,$pathstr;
-        if (self::$GlobalErrors!='') {
-            CmsLogger::getTerminalsList();
-            if (mb_stripos(self::$ErrorFirstTitle,'page_not_found')!==false) {
-                return;
+		Global $cfg,$pathstr;
+		if (self::$GlobalErrors!='') {
+			CmsLogger::getTerminalsList();
+			if (mb_stripos(self::$ErrorFirstTitle,'page_not_found')!==false && !core::$isAjax) {
+				return;
                 if (mb_substr($pathstr,-5,5)=='.map/') return;
                 if (mb_substr($pathstr,-5,5)=='.php/' ||
                     mb_strpos($pathstr,'admin')!==false ||
@@ -623,7 +613,7 @@ class core {
     }
     public static function cms_autoload($class_name)
     {
-        $classNameSlashed = str_replace('_','/',$class_name);
+        $classNameSlashed = str_replace(['_','\\'],'/',$class_name);
         $res = @include_once $classNameSlashed.'.php';
         if ($res===false) $res = @include_once $class_name.'.php';
         if ($res===false) {

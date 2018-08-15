@@ -28,7 +28,7 @@ class CmsLogger
      */
     public static function var_log($vars) {
         self::beep();
-        self::write(self::var_log_export(...func_get_args()));
+        self::write(self::var_log_export(...func_get_args()).PHP_EOL);
     }
 
     /**
@@ -48,7 +48,7 @@ class CmsLogger
         global $cfg;
         if (count(self::$terminals)>0) return self::$terminals;
         $out = [];
-        if (strrpos($_SERVER["DOCUMENT_ROOT"],'/')===0 && file_exists('/logs/terminal'))
+        if (is_writable('/logs/terminal'))
             $out[] = [
                 'user' => 'nouser',
                 'terminal' => '/logs/terminal',

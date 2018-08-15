@@ -27,7 +27,7 @@ class Pg_SendLetter extends PgUnitAbstract {
         $js = <<<JS
             jQuery(document).ready(function() { var ax='$this->hash',form=$('form');form.append($('<input type="hidden" name="cval"/>').prop('value',ax.substring(4,9)+ax.substring(1,3))); });
 JS;
-        $shape['js_admin'] = (isset($shape['js_admin'])?$shape['js_admin']:'').'<script>'.jsMin::minify($js).'</script>';
+        $shape['js_admin'] .= '<script>'.jsMin::minify($js).'</script>';
 
         parent::__construct($pathParams);
     }
