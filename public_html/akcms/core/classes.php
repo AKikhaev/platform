@@ -155,16 +155,35 @@ class CacheController { /* cache */
 class CmsUser {
     public static $rights = array();
     public static $user = array();
+	private static $fields = 'id_usr,usr_login,usr_name,usr_admin,usr_enabled,usr_grp,usr_activated,usr_email';
 
-    public static function auth($login,$password) {
+	/**
+	 * @param int $length
+	 * @return string
+	 * @throws Exception
+	 */
+	public static function generate_password_string($length = 20){
+		$chars =  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`-=~!@#$%^&*()_+,./<>?;:[]{}\|';
+
+		$str = '';
+		$max = strlen($chars) - 1;
+
+		for ($i=0; $i < $length; $i++)
+			$str .= $chars[random_int(0, $max)];
+
+		return $str;
+	}
+
+    public static function auth($loginOrEmail, $password, $emailInsteadLogin = false) {
         global $sql;
-        $query = sprintf('select * from cms_users where usr_login = %s and usr_password_md5 = %s and usr_enabled and usr_activated limit 1;',
-            $sql->pgf_text($login),
+        $query = sprintf('select '.self::$fields.' from cms_users where %s = %s and usr_password_md5 = %s and usr_enabled and usr_activated limit 1;',
+			$emailInsteadLogin ? 'usr_email' : 'usr_login',
+            $sql->pgf_text($loginOrEmail),
             $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$password)));
         $datausr = $sql->query_first_assoc($query);
-        if ($datausr!==false?$datausr['usr_login']==$login:false) {
+        if ($datausr!==false) {
             if (!isset($_COOKIE[session_name()])) session_start();
-            $_SESSION['u'] = $login;
+            $_SESSION['u'] = $datausr['usr_login'];
             $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
             CmsUser::$user = $datausr;
             return true;
@@ -173,13 +192,13 @@ class CmsUser {
 
     public static function authAuto($login,$autohash) {
         global $sql;
-        $query = sprintf('select * from cms_users where usr_login = %s and usr_autohash = %s and usr_enabled and usr_activated limit 1;',
+        $query = sprintf('select '.self::$fields.' from cms_users where usr_login = %s and usr_autohash = %s and usr_enabled and usr_activated limit 1;',
             $sql->pgf_text($login),
             $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$autohash)));
         $datausr = $sql->query_first_assoc($query);
         if ($datausr!==false?$datausr['usr_login']==$login:false) {
             if (!isset($_COOKIE[session_name()])) session_start();
-            $_SESSION['u'] = $login;
+			$_SESSION['u'] = $datausr['usr_login'];
             $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
             CmsUser::$user = $datausr;
             return true;
@@ -188,28 +207,22 @@ class CmsUser {
 
     public static function authAuto_id($id,$autohash) {
         global $sql;
-        $query = sprintf('select * from cms_users where id_usr = %d and usr_autohash = %s and usr_enabled and usr_activated limit 1;',
+        $query = sprintf('select '.self::$fields.' from cms_users where id_usr = %d and usr_autohash = %s and usr_enabled and usr_activated limit 1;',
             $sql->d($id),
             $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$autohash)));
         $datausr = $sql->query_first_assoc($query);
         if ($datausr!==false?$datausr['id_usr']==$id:false) {
             if (!isset($_COOKIE[session_name()])) session_start();
-            $login=$datausr['usr_login'];
-            $_SESSION['u'] = $login;
+            $_SESSION['u'] = $datausr['usr_login'];
             $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
             CmsUser::$user = $datausr;
-
-            $query = 'SELECT cmp_id FROM ms_companies WHERE cmp_owner_id='.$sql->d(CmsUser::$user['id_usr']);
-            $cmpId = $sql->query_one($query);
-            if ($cmpId!=false) Masa::CRMthrd_add($cmpId,$_SERVER['REMOTE_ADDR'],'','aauth',0,'',CmsUser::$user['id_usr']);
-
             return true;
         } else return false;
     }
 
     public static function hasLogin($login) {
         global $sql;
-        $query = sprintf('select id_usr,usr_login,usr_name,usr_admin,usr_enabled,usr_grp,usr_activated,usr_email from cms_users where usr_login ilike %s;',
+        $query = sprintf('select '.self::$fields.' from cms_users where usr_login ilike %s;',
             $sql->pgf_text($login));
         $datausr = $sql->query_first_assoc($query);
         return $datausr;
@@ -217,7 +230,7 @@ class CmsUser {
 
     public static function hasEmail($email) {
         global $sql;
-        $query = sprintf('select id_usr,usr_login,usr_name,usr_admin,usr_enabled,usr_grp,usr_activated,usr_email from cms_users where usr_email ilike %s;',
+        $query = sprintf('select '.self::$fields.' from cms_users where usr_email ilike %s;',
             $sql->pgf_text($email));
         $datausr = $sql->query_first_assoc($query);
         return $datausr;
@@ -225,7 +238,7 @@ class CmsUser {
 
     public static function hasId($id) {
         global $sql;
-        $query = sprintf('select id_usr,usr_login,usr_name,usr_admin,usr_enabled,usr_grp,usr_activated,usr_email from cms_users where id_usr = %d;',
+        $query = sprintf('select '.self::$fields.' from cms_users where id_usr = %d;',
             $sql->d($id));
         $datausr = $sql->query_first_assoc($query);
         return $datausr;
@@ -266,7 +279,7 @@ class CmsUser {
             $sql->pgf_text($login)
         );
         $res = $sql->query_first_row($query);
-        return $res!=false?array('email'=>$res[0],'lostcode'=>$lostcode):false;
+		return $res!=false?array('email'=>$res[0],'lostcode'=>$lostcode):false;
     }
 
     public static function newLostpass($login,$lostcode,$password) {
@@ -420,7 +433,7 @@ class core {
         register_shutdown_function('core::ShutdownHandler');
         spl_autoload_register('core::cms_autoload');
 
-        umask(0077);
+        umask(0002);
         setlocale(LC_CTYPE, 'ru_RU.UTF-8');
         setlocale(LC_COLLATE, 'ru_RU.UTF-8');
         mb_internal_encoding("UTF-8");
@@ -636,7 +649,7 @@ class core {
         $outputData = '';
         $f = false;
         foreach ($page->initAjx() as $k => $v) {
-            //echo $pathstr.'=='.$k."<br>\n";
+            //echo self::$ajaxAction.'=='.$k."<br>\n";
             if (self::$ajaxAction==$k) {
                 $runObj = &$page;
                 if (isset($v['object'])) $runObj = &$v['object'];
@@ -659,6 +672,18 @@ class shp{
         },$html);
         return $html;
     }
+
+    public static function redirectHidden($url){
+		//header('HTTP/1.0 401 Unauthorized');
+		header('HTTP/1.0 404 Not Found');
+		header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+		header('Expires: 0');
+		echo self::tmpl('errors/error_redirect_hidden',[
+			'metas'=>'<meta http-equiv="Refresh" content="0; URL='.$url.'">',
+			'js'=>'<script>document.location="'.$url.'";</script>',
+		]);
+		die;
+	}
 
     /***
      * @param $html

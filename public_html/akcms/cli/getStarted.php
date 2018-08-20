@@ -8,24 +8,6 @@ class getStarted extends cliUnit {
     public $projectName = '';
     protected $options_available = ['-bash_completion','--silence_greetings'];
 
-    /**
-     * @param int $length
-     * @return string
-     * @throws Exception
-     */
-    private function generate_password($length = 20){
-        $chars =  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.
-            '0123456789`-=~!@#$%^&*()_+,./<>?;:[]{}\|';
-
-        $str = '';
-        $max = strlen($chars) - 1;
-
-        for ($i=0; $i < $length; $i++)
-            $str .= $chars[random_int(0, $max)];
-
-        return $str;
-    }
-
     public function __construct()
     {
         $this->projectName = $this->getProjectName();
@@ -118,7 +100,7 @@ SQL;
 
     public function resetDvPasswordAction($user="dv"){
         if (readline("  Conform user `$user` password change [yN]: ")=='y') {
-            $password = $this->generate_password();
+            $password = CmsUser::generate_password_string();
             CmsUser::setNewPassword($user, $password);
             echo "New password for $user: ".$password . PHP_EOL;
         }

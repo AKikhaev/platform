@@ -228,7 +228,7 @@
 											<div class="col-sm-5 form-group mt-3">
 												<div class="custom-control custom-checkbox">
 													<input type="checkbox" class="custom-control-input" id="e_sec_showinmenu">
-													<label class="custom-control-label" for="e_sec_showinmenu" data-toggle="tooltip" data-placement="top" title="Показывает страницу в меню и в рубрикаторах">Отображать страницу</label>
+													<label class="custom-control-label" for="e_sec_showinmenu" data-toggle="tooltip" data-placement="top" title="Показывает страницу в меню и в рубрикаторах">Отображать в меню</label>
 												</div>
 												<div class="custom-control custom-checkbox">
 													<input type="checkbox" class="custom-control-input" id="e_sec_openfirst">

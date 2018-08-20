@@ -284,7 +284,7 @@ abstract class VisualThemeAbstract
 
     private static $sectionStrings = [];
 
-    /** Возвращает ассоцириированные сохраненные данные строк раздела
+    /** Возвращает ассоциированные сохраненные данные строк раздела
      * @param int $secId
      * @return mixed
      */

@@ -22,8 +22,7 @@ try {
             }
         }
     }
-    if ($page === null) throw $e;
-
+	if ($page === null) throw $e;
 
     if (core::$isAjax) {
         core::$outputData .= core::proceedAjax();

@@ -25,10 +25,13 @@
                     url: '/ajx/'+parent.window['editdiv'].data('edt-uri')+'_sse_save',
                     data: arrPost,
                     success: function (sres) {
-                        if (sres === 't') parent.window['editdiv'].removeClass('textNotFound').html(arrPost.data);
-                        if (callback !== undefined) callback(sres === 't');
+                        if (sres === '"t"') parent.window['editdiv'].removeClass('textNotFound').html(arrPost.data);
+                        if (callback !== undefined) callback(sres === '"t"');
                     },
-                    dataType: 'json'
+					error: function(){
+						callback(false);
+					},
+                    dataType: 'text'
                 });
             };
             var params = {
@@ -187,13 +190,13 @@
                             ed.setProgressState(true);
                             ed.uploadImages(function () {
                                 savethis(function(res){
+									ed.setProgressState(false);
                                     if (res) {
                                         //ed.controlManager.setActive('btnsve', false);
-                                        ed.setProgressState(false);
                                         ed.setDirty(false);
                                         if (!e.ctrlKey) {parent.jQuery.fancybox.close();parent.window.focus();}
                                     }
-                                    else alert('Не удалось сохранить данные.');
+                                    else ed.windowManager.alert('Не удалось сохранить данные.');
                                 });
 
                             });

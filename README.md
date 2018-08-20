@@ -50,9 +50,11 @@ replace /var/lib/postgresql/10/main to /data/db/pg10
 service postgresql start
 su postgres
 psql
-CREATE ROLE astr NOINHERIT LOGIN PASSWORD 'password';
-CREATE DATABASE astr WITH OWNER = astr ENCODING = 'UTF8';
-ALTER DATABASE astr SET timezone TO 'Europe/Moscow';
+CREATE ROLE project_name NOINHERIT LOGIN PASSWORD 'password';
+CREATE DATABASE project_name WITH OWNER = project_name ENCODING = 'UTF8';
+ALTER DATABASE project_name SET timezone TO 'Europe/Moscow';
+\c astr
+ALTER SCHEMA public OWNER TO project_name;
 ```
 
 * Базовая настройка сервера
@@ -97,6 +99,14 @@ opcache.revalidate_path=1
 opcache.save_comments=1
 opcache.validate_root=1
 ```
+
+* postgresql
+
+Умирающие постоянные соединения при подключении создают ошибку:pg_query(): Cannot set connection to blocking mode
+```bash
+/etc/php/7.2/fpm/php.ini включить параметр:
+pgsql.auto_reset_persistent = on
+````
 
 ###### Важно знать
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo), [Markdown-Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
