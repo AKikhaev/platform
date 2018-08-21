@@ -1145,6 +1145,7 @@ class PageUnit extends CmsPage {
             ];
 
             //todo remove currpage, js function
+
             $GLOBALS['shape']['menuedit'] = self::buildAdminMenu($this->getMenu($this->inEditCan),'_/'); #todo remove old menu
             $currpage = $this->variables();
             $currpage['secs'] = $this->pageSections;

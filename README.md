@@ -107,6 +107,27 @@ opcache.validate_root=1
 /etc/php/7.2/fpm/php.ini включить параметр:
 pgsql.auto_reset_persistent = on
 ````
+##### ORM
+* Таблицы
+Определение характеристик таблиц и полей производится указанием технических комментариев: 
+Формирование таблицы:
+```
+Название|i
+i - игнорировать таблицу
+```
+Модели таблиц, имена которых начинаются с `cms_` создаются в `/akcms/models`,
+остальные считаются пользовательскими таблицами и их модели размещаются в `/akcms/u/models` 
+
+* Поля
+```
+Название поля|>=cms_sections
+>=cms_sections - Указывает что поле связано с указанной таблицей, по её первичному ключу
+i - игнорировать поле
+```
+Генерация моделей производится командой
+```
+acli getStarted genModel
+```
 
 ###### Важно знать
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo), [Markdown-Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)

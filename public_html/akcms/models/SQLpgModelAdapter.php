@@ -10,7 +10,7 @@ trait SQLpgModelAdapter {
     private $position = 0; // Сторока для возврата
     private $datapos = -1; // Позиция текущих данных
     //protected $data = array(); //Объявлено в abstact
-    protected $result_type = PGSQL_ASSOC;
+	private $result_type = PGSQL_ASSOC;
     /* @var pgdb */
     private $sql;
     /* SELECT SQL statement */
@@ -532,6 +532,12 @@ trait SQLpgModelAdapter {
     public function all() {
         return $this->where()->get();
     }
+
+    public function getAllAsArray(){
+		if ($this->query=='') throw new DBException('No query for '.__CLASS__);
+		if ($this->query=='!') $this->buildQuery();
+    	return $this->sql->query_all($this->query);
+	}
 
     /**
      * call as function

@@ -54,7 +54,7 @@ function makePager($pager_Count, $pager_pgSize, $pager_pgNum, $urlstr, $NoFirstN
 	return $html;
 }
 
-function html_arrIdValPairs_toOptions($data,$idVal,$idName,$valSeected,$idStyle=null) {
+function html_arrIdValPairs_toOptions($data,$idVal,$idName,$valSeected=0,$idStyle=null) {
 	$res = '';
 	if ($data!==false) foreach ($data as $dataItem) { //
 		$res .= '<option value="'.$dataItem[$idVal].'" '.($dataItem[$idVal]==$valSeected?'selected':'').(($idStyle!=null && isset($dataItem[$idStyle]))?' style="'.$dataItem[$idStyle].'"':'').'>'.$dataItem[$idName].'</option>';

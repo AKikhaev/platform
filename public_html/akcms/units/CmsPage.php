@@ -173,8 +173,10 @@ abstract class CmsPage extends AclProcessor { /* page */
         }
         if (core::$inEdit) {
             $root = $this->_getMenuItem(1);
-            $root['sec_url_full'] = '';
-            if ($root !== false) array_unshift($this->pageMenu,$root);
+            if ($root !== false) {
+				$root['sec_url_full'] = '';
+				array_unshift($this->pageMenu,$root);
+			}
         }
         return $this->pageMenu;
     }

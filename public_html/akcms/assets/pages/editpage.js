@@ -371,9 +371,11 @@ _akcms.editPage = {
                 preventUnselect:true,
                 tagsClass:'badge badge-secondary',
                 onNodeSelected: function(event, node) {
-                    var href = document.akcms.secs[node.id]['sec_url_full'];
+                    var href = '/'+document.akcms.secs[node.id]['sec_url_full'];
+                    if (href=='//') href = '/';
                     if (treeLoaded) {
-                        history.pushState(null, null, '/_/'+href);
+                        history.pushState(null, null, '/_'+href);
+                        $('#akcms_viewPage').attr('href',href);
                         _akcms.loadaing.start();
                         $.ajax({
                             type: 'POST',
@@ -393,6 +395,7 @@ _akcms.editPage = {
                     //$(e.target).treeview("collapseAll", { silent: true })
                     $treeview.collapseAll();
                     $.each($treeview.getNodes(),function (n,node) {
+                        if (node.href==='//') node.href = '/';
                         if (currpage.id===node.id) {
                             $treeview.revealNode(node);
                             $treeview.selectNode(node);
