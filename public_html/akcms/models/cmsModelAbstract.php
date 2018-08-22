@@ -93,6 +93,14 @@ abstract class cmsModelAbstract implements SeekableIterator
         } else throw new DBException('Field not found '.$name);
     }
 
+    public function __getFieldDescription($fieldName){
+        $name = @$this->struct['fieldsDB'][$fieldName];
+        if ($name!==NULL) {
+            $fieldComment = @$this->struct['fields'][$name]['COMMENT'];
+            if ($fieldComment!==null) return $fieldComment;
+        }
+        return $fieldName;
+    }
     /*-------------------*/
 
 

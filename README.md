@@ -30,7 +30,7 @@ dpkg -l | grep php
 add-apt-repository ppa:ondrej/php
 apt update
 
-apt install libfcgi-bin mc nginx php7.2-fpm php7.2-cli php7.2-common php7.2-curl php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-pgsql php7.2-xml
+apt install libfcgi-bin mc nginx php7.2-fpm php7.2-cli php7.2-common php7.2-curl php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-pgsql php7.2-xml p7zip-full
 
 apt install php7.2-zip php7.2-opcache  
 apt install php7.2-mcrypt
