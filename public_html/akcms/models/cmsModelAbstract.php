@@ -1,5 +1,28 @@
 <?php
 
+/** Makes key value dictionary from any table with primary key
+ * Class tableDictionary
+ */
+class tableDictionary{
+    protected $dictionary = [];
+    public function __construct(cmsModelAbstract $table,$textField)
+    {
+        $primary = $table->zzJoinData()['primary'];
+        foreach ($table as $record) {
+            $this->dictionary[$table->__get($primary)] = $table->__get($textField);
+        }
+    }
+
+    /** returns value associated with key or just key
+     * @param $key
+     * @return mixed
+     */
+    public function text($key){
+        if (isset($this->dictionary[$key])) return $this->dictionary[$key];
+        else return $key;
+    }
+}
+
 /**
  * шаблон для автогенерации модели данных
  *
@@ -32,7 +55,15 @@ abstract class cmsModelAbstract implements SeekableIterator
         if ($fieldName!==NULL) {
             $this->data[$fieldName] = $value;
             $this->filled[$name] = true;
-        } else throw new DBException('Field not found '.$name);
+        }
+        else {
+            $fieldName = $name;
+            $name = @$this->struct['fieldsDB'][$fieldName];
+            if ($name!==NULL) {
+                $this->data[$fieldName] = $value;
+                $this->filled[$name] = true;
+            } else throw new DBException('fieldDB not found '.$name);
+        }
     }
 
     public function __get($name)

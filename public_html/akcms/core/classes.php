@@ -174,6 +174,14 @@ class CmsUser {
 		return $str;
 	}
 
+	private static function forceAuth($userData){
+        if (!isset($_COOKIE[session_name()])) session_start();
+        $_SESSION['u'] = $userData['usr_login'];
+        $_SESSION['ip'] = core::get_client_ip();
+        CmsUser::$user = $userData;
+        return true;
+    }
+
     public static function auth($loginOrEmail, $password, $emailInsteadLogin = false) {
         global $sql;
         $query = sprintf('select '.self::$fields.' from cms_users where %s = %s and usr_password_md5 = %s and usr_enabled and usr_activated limit 1;',
@@ -181,13 +189,8 @@ class CmsUser {
             $sql->pgf_text($loginOrEmail),
             $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$password)));
         $datausr = $sql->query_first_assoc($query);
-        if ($datausr!==false) {
-            if (!isset($_COOKIE[session_name()])) session_start();
-            $_SESSION['u'] = $datausr['usr_login'];
-            $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
-            CmsUser::$user = $datausr;
-            return true;
-        } else return false;
+        if ($datausr!==false) return self::forceAuth($datausr);
+        else return false;
     }
 
     public static function authAuto($login,$autohash) {
@@ -196,13 +199,8 @@ class CmsUser {
             $sql->pgf_text($login),
             $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$autohash)));
         $datausr = $sql->query_first_assoc($query);
-        if ($datausr!==false?$datausr['usr_login']==$login:false) {
-            if (!isset($_COOKIE[session_name()])) session_start();
-			$_SESSION['u'] = $datausr['usr_login'];
-            $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
-            CmsUser::$user = $datausr;
-            return true;
-        } else return false;
+        if ($datausr!==false) return self::forceAuth($datausr);
+        else return false;
     }
 
     public static function authAuto_id($id,$autohash) {
@@ -211,13 +209,8 @@ class CmsUser {
             $sql->d($id),
             $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$autohash)));
         $datausr = $sql->query_first_assoc($query);
-        if ($datausr!==false?$datausr['id_usr']==$id:false) {
-            if (!isset($_COOKIE[session_name()])) session_start();
-            $_SESSION['u'] = $datausr['usr_login'];
-            $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
-            CmsUser::$user = $datausr;
-            return true;
-        } else return false;
+        if ($datausr!==false) return self::forceAuth($datausr);
+        else return false;
     }
 
     public static function hasLogin($login) {
@@ -257,18 +250,21 @@ class CmsUser {
         }
     }
 
-    public static function register($login,$email,$password,$name) {
+    public static function register($login,$email,$password,$name,$soname = '') {
         global $sql;
         $actcode = md5('юhuu'.random_bytes(20));
-        $query = sprintf('INSERT INTO cms_users (usr_login,usr_email,usr_password_md5,usr_name,usr_actcode) VALUES(%s,%s,%s,%s,%s) RETURNING id_usr;',
-            $sql->pgf_text($login),
-            $sql->pgf_text($email),
-            $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$password)),
-            $sql->pgf_text($name),
-            $sql->pgf_text($actcode)
-        );
-        $res = $sql->query_first_row($query);
-        return $res!=false?array('id'=>$res[0],'actcode'=>$actcode):false;
+        $cmsUser = new modelCmsUsers();
+		$cmsUser->usrLogin = $login;
+		$cmsUser->usrEmail = $email;
+		$cmsUser->usrPasswordMd5 = md5($GLOBALS['cfg']['usrprepass'].$password);
+		$cmsUser->usrName = $name;
+		$cmsUser->usrActcode = $actcode;
+		if ($soname!=='') $cmsUser->usrSoname = $soname;
+		if (core::$IS_CLI) $cmsUser->usrRegisteredId = 'cli';
+		elseif (core::get_client_ip() !== false) $cmsUser->usrRegisteredId = core::get_client_ip();
+		$regData = $cmsUser->insert()?$cmsUser->asArray():[];
+		unset($regData['usr_password_md5']);
+		return $regData;
     }
 
     public static function genLostcode($login) {
@@ -356,14 +352,15 @@ class CmsUser {
         return $res>0?$autohash:false;
     }
 
-    public static function activate($login,$actcode) {
+    public static function activate($login,$actcode,$autoLogin = false) {
         global $sql;
-        $query = sprintf('UPDATE cms_users SET usr_activated = true WHERE usr_enabled AND NOT usr_activated AND usr_login = %s AND usr_actcode = %s;',
+        $query = sprintf('UPDATE cms_users SET usr_activated = true WHERE usr_enabled AND NOT usr_activated AND usr_login = %s AND usr_actcode = %s RETURNING '.self::$fields,
             $sql->pgf_text($login),
             $sql->pgf_text($actcode)
         );
-        $res = $sql->command($query);
-        return $res>0;
+        $datausr = $sql->query_first($query);
+        if ($datausr!==false && $autoLogin) self::forceAuth($datausr);
+        return $datausr;
     }
 
     public static function init() {
@@ -453,8 +450,8 @@ class core {
         if ($ip===false) $ip = getenv('REMOTE_ADDR');
         return $ip;
     }
-    private static function hidePathForError($filename) {
-		if (isset($_SERVER) && strpos($filename,$_SERVER['DOCUMENT_ROOT'])!==false) {
+    public static function hidePathForShow($filename) {
+		if (isset($_SERVER) && isset($_SERVER['DOCUMENT_ROOT']) && strpos($filename,$_SERVER['DOCUMENT_ROOT'])===0) {
             $filename = substr($filename, strlen($_SERVER['DOCUMENT_ROOT']));
         }
     	else $filename = basename($filename);
@@ -487,37 +484,50 @@ class core {
             if (self::$ErrorFirstTitle=='')
             	self::$ErrorFirstTitle = $errortype[$errno].': '.explode("\n",$errmsg)[0].' '.
 					(isset($_SERVER['SERVER_NAME'])?$_SERVER['SERVER_NAME']:'').' '.(isset($_SERVER['REQUEST_URI'])?$_SERVER['REQUEST_URI']:'');
-            $err .= 'src: ' . self::hidePathForError($filename).': '.$linenum . "\n";
-            if (in_array($errno, array(E_USER_ERROR, E_USER_WARNING, E_USER_NOTICE, E_NOTICE, E_ERROR, E_WARNING, -1))) {#E_WARNING,
+            $err .= 'src: ' . self::hidePathForShow($filename).': '.$linenum . "\n";
+            if (in_array($errno, array(E_USER_ERROR, E_USER_WARNING, E_USER_NOTICE, E_NOTICE, E_ERROR, E_WARNING, -1, 0))) {#E_WARNING,
                 $tracedata = array();
                 if (!isset($backtrace[0])) { $backtrace = debug_backtrace(0); unset($backtrace[0]);}
                 foreach($backtrace as $k=>$d) if (is_array($d)) {
                     $i='  '.$k.': ';
-                    if (isset($d['file'])) $i  .= self::hidePathForError($d['file']);
+                    if (isset($d['file'])) $i  .= self::hidePathForShow($d['file']);
                     if (isset($d['line'])) $i  .= ':'.$d['line'];
                     if (isset($d['class'])) $i .= ' {'.$d['class'].'}';
                     if (isset($d['type'])) $i  .= ' '.$d['type'];
                     if (isset($d['function'])) $i .= ' '.$d['function'];
                     if (isset($d['args'])) {
-                        $d['args'] = array_map(function($v) use ($d){
+                        $parameters = [];
+                        try {
+                            if (isset($d['function']))
+                                $parameters = isset($d['class']) ?
+                                    (new ReflectionClass($d['class']))->getMethod($d['function'])->getParameters() :
+                                    (new ReflectionFunction('file_exists'))->getParameters();
+                        } catch (Exception $eDie) {
+                            ChromePhp::log(
+                                $eDie
+                            );
+                        }
+                        foreach ($d['args'] as $n=>&$v){
                             switch (gettype($v)) {
-                                case 'boolean': return $v===true?'TRUE':FALSE;
+                                case 'boolean': $v = $v===true?'TRUE':'FALSE'; break;
                                 case 'integer':
                                 case 'double':
-                                case 'float': return GetTruncString($v,20);
-                                case 'string': {
-                                    if (isset($d['function']) && (in_array($d['function'],['require_once','require']) || strrpos($d['function'],'file_')===0))
+                                case 'float': $v = GetTruncString($v,20); break;
+                                case 'object': $v = '{'.get_class($v).'}'; break;
+                                case 'array': $v = '[…'.count($v).']'; break;
+                                case 'string':
+                                    if (isset($parameters[$n]) && (mb_stripos($parameters[$n]->getName(),'passw')!==false || mb_stripos($parameters[$n]->getName(),'psw')!==false)) $v='*****';
+                                    elseif (isset($d['function']) && (in_array($d['function'],['require_once','require']) || strrpos($d['function'],'file_')===0))
                                     {
-                                        if (isset($_SERVER) && strpos($v,$_SERVER['DOCUMENT_ROOT'])!==false) {
+                                        if (isset($_SERVER) && isset($_SERVER['DOCUMENT_ROOT']) && strpos($v,$_SERVER['DOCUMENT_ROOT'])===0) {
                                             $v = substr($v, strlen($_SERVER['DOCUMENT_ROOT']));
                                         }
                                     }
-                                    return '\''.GetTruncString($v,20).'\'';
-                                }
-                                case 'object': return '{'.get_class($v).'}';
+                                    $v = '\''.GetTruncString($v,20).'\'';
+                                    break;
+                                default: $v = gettype($v); break;
                             }
-                            return gettype($v);
-                        },$d['args']);
+                        }
                         $i .= '('.implode(',',$d['args']).')';
                     }
                     $tracedata[] = $i;
@@ -525,7 +535,8 @@ class core {
                 $err .= implode(PHP_EOL,$tracedata) . PHP_EOL.PHP_EOL;
             }
             if (isset($cfg['debug']) && $cfg['debug']===true) {
-                if (self::$isAjax || self::$IS_CLI) {}//echo '/* '.$err.' */';
+                if (self::$IS_CLI) {}//echo '/* '.$err.' */';
+                else if (self::$isAjax) ChromePhp::log('error',$err);
                 else echo '<script>console.log('.json_encode($err).');</script>';
                 //else echo '<!--'.$err.'-->';
                 //echo ErrorsStringToHTML($err);
@@ -541,7 +552,7 @@ class core {
     }
     public static function InTryErrorHandler(Exception $e) {
 		self::GlobalErrorHandler(-1,$e->getMessage(),$e->getFile(),$e->getLine(),$e->getTrace());
-		if (self::$isAjax) { http_response_code(404); return; } //json_encode(array('error'=>array(array('f'=>'system','s'=>'failure'))));
+		if (self::$isAjax) { http_response_code(500); return; } //json_encode(array('error'=>array(array('f'=>'system','s'=>'failure'))));
 		$errorPageTemplate = 'error_page';
         $shape['title'] = 'Произошла ошибка';
         $shape['metas'] = '';
@@ -553,15 +564,16 @@ class core {
             $shape['title'] = 'Страница не найдена';
         } else
             if ($e->getMessage()=='login_needs') {
-                //header('HTTP/1.0 401 Unauthorized');
-                header('HTTP/1.0 404 Not Found');
-                header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-                header('Expires: 0');
-                #var_dump__($e);
                 $url = $_SERVER['SCRIPT_URL']; if (trim($url,'/')==='_') $url = '/';
-                $shape['metas'] = '<meta http-equiv="Refresh" content="0; URL=/_auth/?url='.urlencode($url).'">';
-                $errorPageTemplate = 'error_pageauthneeds';
-                $shape['title'] = 'Страница не найдена';
+                shp::redirectHidden('/_auth/?url='.urlencode($url));
+//                //header('HTTP/1.0 401 Unauthorized');
+//                header('HTTP/1.0 404 Not Found');
+//                header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+//                header('Expires: 0');
+//                #var_dump__($e);
+//                $shape['metas'] = '<meta http-equiv="Refresh" content="0; URL=/_auth/?url='.urlencode($url).'">';
+//                $errorPageTemplate = 'error_pageauthneeds';
+//                $shape['title'] = 'Страница не найдена';
             } else
                 header('HTTP/1.0 500 Internal error');
 

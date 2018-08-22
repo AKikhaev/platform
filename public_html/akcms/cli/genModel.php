@@ -256,7 +256,7 @@ class pgCmsModelGenerator {
 					break;
 				case 'date':
 					$typeSimple = 'string';
-					$field['FIELD_CLASS'] = 'CMSFieldDate';//
+					$field['FIELD_CLASS'] = 'FieldDate';//
 					unset($field['LENGTH']);
 					break;
 

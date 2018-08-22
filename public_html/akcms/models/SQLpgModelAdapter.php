@@ -524,8 +524,7 @@ trait SQLpgModelAdapter {
         return $this;
     }
 
-    /**
-     * return all records
+    /** return all records
      * @return $this|$this[]
      * @throws DBException
      */
@@ -533,11 +532,22 @@ trait SQLpgModelAdapter {
         return $this->where()->get();
     }
 
+    /** return all records as array
+     * @return array
+     * @throws DBException
+     */
     public function getAllAsArray(){
 		if ($this->query=='') throw new DBException('No query for '.__CLASS__);
 		if ($this->query=='!') $this->buildQuery();
     	return $this->sql->query_all($this->query);
 	}
+
+    /** return current data as array
+     * @return mixed
+     */
+	public function asArray(){
+        return $this->data;
+    }
 
     /**
      * call as function

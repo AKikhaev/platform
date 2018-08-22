@@ -29,7 +29,7 @@ function LOAD_CORE_CLI() {
 	$_SERVER['DOCUMENT_ROOT'] = getcwd();
     $_SERVER['HTTP_HOST'] = 'CLI:'.$cfg['site_domain'];
     $_SERVER['SERVER_NAME'] = 'CLI:'.$cfg['site_domain'];
-    $_SERVER['REQUEST_URI'] = '/'.$GLOBALS['argv'][0];
+    $_SERVER['REQUEST_URI'] = core::hidePathForShow('/'.trim($GLOBALS['argv'][0],'/'));
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
 	#set_error_handler("GlobalErrorHandler");
