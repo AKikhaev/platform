@@ -22,6 +22,8 @@ chown mstr:www-user /data/nfs/$projectName/var/lib/php/sessions
 mkdir -p /data/nfs/$projectName/etc
 cp /etc/hosts /data/nfs/$projectName/etc/
 cp /etc/resolv.conf /data/nfs/$projectName/etc/
+cp -r /etc/ssl /data/nfs/$projectName/etc/ssl
+cp -r /usr/share/ca-certificates /data/nfs/$projectName/usr/share/
 mkdir -p /data/nfs/$projectName/etc/ssl/certs/
 wget -O /data/nfs/$projectName/etc/ssl/certs/cacert.pem https://curl.haxx.se/ca/cacert.pem
 
@@ -34,7 +36,11 @@ cp /usr/share/zoneinfo/Europe/Moscow /data/nfs/$projectName/usr/share/zoneinfo/E
 chown -R mstr:www-user /data/nfs/$projectName/public_html/s/
 chown -R mstr:www-user /data/nfs/$projectName/public_html/img/gallery/
 chown -R mstr:www-user /data/nfs/$projectName/public_html/img/pages/
+chown mstr:www-user /data/nfs/$projectName/public_html/sitemap*.xml
 
 echo
 echo "Add this line to /etc/fstab (for auto terminal notification feature):"
 echo /dev/pts /data/nfs/$projectName/dev/pts auto bind 0 0
+echo "To temporary using:";
+echo mount --bind /dev/pts /data/nfs/$projectName/dev/pts
+echo umount /data/nfs/$projectName/dev/pts
