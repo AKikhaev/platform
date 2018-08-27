@@ -21,7 +21,7 @@
 ##### Требования
 * nginx
 ```bash
-apt nginx
+apt install nginx
 ```
 * PHP 7+: [supported-versions](http://php.net/supported-versions.php)
 ```bash

@@ -473,7 +473,7 @@ class PageUnit extends CmsPage {
   
 	public static function _imgduplicate($pathold, $pathto, &$imggrabbed) { // Загружает изображения с других серверов
 		$dirpath = mb_substr($pathto, 0, -1);
-		if(!file_exists($dirpath)) mkdir($dirpath,0755,true);  
+		if(!file_exists($dirpath)) mkdir($dirpath,0775,true);
 		$result = '';
 
 		$path_prts = pathinfo(mb_strtolower($pathold));
@@ -638,7 +638,7 @@ class PageUnit extends CmsPage {
 									$i_file = $_POST['section_id'].'.jpg';
 									$pathstr = self::$imgthmbpath.$i_file;
 									$dirpath = dirname($pathstr);
-									if (!file_exists($dirpath)) mkdir($dirpath,0755,true);       
+									if (!file_exists($dirpath)) mkdir($dirpath,0775,true);
 									@unlink(self::$imgthmbpath.$i_file);
 									@array_map('unlink',glob(self::$imgthmbpath.'*/'.$i_file));
 									imagejpeg($dst,$pathstr,90);
@@ -696,7 +696,7 @@ class PageUnit extends CmsPage {
 					$i_file = $section_id.'.jpg';
 					$pathstr = self::$imgthmbpath.$i_file;
 					$dirpath = dirname($pathstr);
-					if (!file_exists($dirpath)) mkdir($dirpath,0755,true);
+					if (!file_exists($dirpath)) mkdir($dirpath,0775,true);
 					@unlink(self::$imgthmbpath.$i_file);
 					@array_map('unlink',glob(self::$imgthmbpath.'*/'.$i_file));
 					imagejpeg($dst,$pathstr,90);
@@ -824,23 +824,27 @@ class PageUnit extends CmsPage {
 				$files = array();
                 foreach(new DirectoryIterator($targetDir) as $item)
                 {
-                    if (! $item->isDot() && $item->isFile())
+                    if (!$item->isDot() && $item->isFile())
                     {
-                        $files[$item->getMTime()][] = [
+                        $files[] = [
+                            'mTime'=>$item->getMTime(),
                             'file'=>$item->getFilename(),
+                            'mTimeText'=>VisualTheme::dateRus('j M в H:i',$item->getMTime()),
                             'size'=>$item->getSize()
                         ];
                     }
                 }
                 arsort($files);
-                $files = array_merge(...$files);
 
 				foreach($files as $file) {
 					if ($_POST['type'] === 'image')
 						$img = '<img src="/img/resizer/?url='.urlencode('/'.$targetDir.'/'.$file['file']).'&w=50&h=50&jo=1" style="padding:2px;" /> ';
 					else $img = '';
-					$res .= '<tr class="'.(++$i%2===0?'':'even').'"><td colspan=2><a onclick="selectURL(\'/'.$targetDir.'/'.$file['file'].'\');" href="#">'.$img.$file['file'].'</a><div class="fsize">'.
-                        prettySize($file['size']).'<br/><a onclick="removeFile(\''.$file['file'].'\',this);" href="#">Удалить</a></div></td></tr>';
+					$res .= '<tr class="'.(++$i%2===0?'':'even').'">'.
+                        '<td colspan=2><a onclick="selectURL(\'/'.$targetDir.'/'.$file['file'].'\');" href="#">'.$img.$file['file'].'</a>'.
+                        '<div class="fsize">'.$file['mTimeText'].'<br/>'.prettySize($file['size']).'<br/>'.
+                        '<a onclick="removeFile(\''.$file['file'].'\',this);" href="#">Удалить</a>'.
+                        '</div></td></tr>';
 				}
 			} else $res .= '';
 			return json_encode($res);
@@ -908,8 +912,9 @@ class PageUnit extends CmsPage {
 			}
 
 			$filePath = $targetDir.'/'.$fileName;
-			$filePathPart = $targetDir.'/'.$fileName.'part';
-			if (!file_exists($targetDir)) @mkdir($targetDir,0755,true);
+			$filePathPart = $targetDir.'/'.$fileName.'-part';
+            ChromePhp::log($targetDir);
+			if (!file_exists($targetDir)) mkdir($targetDir,0775,true);
 
 			if (isset($_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name'])) {
 				if ($in = fopen($_FILES['file']['tmp_name'], 'rb')) {

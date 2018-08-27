@@ -8,6 +8,7 @@ abstract class VisualThemeAbstract
     const monthsShort = array('','янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек');
     /**
      * 7 июля в 14:17         - j F в H:i
+     * 7 июл в 14:17         - j M в H:i
      * Пятница, 7 янв 2017г. - l, j M Y г.
      * @param $format
      * @param $dt
