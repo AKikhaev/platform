@@ -283,7 +283,7 @@ _akcms.editPage = {
                 document.getElementById('e_sec_imgfile').src = canvas.toDataURL("image/jpeg");
             },false);
             img.src = reader.result;
-        }
+        };
 
         if (file) reader.readAsDataURL(file);
         else Holder.run({images: '#e_sec_imgfile'});
@@ -400,6 +400,7 @@ _akcms.editPage = {
                             $treeview.revealNode(node);
                             $treeview.selectNode(node);
                             $treeview.expandNode(node);
+                            $('#akcms_viewPage').attr('href',node.href);
                         }
                         node.$el.append(
                             $('<div class="node-buttons">' +
