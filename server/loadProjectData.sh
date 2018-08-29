@@ -9,16 +9,13 @@ projectRoot=$(dirname "$scriptsDir")
 projectHome=$(dirname "$scriptsDir")/public_html
 projectName=$(basename "$(dirname "$scriptsDir")")
 projectNameShort=`echo $name | sed 's/[ \t\.-]//g'`
+projectPhpSocket=/tmp/php-fpm-${projectName}.sock
 
 #to call from another script paste at the begin:
-#scriptsDir=$(dirname "$(readlink -f "$0")")
-#. $scriptsDir/getProjectData.sh
+#scriptsDir=$(dirname "$(readlink -f "$0")") && . $scriptsDir/loadProjectData.sh
 
 perform_socket_query()
 {
-#phpSocket=/data/nfs/$projectName/tmp/php-fpm-${projectName}.sock
-phpSocket=/tmp/php-fpm-${projectName}.sock
-
 SCRIPT_FILENAME="$1" \
 SCRIPT_NAME="$1" \
 HTTP_HOST=${projectName} \
@@ -36,6 +33,5 @@ REMOTE_PORT=7777 \
 SERVER_ADDR=127.0.0.1 \
 SERVER_PORT=80 \
 SERVER_NAME=knpz-ken.ru.local \
-cgi-fcgi -bind -connect "$phpSocket"
-
+cgi-fcgi -bind -connect "$projectPhpSocket"
 }
