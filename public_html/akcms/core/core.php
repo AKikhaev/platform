@@ -101,6 +101,7 @@ function LOAD_CORE() {
     }
     elseif (mb_substr($pathurl,-1)!='/')
     {
+        if (!mb_check_encoding($_SERVER['SCRIPT_URL'])) throw new CmsException('page_not_found');
         $QUERY_STRING = $_SERVER['QUERY_STRING']!==''?'?'.$_SERVER['QUERY_STRING']:'';
         $REQUEST_URI = rtrim($_SERVER['REQUEST_URI'],'?');
         header('Location: '.mb_substr($REQUEST_URI,0,mb_strlen($REQUEST_URI)-mb_strlen($QUERY_STRING)).'/'.$QUERY_STRING);
