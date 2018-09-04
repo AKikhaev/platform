@@ -99,7 +99,7 @@ SQL;
     }
 
     public function resetDvPasswordAction($user="dv"){
-        if (readline("  Conform user `$user` password change [yN]: ")=='y') {
+        if (readline("  Confirm user `$user` password change [yN]: ")=='y') {
             $password = CmsUser::generate_password_string();
             CmsUser::setNewPassword($user, $password);
             echo "New password for $user: ".$password . PHP_EOL;

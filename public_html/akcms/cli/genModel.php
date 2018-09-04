@@ -4,6 +4,7 @@ class pgCmsModelGenerator {
 
 	private function TableNameToModel($name) {
 		$names = array();
+		$name = str_replace('.','_',$name);
 		foreach (explode('_',$name) as $name) {
 			$names[] = mb_ucfirst($name);
 		}
@@ -138,7 +139,7 @@ class pgCmsModelGenerator {
 				'IDENTITY'         => $identity,
 				'COMMENT'		   => $row[$coldescription],
 			);
-			$dbfields[$fieldInfo['COLUMN_NAME']] = $fieldInfo['MODEL_NAME'];
+			//$dbfields[$fieldInfo['COLUMN_NAME']] = $fieldInfo['MODEL_NAME'];
 			$modelfields[$fieldInfo['MODEL_NAME']] = $fieldInfo;
 		}
 
@@ -146,7 +147,6 @@ class pgCmsModelGenerator {
 
 		return array(
 			'table'=>$tableName,
-			'model'=>$this->TableNameToModel($tableName),
 			'schema'=>$schemaName,
 			'comment'=>$tableComment,
 			//'dbfields'=>$dbfields,
@@ -164,12 +164,13 @@ class pgCmsModelGenerator {
      * @throws CmsException
      */
 	public function generate($tableName, $schemaName = 'public') {
+	    global $cfg;
 		$tableInfo = $this->describeTable($tableName,$schemaName);
-        $isView = preg_match('/view$/iu',$tableInfo['model'])===1;
+        $isView = preg_match('/view$/iu',$tableInfo['table'])===1;
         $primary = ''; $primaryDB = '';
 
         $tableCommentRaw = $tableInfo['comment'];
-        if (!$tableInfo['comment']) CmsLogger::logError($tableInfo['model'].' Без описания');
+        if (!$tableInfo['comment']) CmsLogger::logError($tableInfo['table'].' Без описания');
         $tableAttr = array();
         if (mb_strpos($tableInfo['comment'],'|')!==false) {
             $tableCommentInfo = explode('|',$tableInfo['comment']);
@@ -192,6 +193,14 @@ class pgCmsModelGenerator {
 		$fieldsProperties = array();
 		$fieldsStatic = array();
 
+        $_schema = $tableInfo['schema'];
+        $_name = $tableInfo['table'];
+        if ($tableInfo['schema']===$cfg['db'][1]['schema']) $_schema = '{default}';
+        else $_name = $tableInfo['schema'].'.'.$tableInfo['table'];
+        $tableInfo['table'] = $_name;
+        $tableInfo['schema'] = $_schema;
+        $tableInfo['model'] = $this->TableNameToModel($_name);
+
 		$maxNameLength = 0; foreach ($tableInfo['fields'] as &$field) if (mb_strlen($field['MODEL_NAME'])>$maxNameLength) $maxNameLength = mb_strlen($field['MODEL_NAME']); $maxNameLength++;
 		foreach ($tableInfo['fields'] as &$field) {
 
@@ -213,7 +222,7 @@ class pgCmsModelGenerator {
                 continue;
             } //Пропус поля
             if (array_key_exists('>',$fieldAttr)) {
-                $field['RELATE_TO'] = $fieldAttr['>'];
+                $field['RELATE_TO'] = ($tableInfo['schema']==='{default}'?'':$tableInfo['schema'].'.').$fieldAttr['>'];
             } //Пропус поля
 
 			// string|integer|int|boolean|bool|float|double|object|mixed|array|resource|void|null|callback|false|true|self
@@ -324,8 +333,8 @@ class pgCmsModelGenerator {
 		$comment = str_replace("\r\n",' * ',$tableInfo['comment']);
 		$template = str_replace('{#properties#}',implode("\n",$fieldsProperties),$template);
 		$template = str_replace('    //{#staticfields#}',implode("\n",$fieldsStatic),$template);
-		$template = str_replace('{#tableName#}',$tableInfo['table'],$template);
-		$template = str_replace('{#schemaName#}',$tableInfo['schema'],$template);
+		$template = str_replace('{#tableName#}',$_name,$template);
+		$template = str_replace('{#schemaName#}',$_schema,$template);
 		$template = str_replace('{#tablecomment#}',$comment,$template);
 		$template = str_replace('$struct = array()','$struct = '.$tableVar,$template);
 
@@ -362,21 +371,31 @@ class genModel extends cliUnit {
         global $sql,$cfg;
 
         $md = new pgCmsModelGenerator();
-        profiler::showOverallTimeToTerminal();
+        //profiler::showOverallTimeToTerminal();
 
-        $filter = str_replace('*','%',$filter);
-        if ($filter=='')
-            $_filter = sprintf(' AND NOT (tablename ilike %s)',
-                $sql->t('cms_%')
-            );
-        else $_filter = ' AND tablename like '.$sql->t($filter);
+        $schema = $cfg['db'][1]['schema'];
 
-        $query = 'select tablename from pg_tables where schemaname='.$sql->t($cfg['db'][1]['schema']).$_filter.' order by 1';
-        $tablesNames = $sql->query_all_column($query);
-        if (count($tablesNames)>0)
-            foreach ($tablesNames as $tableName) {
-                CmsLogger::logInfo('Генерация '.$tableName);
-                $md->generate($tableName,$cfg['db'][1]['schema']);
+        if ($filter == '') {
+            if (readline("  Conform generation of all user tables? [yN]: ") == 'y') {
+                $_filter = sprintf('table_schema = %s AND NOT (table_name ilike %s)',
+                    $sql->t($cfg['db'][1]['schema']),
+                    $sql->t('cms_%')
+                );
+            } else CmsLogger::logDie__('Отменено пользователем');
+        }
+        else {
+            if (mb_strpos($filter,'.')===false) $filter = $cfg['db'][1]['schema'].'.'.$filter;
+            $filter = str_replace('*','%',$filter);
+            $_filter = '(table_schema || \'.\' || table_name) ilike '.$sql->t($filter);
+        }
+
+        $query = 'SELECT table_schema || \'.\' || table_name as table,table_schema,table_name FROM information_schema.tables WHERE table_schema NOT IN (\'information_schema\',\'pg_catalog\') AND '.$_filter.' ORDER BY table_schema,table_name;';
+        //$query = 'select tablename from pg_tables where schemaname='.$sql->t($cfg['db'][1]['schema']).$_filter.' order by 1';
+        $tables = $sql->query_all($query);
+        if ($tables !== false)
+            foreach ($tables as $table) {
+                CmsLogger::logInfo('Генерация '.$table['table']);
+                $md->generate($table['table_name'],$table['table_schema']);
             }
         else CmsLogger::logInfo('Нет подходящих таблиц');
     }

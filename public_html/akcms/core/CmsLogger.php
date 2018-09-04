@@ -44,13 +44,6 @@ class CmsLogger
         self::beep();
         self::write(self::var_log_export(...func_get_args()).PHP_EOL);
     }
-
-    public static function var_log_js($var) {
-        $var = func_get_args();
-        if (!Core::$IS_CLI && !Core::$isAjax)
-            echo '<script>console.log('.json_encode(count($var)==1?$var[0]:$var).');</script>';
-    }
-
     /**
      * Вывод переменной в лог и останов
      * @param $var
@@ -58,6 +51,16 @@ class CmsLogger
     public static function var_log__($var) {
         self::var_log(...func_get_args());
         exit();
+    }
+
+
+    /** Вывод в js консоль
+     * @param $var
+     */
+    public static function var_log_js($var) {
+        $var = func_get_args();
+        if (!Core::$IS_CLI && !Core::$isAjax)
+            echo '<script>console.log('.json_encode(count($var)==1?$var[0]:$var).');</script>';
     }
 
     /**
