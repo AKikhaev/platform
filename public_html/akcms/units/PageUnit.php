@@ -122,9 +122,10 @@ class PageUnit extends CmsPage {
                 header('Location: /'.$this->pageMainUri);
                 //throw new CmsException('login_needs_');
             }
-            $pageTemplate = 'editpage';
-            if (core::$devTest) $pageTemplate = 'editpage2';
-            if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') $pageTemplate = 'editpage2';
+            $pageTemplate = 'editpage2';
+            //if (core::$devTest) $pageTemplate = 'editpage2';
+
+            //if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') $pageTemplate = 'editpage2';
         }
 
 		$this->title = $this->page['sec_title'] !== '' ? $this->page['sec_title'] : $this->page['sec_namefull'].' - '.$cfg['site_title'];

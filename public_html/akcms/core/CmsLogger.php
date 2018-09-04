@@ -7,6 +7,20 @@ class CmsLogger
 
     /**
      * Текстовое форматированное представление переданных переменных любого типа
+     * @return false|null|string|string[]
+     */
+    public static function var_dump_export() {
+        ob_start();
+        var_dump(...func_get_args()); $printVar = ob_get_contents();
+        ob_end_clean();
+        $printVar = preg_replace('/\n\s*\}/','}',$printVar);
+        $printVar = preg_replace('/=>\n\s+/',' => ',$printVar);
+        $printVar = preg_replace('/\[\"(.+)\"\]/','[$1]',$printVar);
+        return $printVar;
+    }
+
+    /**
+     * Текстовое форматированное представление переданных переменных любого типа
      * @param $vars
      * @return mixed|null|string|string[]
      */
@@ -29,6 +43,12 @@ class CmsLogger
     public static function var_log($vars) {
         self::beep();
         self::write(self::var_log_export(...func_get_args()).PHP_EOL);
+    }
+
+    public static function var_log_js($var) {
+        $var = func_get_args();
+        if (!Core::$IS_CLI && !Core::$isAjax)
+            echo '<script>console.log('.json_encode(count($var)==1?$var[0]:$var).');</script>';
     }
 
     /**
@@ -100,7 +120,7 @@ class CmsLogger
      * @param null $terminal
      * @return bool
      */
-    public static function writeLn($data, $terminal=null){self::write($data.PHP_EOL, $terminal);}
+    public static function writeLn($data, $terminal=null){ self::write($data.PHP_EOL, $terminal); }
 
     /**
      * Выдает в лог последовательность очистки окна терминала

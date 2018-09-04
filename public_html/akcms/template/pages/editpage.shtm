@@ -10,7 +10,7 @@
 	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link href="/akcms/css/v1/style_adm.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="/akcms/js/v1/mootools-adm.js"></script>
-	<link href="/akcms/css/v1/style_adm_cntrl.css" rel="stylesheet" type="text/css"/>
+	<link href="/akcms/assets/pages/style_adm_cntrl.css" rel="stylesheet" type="text/css"/>
 	<script type="text/javascript">
         window.addEvent('domready', function() {
             var userControl = function() {
