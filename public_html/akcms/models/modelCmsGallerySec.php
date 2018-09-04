@@ -15,12 +15,12 @@ class modelCmsGallerySec extends cmsModelAbstract
     public static $_glrId  = 'glr_id';
 
     public static $tableName = 'cms_gallery_sec';
-    protected $schemaName = 'knpzken';
+    protected $schemaName = '{default}';
 
     /* струкура таблицы */
     protected $struct = array (
     'table' => 'cms_gallery_sec',
-    'schema' => 'knpzken',
+    'schema' => '{default}',
     'comment' => 'Галареи на страницах',
     'fields' => array(
       'secId' => array(
@@ -49,7 +49,7 @@ class modelCmsGallerySec extends cmsModelAbstract
         'table' => 'cms_gallery_sec',
         'primary' => '',
         'primaryDB' => '',
-        'schema' => 'knpzken',
+        'schema' => '{default}',
         'prefix' => '',
       ),
     ),

@@ -19,12 +19,12 @@ class modelCmsMenuItems extends cmsModelAbstract
     public static $_mnuiSort   = 'mnui_sort';
 
     public static $tableName = 'cms_menu_items';
-    protected $schemaName = 'knpzken';
+    protected $schemaName = '{default}';
 
     /* струкура таблицы */
     protected $struct = array (
     'table' => 'cms_menu_items',
-    'schema' => 'knpzken',
+    'schema' => '{default}',
     'comment' => 'Меню, доработать',
     'fields' => array(
       'mnuiId' => array(
@@ -67,7 +67,7 @@ class modelCmsMenuItems extends cmsModelAbstract
         'table' => 'cms_menu_items',
         'primary' => 'mnuiId',
         'primaryDB' => 'mnui_id',
-        'schema' => 'knpzken',
+        'schema' => '{default}',
         'prefix' => '',
       ),
     ),

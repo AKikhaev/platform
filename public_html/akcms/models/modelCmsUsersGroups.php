@@ -15,12 +15,12 @@ class modelCmsUsersGroups extends cmsModelAbstract
     public static $_usrgrpName  = 'usrgrp_name';
 
     public static $tableName = 'cms_users_groups';
-    protected $schemaName = 'knpzken';
+    protected $schemaName = '{default}';
 
     /* струкура таблицы */
     protected $struct = array (
     'table' => 'cms_users_groups',
-    'schema' => 'knpzken',
+    'schema' => '{default}',
     'comment' => 'Группы пользователей',
     'fields' => array(
       'idUsrgpr' => array(
@@ -47,7 +47,7 @@ class modelCmsUsersGroups extends cmsModelAbstract
         'table' => 'cms_users_groups',
         'primary' => 'idUsrgpr',
         'primaryDB' => 'id_usrgpr',
-        'schema' => 'knpzken',
+        'schema' => '{default}',
         'prefix' => '',
       ),
     ),

@@ -15,12 +15,12 @@ class modelCmsTags extends cmsModelAbstract
     public static $_tagText  = 'tag_text';
 
     public static $tableName = 'cms_tags';
-    protected $schemaName = 'knpzken';
+    protected $schemaName = '{default}';
 
     /* струкура таблицы */
     protected $struct = array (
     'table' => 'cms_tags',
-    'schema' => 'knpzken',
+    'schema' => '{default}',
     'comment' => 'Теги',
     'fields' => array(
       'tagId' => array(
@@ -47,7 +47,7 @@ class modelCmsTags extends cmsModelAbstract
         'table' => 'cms_tags',
         'primary' => 'tagId',
         'primaryDB' => 'tag_id',
-        'schema' => 'knpzken',
+        'schema' => '{default}',
         'prefix' => '',
       ),
     ),

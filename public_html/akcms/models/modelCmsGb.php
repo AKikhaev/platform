@@ -29,12 +29,12 @@ class modelCmsGb extends cmsModelAbstract
     public static $_gbPhone       = 'gb_phone';
 
     public static $tableName = 'cms_gb';
-    protected $schemaName = 'knpzken';
+    protected $schemaName = '{default}';
 
     /* струкура таблицы */
     protected $struct = array (
     'table' => 'cms_gb',
-    'schema' => 'knpzken',
+    'schema' => '{default}',
     'comment' => 'Гостевая книга',
     'fields' => array(
       'gbId' => array(
@@ -110,7 +110,7 @@ class modelCmsGb extends cmsModelAbstract
         'table' => 'cms_gb',
         'primary' => 'gbId',
         'primaryDB' => 'gb_id',
-        'schema' => 'knpzken',
+        'schema' => '{default}',
         'prefix' => '',
       ),
     ),

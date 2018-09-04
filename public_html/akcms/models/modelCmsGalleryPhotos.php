@@ -23,12 +23,12 @@ class modelCmsGalleryPhotos extends cmsModelAbstract
     public static $_cgpEnabled  = 'cgp_enabled';
 
     public static $tableName = 'cms_gallery_photos';
-    protected $schemaName = 'knpzken';
+    protected $schemaName = '{default}';
 
     /* струкура таблицы */
     protected $struct = array (
     'table' => 'cms_gallery_photos',
-    'schema' => 'knpzken',
+    'schema' => '{default}',
     'comment' => 'Фото галерей',
     'fields' => array(
       'idCgp' => array(
@@ -84,7 +84,7 @@ class modelCmsGalleryPhotos extends cmsModelAbstract
         'table' => 'cms_gallery_photos',
         'primary' => 'idCgp',
         'primaryDB' => 'id_cgp',
-        'schema' => 'knpzken',
+        'schema' => '{default}',
         'prefix' => '',
       ),
     ),

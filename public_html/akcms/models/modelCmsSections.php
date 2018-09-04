@@ -67,12 +67,12 @@ class modelCmsSections extends cmsModelAbstract
     public static $_secIdsClosest   = 'sec_ids_closest';
 
     public static $tableName = 'cms_sections';
-    protected $schemaName = 'knpzken';
+    protected $schemaName = '{default}';
 
     /* струкура таблицы */
     protected $struct = array (
     'table' => 'cms_sections',
-    'schema' => 'knpzken',
+    'schema' => '{default}',
     'comment' => 'Страницы',
     'fields' => array(
       'sectionId' => array(
@@ -284,7 +284,7 @@ class modelCmsSections extends cmsModelAbstract
         'table' => 'cms_sections',
         'primary' => 'sectionId',
         'primaryDB' => 'section_id',
-        'schema' => 'knpzken',
+        'schema' => '{default}',
         'prefix' => '',
       ),
     ),

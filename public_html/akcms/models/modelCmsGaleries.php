@@ -31,12 +31,12 @@ class modelCmsGaleries extends cmsModelAbstract
     public static $_glrSort     = 'glr_sort';
 
     public static $tableName = 'cms_galeries';
-    protected $schemaName = 'knpzken';
+    protected $schemaName = '{default}';
 
     /* струкура таблицы */
     protected $struct = array (
     'table' => 'cms_galeries',
-    'schema' => 'knpzken',
+    'schema' => '{default}',
     'comment' => 'Галереи',
     'fields' => array(
       'idGlr' => array(
@@ -120,7 +120,7 @@ class modelCmsGaleries extends cmsModelAbstract
         'table' => 'cms_galeries',
         'primary' => 'idGlr',
         'primaryDB' => 'id_glr',
-        'schema' => 'knpzken',
+        'schema' => '{default}',
         'prefix' => '',
       ),
     ),

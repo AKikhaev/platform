@@ -27,12 +27,12 @@ class modelCmsObjPhotos extends cmsModelAbstract
     public static $_copEnabled  = 'cop_enabled';
 
     public static $tableName = 'cms_obj_photos';
-    protected $schemaName = 'knpzken';
+    protected $schemaName = '{default}';
 
     /* струкура таблицы */
     protected $struct = array (
     'table' => 'cms_obj_photos',
-    'schema' => 'knpzken',
+    'schema' => '{default}',
     'comment' => 'Фото элементов',
     'fields' => array(
       'idCop' => array(
@@ -101,7 +101,7 @@ class modelCmsObjPhotos extends cmsModelAbstract
         'table' => 'cms_obj_photos',
         'primary' => 'idCop',
         'primaryDB' => 'id_cop',
-        'schema' => 'knpzken',
+        'schema' => '{default}',
         'prefix' => '',
       ),
     ),

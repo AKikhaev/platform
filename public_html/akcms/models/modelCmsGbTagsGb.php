@@ -15,12 +15,12 @@ class modelCmsGbTagsGb extends cmsModelAbstract
     public static $_gbtId  = 'gbt_id';
 
     public static $tableName = 'cms_gb_tags_gb';
-    protected $schemaName = 'knpzken';
+    protected $schemaName = '{default}';
 
     /* струкура таблицы */
     protected $struct = array (
     'table' => 'cms_gb_tags_gb',
-    'schema' => 'knpzken',
+    'schema' => '{default}',
     'comment' => 'Теги записей гостевой',
     'fields' => array(
       'gbId' => array(
@@ -49,7 +49,7 @@ class modelCmsGbTagsGb extends cmsModelAbstract
         'table' => 'cms_gb_tags_gb',
         'primary' => '',
         'primaryDB' => '',
-        'schema' => 'knpzken',
+        'schema' => '{default}',
         'prefix' => '',
       ),
     ),

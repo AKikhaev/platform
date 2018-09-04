@@ -41,12 +41,12 @@ class modelCmsUsers extends cmsModelAbstract
     public static $_usrRegisteredId     = 'usr_registered_id';
 
     public static $tableName = 'cms_users';
-    protected $schemaName = 'knpzken';
+    protected $schemaName = '{default}';
 
     /* струкура таблицы */
     protected $struct = array (
     'table' => 'cms_users',
-    'schema' => 'knpzken',
+    'schema' => '{default}',
     'comment' => 'Пользователи',
     'fields' => array(
       'idUsr' => array(
@@ -166,7 +166,7 @@ class modelCmsUsers extends cmsModelAbstract
         'table' => 'cms_users',
         'primary' => 'idUsr',
         'primaryDB' => 'id_usr',
-        'schema' => 'knpzken',
+        'schema' => '{default}',
         'prefix' => '',
       ),
     ),

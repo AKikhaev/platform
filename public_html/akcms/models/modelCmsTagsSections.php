@@ -15,12 +15,12 @@ class modelCmsTagsSections extends cmsModelAbstract
     public static $_secId  = 'sec_id';
 
     public static $tableName = 'cms_tags_sections';
-    protected $schemaName = 'knpzken';
+    protected $schemaName = '{default}';
 
     /* струкура таблицы */
     protected $struct = array (
     'table' => 'cms_tags_sections',
-    'schema' => 'knpzken',
+    'schema' => '{default}',
     'comment' => 'Теги страниц',
     'fields' => array(
       'tagId' => array(
@@ -49,7 +49,7 @@ class modelCmsTagsSections extends cmsModelAbstract
         'table' => 'cms_tags_sections',
         'primary' => '',
         'primaryDB' => '',
-        'schema' => 'knpzken',
+        'schema' => '{default}',
         'prefix' => '',
       ),
     ),

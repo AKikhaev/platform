@@ -25,12 +25,12 @@ class modelCmsComments extends cmsModelAbstract
     public static $_cmntEnabled  = 'cmnt_enabled';
 
     public static $tableName = 'cms_comments';
-    protected $schemaName = 'knpzken';
+    protected $schemaName = '{default}';
 
     /* струкура таблицы */
     protected $struct = array (
     'table' => 'cms_comments',
-    'schema' => 'knpzken',
+    'schema' => '{default}',
     'comment' => 'Коментарии',
     'fields' => array(
       'cmntId' => array(
@@ -93,7 +93,7 @@ class modelCmsComments extends cmsModelAbstract
         'table' => 'cms_comments',
         'primary' => 'cmntId',
         'primaryDB' => 'cmnt_id',
-        'schema' => 'knpzken',
+        'schema' => '{default}',
         'prefix' => '',
       ),
     ),

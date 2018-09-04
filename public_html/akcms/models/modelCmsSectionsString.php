@@ -21,12 +21,12 @@ class modelCmsSectionsString extends cmsModelAbstract
     public static $_secsMultiline  = 'secs_multiline';
 
     public static $tableName = 'cms_sections_string';
-    protected $schemaName = 'knpzken';
+    protected $schemaName = '{default}';
 
     /* струкура таблицы */
     protected $struct = array (
     'table' => 'cms_sections_string',
-    'schema' => 'knpzken',
+    'schema' => '{default}',
     'comment' => 'Текстовые блоки страниц',
     'fields' => array(
       'secsId' => array(
@@ -76,7 +76,7 @@ class modelCmsSectionsString extends cmsModelAbstract
         'table' => 'cms_sections_string',
         'primary' => 'secsId',
         'primaryDB' => 'secs_id',
-        'schema' => 'knpzken',
+        'schema' => '{default}',
         'prefix' => '',
       ),
     ),

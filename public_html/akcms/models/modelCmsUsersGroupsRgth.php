@@ -17,12 +17,12 @@ class modelCmsUsersGroupsRgth extends cmsModelAbstract
     public static $_usrrghtMode   = 'usrrght_mode';
 
     public static $tableName = 'cms_users_groups_rgth';
-    protected $schemaName = 'knpzken';
+    protected $schemaName = '{default}';
 
     /* струкура таблицы */
     protected $struct = array (
     'table' => 'cms_users_groups_rgth',
-    'schema' => 'knpzken',
+    'schema' => '{default}',
     'comment' => 'Права групп',
     'fields' => array(
       'usrrghtGrpid' => array(
@@ -57,7 +57,7 @@ class modelCmsUsersGroupsRgth extends cmsModelAbstract
         'table' => 'cms_users_groups_rgth',
         'primary' => '',
         'primaryDB' => '',
-        'schema' => 'knpzken',
+        'schema' => '{default}',
         'prefix' => '',
       ),
     ),
