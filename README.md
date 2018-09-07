@@ -129,13 +129,75 @@ i - игнорировать поле
 acli getStarted genModel
 ```
 
-###### Важно знать
+##### Шаблонизатор
+`{#tmpl:parts/header#}` - Вставить шаблон parts/header.shtm
+
+`{#_tmpl_left_menu:…:…#}` - вызвать функцию VisualTheme::_ph_tmpl_left_menu(&$pageData,$editMode,$text,$secId=336), где:
+```php
+* $pageData - данные текущей страницы
+* $editMode - флаг режима редактирования
+* $text - содержимое шаблон-тега
+… явно указанные параметры, любое количество, в шаблоне разделаются двоеточиями
+```
+
+`{#ep:content:m#/}{/#ep:content:m#}` - редактируемое поле, где:
+```php
+* ep|eg - глобальный параметр|параметр только этой страницы
+* ep:content,ep:namefull,any - заререзвированинные имена текущей страницы, хранятся в CmsSection
+                               другие кобинации хранятся в таблице CmsSectionStrings
+* m|s|l - многострочное поле|однострочное после|простая строка без переносов
+```
+
+`{#_tmpl_children:parts/novosti_lasttop:2:3:21:t#}` - вызов VisualThemeAbstract::_ph_tmpl_children c: 
+```php
+* $template - шаблоном parts/novosti_lasttop.shtm для каждого потомка, 
+* $howchild - Как сортировать потомков
+* $limit    - 3
+* $sec_id   - Потомки для раздела: 
+              -1|id - текущий|любой
+* $skipthis - пропустить, если потомок по id совпадает с текущей страницей
+```
+
+`{#_tmpl_children_e:raskrinf_types:3:0:-1:f#}`, - вызов VisualThemeAbstract::_ph_tmpl_children_e c:
+```php
+* $template - шаблоном parts/raskrinf_types.php для каждого потомка,
+* $howchild - Как сортировать потомков
+* $limit    - 0
+* $sec_id   - Потомки для раздела: 
+              -1|id - текущий|любой
+* $mode:
+              a - один за одним, запуск для каждой сущности
+              f - общий запуск, foreach необходимо выполнять вручную
+```
+ 
+Прочие готовые функции:
+```php
+{#_date:sec_from:d F Y#}
+_ph_date: 
+    * $field  - Обязательный. поле из шаблоны
+    * $format - формат даты как в date, русский язык
+_ph_text:
+    * $field  - Обязательный. поле из шаблоны
+    * $quote  - Формат кавычек:
+                0 - не экранировать
+                1 - одинарные
+                2 - двойные
+_ph_text_trunc:
+    * $field  - Обязательный. поле из шаблоны
+    * $quote  - Формат кавычек:
+                0 - не экранировать
+                1 - одинарные
+                2 - двойные
+    * $cnt    - Длина строки 
+```
+
+##### Важно знать
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo), [Markdown-Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
 * [Как работает opcache](https://habr.com/company/mailru/blog/310054/)
 * [chroot](https://wiki.debian.org/chroot)
 * [nginx location](https://nginx.org/ru/docs/http/ngx_http_core_module.html#location)
 
-###### TODO
+##### TODO
 * Встраиваемые фотографии
 * Прикрепляемые файлы
 * Отмечать не активные разделы при редактировании заголовков в режиме редактирования. 

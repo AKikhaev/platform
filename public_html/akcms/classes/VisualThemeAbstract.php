@@ -142,6 +142,24 @@ abstract class VisualThemeAbstract
         return $pageData[$field];
     }
 
+    /** Обработчик плейсхолдера. Вывод текста
+     * @param $pageData
+     * Обязательный. массив с данными
+     * @param $editMode
+     * Обязательный. режим редактирования
+     * @param $text
+     * Обязательный. Заменяемый в шаблоне текст
+     * @param $field
+     * Обязательный. поле из шаблоны
+     * @param int $quote
+     * Формат кавычек.
+     * 0 - не экранировать
+     * 1 - одинарные
+     * 2 - двойные
+     * @param int $cnt
+     * Длина текста
+     * @return false|string
+     */
     public static function _ph_text_trunc(&$pageData,$editMode,$text,$field,$quote = 0,$cnt = 200){
         $txt = $pageData[$field];
         if ($text==='' && $field==='sec_contshort') $txt = $pageData['sec_content'];

@@ -498,7 +498,7 @@ class core {
                     if (isset($d['args'])) {
                         $parameters = [];
                         try {
-                            if (isset($d['function']))
+                            if (isset($d['function']) && $d['function']!='{closure}')
                                 $parameters = isset($d['class']) ?
                                     (new ReflectionClass($d['class']))->getMethod($d['function'])->getParameters() :
                                     (new ReflectionFunction('file_exists'))->getParameters();
@@ -644,7 +644,7 @@ class core {
         if ($res===false) {
             $bugtrace = debug_backtrace(0)[1];
             throw new CmsException('class_not_found: '.$class_name,-1,E_ERROR,
-                isset($bugtrace['file'])?$bugtrace['file']:(isset($bugtrace['function'])?$bugtrace['function'].'(...)':''),
+                isset($bugtrace['file'])?$bugtrace['file']:(isset($bugtrace['function'])?$bugtrace['function'].'(…)':''),
                 isset($bugtrace['line'])?$bugtrace['line']:-1); // 5.3.0+
             //self::InTryErrorHandler(new CmsException('class_not_found: '.$class_name,0,E_USER_ERROR,$bugtrace['file'],$bugtrace['line'])); die();
         }

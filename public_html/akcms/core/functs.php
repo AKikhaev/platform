@@ -253,7 +253,7 @@ Function GetTruncString($str,$cnt,$p3after = true) // Возвращает ча�
 {
     if (mb_strlen($str)<=$cnt) return $str;
     $str = mb_substr($str,0,$cnt);
-    return $str.($p3after?'... ':'');
+    return $str.($p3after?'… ':'');
 }
 
 Function DtTmToDtStr($dttm,$y=true) // Конвертирует 2005-05-06 в 6 мая 2005г.
