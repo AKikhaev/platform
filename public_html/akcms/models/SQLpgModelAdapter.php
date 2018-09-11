@@ -25,6 +25,15 @@ trait SQLpgModelAdapter {
     private $query_page = 0;
     private $query_pageSize = 50;
     private $tableSet = [];
+    private $__hasData = false;
+
+    /**
+     * @return bool
+     */
+    public function hasData()
+    {
+        return $this->__hasData;
+    }
 
     private function genFiledsDBList(){
         if (isset($this->struct['fieldsDB'])) return;
@@ -677,7 +686,8 @@ trait SQLpgModelAdapter {
     private function fetch_r() {
         $this->datapos = $this->sqlpos;
         $res = pg_fetch_row($this->sqlres);
-        if ($res!==false) $this->sqlpos++;
+        $this->__hasData = $res!==false;
+        if ($this->__hasData) $this->sqlpos++;
         $this->data = $res;
         return $res;
     }
@@ -685,7 +695,8 @@ trait SQLpgModelAdapter {
     private function fetch_a() {
         $this->datapos = $this->sqlpos;
         $res = pg_fetch_assoc($this->sqlres);
-        if ($res!==false) $this->sqlpos++;
+        $this->__hasData = $res!==false;
+        if ($this->__hasData) $this->sqlpos++;
         $this->data = $res;
         return $res;
     }
@@ -693,7 +704,8 @@ trait SQLpgModelAdapter {
     function fetch() {
         $this->datapos = $this->sqlpos;
         $res = pg_fetch_array($this->sqlres,null,$this->result_type);
-        if ($res!==false) $this->sqlpos++;
+        $this->__hasData = $res!==false;
+        if ($this->__hasData) $this->sqlpos++;
         $this->data = $res;
         return $res;
     }
