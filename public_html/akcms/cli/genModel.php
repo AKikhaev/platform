@@ -229,6 +229,7 @@ class pgCmsModelGenerator {
 			$typeSimple = '';
 			switch ($field['DATA_TYPE']) {
 				case 'int':
+				case 'int2':
 				case 'int4':
 				case 'int8':
 				case 'serial2':
