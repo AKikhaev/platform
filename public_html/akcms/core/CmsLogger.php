@@ -37,7 +37,7 @@ class CmsLogger
     }
 
     /**
-     * Вывод переменной в лог
+     * Вывод переменной в лог (print_r)
      * @param $vars
      */
     public static function var_log($vars) {
@@ -45,7 +45,7 @@ class CmsLogger
         self::write(self::var_log_export(...func_get_args()).PHP_EOL);
     }
     /**
-     * Вывод переменной в лог и останов
+     * Вывод переменной в лог (print_r) и останов
      * @param $var
      */
     public static function var_log__($var) {
@@ -53,6 +53,22 @@ class CmsLogger
         exit();
     }
 
+    /**
+     * Вывод переменной в лог (var_dump)
+     * @param $vars
+     */
+    public static function var_dump($vars) {
+        self::beep();
+        self::write(self::var_dump_export(...func_get_args()).PHP_EOL);
+    }
+    /**
+     * Вывод переменной в лог (var_dump) и останов
+     * @param $var
+     */
+    public static function var_dump__($var) {
+        self::var_dump(...func_get_args());
+        exit();
+    }
 
     /** Вывод в js консоль
      * @param $var

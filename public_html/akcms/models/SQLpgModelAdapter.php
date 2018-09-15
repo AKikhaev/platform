@@ -15,11 +15,12 @@ trait SQLpgModelAdapter {
     private $sql;
     /* SELECT SQL statement */
 
-    public $query = '';
+    private $query = '';
     private $query_fields = [];
     private $query_from = [];
     private $query_join = [];
     private $query_where = [];
+    private $query_groupBy = [];
     private $query_order = [];
     private $query_limit = 0;
     private $query_page = 0;
@@ -205,17 +206,18 @@ trait SQLpgModelAdapter {
      *
      * field BETWEEN 1 2
      *
-     * [where] AND [where] AND [...] | set of and wheres
+     * [where] AND [where] AND [...] | set of $concatSQL(and|or) wheres
      *
      * id
      *
      * instanceof cmsModelAbstract
      *
      * @param array $where
+     * @param string $concatSQL ' AND '
      * @return string
      * @throws DBException
      */
-    private function _where(array $where = []) {
+    private function _where(array $where = [],$concatSQL = ' AND ') {
         if (count($where) == 3 && is_string($where[1])) {
             // field = value
             // field =ANY [values]
@@ -251,7 +253,7 @@ trait SQLpgModelAdapter {
             foreach ($where as $w) {
                 $f[] = $this->_where($w);
             }
-            $where = implode(' AND ', $f);
+            $where = implode($concatSQL, $f);
             return $where;
         } elseif (count($where) === 1 && is_numeric($where[0])) {
             // id
@@ -272,6 +274,8 @@ trait SQLpgModelAdapter {
                 }
             }
             throw new DBException('relation '.get_class($this).' to '.get_class($where[0]).' not found');
+        }elseif (count($where) === 1 && $where[0] instanceof rawsql) {
+            return $where[0];
         }
         throw new DBException('unknown where');
     }
@@ -286,7 +290,7 @@ trait SQLpgModelAdapter {
      *
      * field BETWEEN 1 2
      *
-     * [where] AND [where] AND [...] | set of and wheres
+     * [where] AND [where] AND [...] | set of AND wheres
      *
      * id
      *
@@ -312,7 +316,7 @@ trait SQLpgModelAdapter {
      *
      * field BETWEEN 1 2
      *
-     * [where] AND [where] AND [...] | set of and wheres
+     * [where] AND [where] AND [...] | set of AND wheres
      *
      * id
      *
@@ -322,9 +326,35 @@ trait SQLpgModelAdapter {
      * @return $this|$this[]
      * @throws DBException
      */
-    public function AND_($where = []) {
+    public function and_($where = []) {
         $this->query = '!';
         $where = $this->_where(func_get_args());
+        $this->query_where .= ' AND ('.$where.')';
+        return $this;
+    }
+
+    /**
+     * And where ...
+     *
+     * field = value
+     *
+     * field =ANY [values]
+     *
+     * field BETWEEN 1 2
+     *
+     * [where] OR [where] OR [...] | set of OR wheres
+     *
+     * id
+     *
+     * instanceof cmsModelAbstract
+     *
+     * @param array $where
+     * @return $this|$this[]
+     * @throws DBException
+     */
+    public function andOrs_($where = []) {
+        $this->query = '!';
+        $where = $this->_where(func_get_args(),' OR ');
         $this->query_where .= ' AND ('.$where.')';
         return $this;
     }
@@ -348,13 +378,24 @@ trait SQLpgModelAdapter {
      * @return $this|$this[]
      * @throws DBException
      */
-    public function OR_($where = []) {
+    public function or_($where = []) {
         $this->query = '!';
         $where = $this->_where(func_get_args());
         $this->query_where .= ' OR ('.$where.')';
         return $this;
     }
 
+    /**
+     * Set query group by
+     *
+     * @param array $groupBy
+     * @return $this|$this[]
+     */
+    public function groupBy($groupBy = []) {
+        $this->query = '!';
+        $this->query_groupBy = $groupBy;
+        return $this;
+    }
     /**
      * Set query order
      *
@@ -373,7 +414,7 @@ trait SQLpgModelAdapter {
      * @param int $limit
      * @return $this|$this[]
      */
-    public function limit($limit = 0) {
+    public function limit($limit) {
         $this->query = '!';
         $this->query_limit = $limit;
         return $this;
@@ -427,9 +468,12 @@ trait SQLpgModelAdapter {
         elseif (is_object($this->query_where) && is_subclass_of($this->query_where, 'cmsModelAbstract')) $query .= ' WHERE '.$this->query_where->_pr_whereEQ(); //Класс самого себя
         elseif (is_array($this->query_where) && count($this->query_where)>0) $query .= ' WHERE '.implode(' AND ',$this->query_where); //набор готовых условий для склейки
 
+        if (is_array($this->query_groupBy) && count($this->query_groupBy)>0) $query .= ' GROUP BY '.implode(',',$this->query_groupBy); //Условия перечислены в массиве
+        elseif (is_string($this->query_groupBy) && $this->query_groupBy!='') $query .= ' GROUP BY '.$this->query_groupBy; // готовое условие
+
         //todo указание направления сотрировки
         if (is_array($this->query_order) && count($this->query_order)>0) $query .= ' ORDER BY '.implode(',',$this->query_order); //Условия перечислены в массиве
-        if (is_string($this->query_order) && $this->query_order!='') $query .= ' ORDER BY '.$this->query_order; // готовое условие
+        elseif (is_string($this->query_order) && $this->query_order!='') $query .= ' ORDER BY '.$this->query_order; // готовое условие
 
         if ($this->query_limit>0) $query .= ' LIMIT '.@(int)$this->query_limit;
         else if ($this->query_page>0)
@@ -494,6 +538,7 @@ trait SQLpgModelAdapter {
     public function update($where = null) {
         if ($where==null) $where=$this->_pr_whereID();
         $query = $this->pr_u($where);
+        $this->filled = [];
         return $this->sql->command($query);
     }
 
@@ -512,6 +557,7 @@ trait SQLpgModelAdapter {
             $res = $this->sql->query_one($query);
             if ($res!=false) {
                 $this->data[$primaryDB] = $res;
+                $this->filled = [];
                 return 1;
             } else return 0;
         }
@@ -550,6 +596,12 @@ trait SQLpgModelAdapter {
 		if ($this->query=='!') $this->buildQuery();
     	return $this->sql->query_all($this->query);
 	}
+
+	public function columnAsArray($col=0){
+        if ($this->query=='') throw new DBException('No query for '.__CLASS__);
+        if ($this->query=='!') $this->buildQuery();
+        return $this->sql->query_all_column($this->query,$col);
+    }
 
     /** return current data as array
      * @return mixed
@@ -718,6 +770,11 @@ class rawsql{
     private $string = '';
     public function __construct($rawquery){
         $this->string = $rawquery;
+    }
+
+    public function __invoke($rawquery)
+    {
+        return new self($rawquery);
     }
 
     public function __toString(){

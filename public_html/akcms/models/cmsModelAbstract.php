@@ -3,8 +3,16 @@
 /** Makes key value dictionary from any table with primary key
  * Class tableDictionary
  */
-class tableDictionary{
+class tableKeyValueDictionary{
     protected $dictionary = [];
+
+    /** tableKeyValueDictionary constructor.
+     * @param cmsModelAbstract $table
+     * table object
+     * @param $textField
+     * text field name as in object
+     * @throws DBException
+     */
     public function __construct(cmsModelAbstract $table,$textField)
     {
         $primary = $table->zzJoinData()['primary'];
@@ -93,6 +101,20 @@ abstract class cmsModelAbstract implements SeekableIterator
         } else throw new DBException('Field not found '.$name);
     }
 
+    /**
+     * set filled array for non empty date values
+     */
+    public function __reFill(){
+        foreach ($this->data as $key=>$datum) {
+            $name = @$this->struct['fieldsDB'][$key];
+            if ($name!==null) $this->filled[$name] = true;
+        }
+    }
+
+    /** get Description field text as it stored in db
+     * @param $fieldName
+     * @return mixed
+     */
     public function __getFieldDescription($fieldName){
         $name = @$this->struct['fieldsDB'][$fieldName];
         if ($name!==NULL) {

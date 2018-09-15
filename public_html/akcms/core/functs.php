@@ -54,10 +54,26 @@ function makePager($pager_Count, $pager_pgSize, $pager_pgNum, $urlstr, $NoFirstN
 	return $html;
 }
 
-function html_arrIdValPairs_toOptions($data,$idVal,$idName,$valSeected=0,$idStyle=null) {
+/** Build select options from array
+ * @param $data
+ * @param $colimnVal
+ * value column
+ * @param $columnName
+ * title column
+ * @param int $valSeected
+ * selected value
+ * @param null $columnStyle
+ * css data column
+ * @param array $ignoreVals
+ * list of ignored values
+ * @return string
+ */
+function html_arrIdValPairs_toOptions($data,$colimnVal,$columnName,$valSeected=0,$columnStyle=null,$ignoreVals=[]) {
 	$res = '';
-	if ($data!==false) foreach ($data as $dataItem) { //
-		$res .= '<option value="'.$dataItem[$idVal].'" '.($dataItem[$idVal]==$valSeected?'selected':'').(($idStyle!=null && isset($dataItem[$idStyle]))?' style="'.$dataItem[$idStyle].'"':'').'>'.$dataItem[$idName].'</option>';
+	if ($data!==false) foreach ($data as $dataItem) {
+	    if (!in_array($dataItem[$colimnVal],$ignoreVals)) {
+            $res .= '<option value="' . $dataItem[$colimnVal] . '" ' . ($dataItem[$colimnVal] == $valSeected ? 'selected' : '') . (($columnStyle != null && isset($dataItem[$columnStyle])) ? ' style="' . $dataItem[$columnStyle] . '"' : '') . '>' . $dataItem[$columnName] . '</option>';
+        }
 	}
 	return $res;
 }

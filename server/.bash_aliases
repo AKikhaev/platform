@@ -19,9 +19,13 @@ function acli(){
 	local PWD=$(pwd -P)
 	if  [[ "$PWD" == "/data/nfs/"* ]] ; then
 		local pwds
-		readarray -d / -t pwds <<<"$PWD/"
+		mapfile -d / -t pwds <<<"$PWD/"
 		projectName=${pwds[3]}
-		php /data/nfs/$projectName/public_html/akcms/core/acli.php "$@"
+		if  [[ "$@" == "monitor" ]] ; then
+		    cls && sh /data/nfs/$projectName/server/monitor.sh
+		else
+    		php /data/nfs/$projectName/public_html/akcms/core/acli.php "$@"
+		fi
 	else
 		echo Not in site folder!
 	fi

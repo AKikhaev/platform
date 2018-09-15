@@ -8,13 +8,18 @@ abstract class VisualThemeAbstract
     const monthsShort = array('','янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек');
     /**
      * 7 июля в 14:17         - j F в H:i
+     *
      * 7 июл в 14:17         - j M в H:i
+     *
      * Пятница, 7 янв 2017г. - l, j M Y г.
+     *
+     * E - год, как Y, если год отличный от текущего
      * @param $format
      * @param $dt
      * @return false|string
      */
     public static function dateRus($format,$dt) {
+        if (!is_numeric($dt)) $dt = strtotime($dt);
         if (mb_strpos($format,'l')!==false) {
             $format = str_replace('l',self::weekdays[date('w',$dt)],$format);
         }
@@ -26,6 +31,9 @@ abstract class VisualThemeAbstract
         }
         if (mb_strpos($format,'M')!==false) {
             $format = str_replace('M',self::monthsShort[date('n',$dt)],$format);
+        }
+        if (mb_strpos($format,'E')!==false) {
+            $format = str_replace('E',date('Y',$dt)!=date('Y')?'Y':'',$format);
         }
         return date($format,$dt);
     }

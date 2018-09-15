@@ -196,6 +196,7 @@ _ph_text_trunc:
 * [Как работает opcache](https://habr.com/company/mailru/blog/310054/)
 * [chroot](https://wiki.debian.org/chroot)
 * [nginx location](https://nginx.org/ru/docs/http/ngx_http_core_module.html#location)
+* [PostgreSql 10](https://postgrespro.ru/docs/postgrespro/10/)
 
 ##### TODO
 * Встраиваемые фотографии

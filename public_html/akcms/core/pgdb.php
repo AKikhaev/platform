@@ -142,10 +142,10 @@ class pgdb {
         return $dict;
     }
 
-    public function query_all_column($query, $row=0)
+    public function query_all_column($query, $col=0)
     {
         $sqlres = $this->query($query);
-        $res = pg_fetch_all_columns($sqlres,$row);
+        $res = pg_fetch_all_columns($sqlres,$col);
         pg_free_result($sqlres);
 
         return $res;
