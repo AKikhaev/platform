@@ -86,13 +86,32 @@ git reset --hard && git pull
 ```
 
 ##### SSL
+* Включение
 
-```php
-$cfg['ssl'] = true;
-```
-```bash
+`$cfg['ssl'] = true;`
+```text
+* Генерация конфигов для получения сертификата
 cls && acli getStarted nginx --ssl-first && service nginx configtest && service nginx reload
+* Получение сертификата:
+php server/acme/certs.php
+* Генерация конфигов с использованием сертификатов 
+cls && acli getStarted nginx && service nginx configtest && service nginx reload
+* Обновление сертификатов (для cron)
+php server/acme/certs.php
 ```
+* [Оценка ssl](https://www.ssllabs.com/ssltest/)
+* Список доменов сайта: 
+
+`true | openssl s_client -showcerts -connect habrahabr.ru:443 2>&1 | openssl x509 -text | grep -o 'DNS:[^,]*' | cut -f2 -d:`
+* Сведения о сертификате:
+```text
+openssl x509 -text -in /data/certs/project_name/cert.crt
+cat /data/certs/project_name/cert.crt | openssl x509 -text | grep -o 'DNS:[^,]*' | cut -f2 -d:
+cat /data/certs/project_name/cert.crt | openssl x509 -text | grep -o 'Not After :[^,]*'
+
+```
+
+
 
 ##### Известные проблемы
 
@@ -142,7 +161,7 @@ acli getStarted genModel
 `{#tmpl:parts/header#}` - Вставить шаблон parts/header.shtm
 
 `{#_tmpl_left_menu:…:…#}` - вызвать функцию VisualTheme::_ph_tmpl_left_menu(&$pageData,$editMode,$text,$secId=336), где:
-```php
+```text
 * $pageData - данные текущей страницы
 * $editMode - флаг режима редактирования
 * $text - содержимое шаблон-тега
@@ -150,7 +169,7 @@ acli getStarted genModel
 ```
 
 `{#ep:content:m#/}{/#ep:content:m#}` - редактируемое поле, где:
-```php
+```text
 * ep|eg - глобальный параметр|параметр только этой страницы
 * ep:content,ep:namefull,any - заререзвированинные имена текущей страницы, хранятся в CmsSection
                                другие кобинации хранятся в таблице CmsSectionStrings
@@ -158,7 +177,7 @@ acli getStarted genModel
 ```
 
 `{#_tmpl_children:parts/novosti_lasttop:2:3:21:t#}` - вызов VisualThemeAbstract::_ph_tmpl_children c: 
-```php
+```text
 * $template - шаблоном parts/novosti_lasttop.shtm для каждого потомка, 
 * $howchild - Как сортировать потомков
 * $limit    - 3
@@ -168,7 +187,7 @@ acli getStarted genModel
 ```
 
 `{#_tmpl_children_e:raskrinf_types:3:0:-1:f#}`, - вызов VisualThemeAbstract::_ph_tmpl_children_e c:
-```php
+```text
 * $template - шаблоном parts/raskrinf_types.php для каждого потомка,
 * $howchild - Как сортировать потомков
 * $limit    - 0
@@ -180,7 +199,7 @@ acli getStarted genModel
 ```
  
 Прочие готовые функции:
-```php
+```text
 {#_date:sec_from:d F Y#}
 _ph_date: 
     * $field  - Обязательный. поле из шаблоны
