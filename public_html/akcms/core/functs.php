@@ -529,7 +529,7 @@ function getCoordsByAddress($addr)
 {
 	$ch = curl_init();
 	$result = array(1,1);
-	curl_setopt($ch, CURLOPT_URL, 'http://geocode-maps.yandex.ru/1.x/?geocode='.urlencode($addr).'&ll=38.985834,45.047493&spn=1,1&results=1&rspn=1&key=ANpUFEkBAAAAf7jmJwMAHGZHrcKNDsbEqEVjEUtCmufxQMwAAAAAAAAAAAAvVrubVT4btztbduoIgTLAeFILaQ==');
+	curl_setopt($ch, CURLOPT_URL, 'https://geocode-maps.yandex.ru/1.x/?geocode='.urlencode($addr).'&ll=38.985834,45.047493&spn=1,1&results=1&rspn=1&key=ANpUFEkBAAAAf7jmJwMAHGZHrcKNDsbEqEVjEUtCmufxQMwAAAAAAAAAAAAvVrubVT4btztbduoIgTLAeFILaQ==');
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	#curl_setopt($ch, CURLOPT_PROXY , '200.195.23.12:3128');
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
