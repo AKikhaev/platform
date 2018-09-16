@@ -6,7 +6,7 @@
  */
 class getStarted extends cliUnit {
     public $projectName = '';
-    protected $options_available = ['-bash_completion','--silence_greetings'];
+    protected $options_available = ['-bash_completion','--silence_greetings','--ssl-first'];
 
     public function __construct()
     {
@@ -36,11 +36,28 @@ class getStarted extends cliUnit {
      */
     public function nginxAction(){
         global $cfg;
+        $data = file_get_contents('../server/nginx/project_name.conf');
+
+        $server_to_ssl = '';
+        $port = 80;
+        $ssl = '';
+
+        $sslEnable = isset($cfg['ssl']) && $cfg['ssl'] = true;
+        if ($sslEnable) {
+            $port = '443 ssl';
+            if (!isset(cli::$options['ssl-first'])) $ssl = file_get_contents('../server/nginx/ssl');
+            $server_to_ssl = file_get_contents('../server/nginx/server_to_ssl');
+        }
+
         $path = '/etc/nginx/sites-enabled';
         //if (!file_exists($path)) mkdir($path,0755,true);
-        $data = file_get_contents('../server/nginx/project_name.conf');
+
+        $data = str_replace('{#server_to_ssl#}',$server_to_ssl,$data);
+        $data = str_replace('{#ssl#}',$ssl,$data);
         $data = str_replace('project_name',$this->projectName,$data);
         $data = str_replace('{#domain#}',$cfg['server_prod'][0],$data);
+        $data = str_replace('{#port#}',$port,$data);
+
         file_put_contents($path.'/'.$this->projectName.'.conf',$data);
         echo "  Nginx confutation saved to $path/*.\n";
     }

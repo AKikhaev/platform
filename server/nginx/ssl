@@ -1,22 +1,22 @@
-ssl_certificate			/etc/letsencrypt/live/zvonkiidut.ru/fullchain.pem;
-ssl_certificate_key		/etc/letsencrypt/live/zvonkiidut.ru/privkey.pem;
-ssl_trusted_certificate	/etc/letsencrypt/live/zvonkiidut.ru/chain.pem;
+    ssl_certificate			/data/certs/project_name/cert.crt;
+    ssl_certificate_key		/data/certs/project_name/key.pem;
+    ssl_trusted_certificate	/data/certs/project_name/chain.pem;
 
-ssl_ciphers EECDH:+AES256:-3DES:RSA+AES:RSA+3DES:!NULL:!RC4;
+    ssl_ciphers EECDH:+AES256:-3DES:RSA+AES:RSA+3DES:!NULL:!RC4;
 
-ssl_stapling on;
-ssl_stapling_verify on;
+    ssl_stapling on;
+    ssl_stapling_verify on;
 
-ssl_session_cache   shared:SSL:10m;
-ssl_session_timeout 5m;
-ssl_prefer_server_ciphers on;
-resolver 8.8.8.8;
+    ssl_session_cache   shared:SSL:10m;
+    ssl_session_timeout 5m;
+    ssl_prefer_server_ciphers on;
+    resolver 8.8.8.8;
 
-# исключим возврат на http-версию сайта
-add_header Strict-Transport-Security "max-age=31536000";
+    # РёСЃРєР»СЋС‡РёРј РІРѕР·РІСЂР°С‚ РЅР° http-РІРµСЂСЃРёСЋ СЃР°Р№С‚Р°
+    add_header Strict-Transport-Security "max-age=31536000";
 
-# явно "сломаем" все картинки с http://
-#add_header Content-Security-Policy "block-all-mixed-content";
+    # СЏРІРЅРѕ "СЃР»РѕРјР°РµРј" РІСЃРµ РєР°СЂС‚РёРЅРєРё СЃ http://
+    #add_header Content-Security-Policy "block-all-mixed-content";
 
-#ssl_session_cache shared:SSL:10m;
-#ssl_session_timeout 2h;
+    #ssl_session_cache shared:SSL:10m;
+    #ssl_session_timeout 2h;

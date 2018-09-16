@@ -1,5 +1,4 @@
-
 location /.well-known {
-    alias /data/nfs/acme/.well-known;
+    alias /data/certs/www/.well-known;
 	#return 501;
 }

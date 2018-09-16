@@ -38,6 +38,10 @@ chown -R mstr:www-user /data/nfs/$projectName/public_html/img/gallery/
 chown -R mstr:www-user /data/nfs/$projectName/public_html/img/pages/
 chown mstr:www-user /data/nfs/$projectName/public_html/sitemap*.xml
 
+mkdir -p /data/certs/www
+chown mstr:www-data /data/certs
+chown mstr:www-data /data/certs/www
+
 echo
 echo "Add this line to /etc/fstab (for auto terminal notification feature):"
 echo /dev/pts /data/nfs/$projectName/dev/pts auto bind 0 0

@@ -85,6 +85,15 @@ git fetch && git pull
 git reset --hard && git pull
 ```
 
+##### SSL
+
+```php
+$cfg['ssl'] = true;
+```
+```bash
+cls && acli getStarted nginx --ssl-first && service nginx configtest && service nginx reload
+```
+
 ##### Известные проблемы
 
 * opcache:

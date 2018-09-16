@@ -1,5 +1,5 @@
 <?php
-chdir(dirname(__FILE__).'/../..');
+chdir(__DIR__.'/../..');
 if(PHP_SAPI!=='cli')die('<!-- not allowed -->');
 ini_set('memory_limit', '228M');
 require_once('akcms/core/core.php'); LOAD_CORE_CLI();
