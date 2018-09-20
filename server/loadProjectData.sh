@@ -4,10 +4,14 @@
 #projectName - extract name from ../{projectName}/public_html
 #projectNameShort - name without spaces, dashes instead tabs,dots
 
+executeScriptDir=$(dirname "$(readlink -f "$0")")
+mapfile -d / -t pwds <<<"$executeScriptDir/"
+projectName=${pwds[3]}
+
+scriptsDir=/data/nfs/$projectName/server
 #scriptsDir=$(dirname "$(readlink -f "$0")")
 projectRoot=$(dirname "$scriptsDir")
-projectHome=$(dirname "$scriptsDir")/public_html
-projectName=$(basename "$(dirname "$scriptsDir")")
+projectHome=$projectRoot/public_html
 projectNameShort=`echo $name | sed 's/[ \t\.-]//g'`
 projectPhpSocket=/tmp/php-fpm-${projectName}.sock
 

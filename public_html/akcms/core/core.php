@@ -57,7 +57,9 @@ function LOAD_CORE() {
 	  exit;
 	}
 
-	if (!in_array(core::$serverName, $cfg['domains_approved'], true)) throw new CmsException('domain_not_approved');
+	if (!in_array(core::$serverName, $cfg['domains_approved'], true)) {
+        throw new CmsException('domain_not_approved:'.core::$serverName);
+    }
 	if (in_array(core::$serverName, $cfg['server_test'], true)) core::$testServer = true;
 	if (in_array(core::$serverName, $cfg['server_prod'], true)) core::$prodServer = true;
 	core::$devTest = isset($_COOKIE['devtest']) && $_COOKIE['devtest'] === 't';

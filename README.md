@@ -29,8 +29,9 @@ dpkg -l | grep php
 
 add-apt-repository ppa:ondrej/php
 apt update
+apt upgrade
 
-apt install libfcgi-bin mc nginx php7.2-fpm php7.2-cli php7.2-common php7.2-curl php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-pgsql php7.2-xml p7zip-full
+apt install libfcgi-bin mc nginx socat php7.2-fpm php7.2-cli php7.2-common php7.2-curl php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-pgsql php7.2-xml p7zip-full
 
 apt install php7.2-zip php7.2-opcache  
 apt install php7.2-mcrypt
@@ -39,7 +40,7 @@ apt install php7.2-mcrypt
 * Postgresql
 
 ```bash
-apt-get install postgresql-10
+apt install postgresql-10
 service postgresql stop
 mkdir -p /data/db
 cp -r -p /var/lib/postgresql/10/main /data/db/pg10
@@ -53,7 +54,7 @@ psql
 CREATE ROLE project_name NOINHERIT LOGIN PASSWORD 'password';
 CREATE DATABASE project_name WITH OWNER = project_name ENCODING = 'UTF8';
 ALTER DATABASE project_name SET timezone TO 'Europe/Moscow';
-\c astr
+\c project_name
 ALTER SCHEMA public OWNER TO project_name;
 ```
 
