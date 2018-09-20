@@ -42,7 +42,7 @@ class getStarted extends cliUnit {
         $port = 80;
         $ssl = '';
 
-        $sslEnable = isset($cfg['ssl']) && $cfg['ssl'] = true;
+        $sslEnable = !cli::isWSL() && isset($cfg['ssl']) && $cfg['ssl'] = true;
         if ($sslEnable) {
             $port = '443 ssl';
             if (!isset(cli::$options['ssl-first'])) $ssl = file_get_contents('../server/nginx/ssl');
@@ -56,6 +56,7 @@ class getStarted extends cliUnit {
         $data = str_replace('{#ssl#}',$ssl,$data);
         $data = str_replace('project_name',$this->projectName,$data);
         $data = str_replace('{#domain#}',$cfg['server_prod'][0],$data);
+        $data = str_replace('{#domains#}',implode(' ',$cfg['domains_approved']),$data);
         $data = str_replace('{#port#}',$port,$data);
 
         file_put_contents($path.'/'.$this->projectName.'.conf',$data);

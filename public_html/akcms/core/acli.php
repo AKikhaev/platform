@@ -71,8 +71,18 @@ class cliUnit {
 class cli {
     private static $rootCmdList = [];
     public static $options = [];
+
+    /** Windows Subsystem Linux
+     * @return bool
+     */
+    public static function isWSL(){
+        $osVersion = file_get_contents('/proc/version');
+        return mb_stripos($osVersion,'Microsoft')!==false ||
+            mb_stripos($osVersion,'WSL')!==false;
+    }
     private static function extractOptions(&$commands)
     {
+
         $lastOption = '';
         foreach ($commands as $i=>$command) {
             if (mb_strpos($command,'--')===0) {
