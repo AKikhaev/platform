@@ -16,14 +16,14 @@ abstract class CmsPage extends AclProcessor { /* page */
     public function initAjx() {return [];}
 
     /** Сортировка потомков
-     * @param $howchild
+     * @param $order
      * 1 - по созданию
      * 2 - с новых
      * 3 - со старых
      * @return bool|string
      */
-    public function _howchildToOrder($howchild){
-        switch ($howchild) {
+    public function _howChildrenOrder($order){
+        switch ($order) {
             case 1:	return 'sec_sort';
             case 2:	return 'sec_from DESC';
             case 3:	return 'sec_from';
@@ -52,7 +52,7 @@ abstract class CmsPage extends AclProcessor { /* page */
     protected function _getMenuItems($parentId,$howchild,$showHidden = false,$prefix=false)
     {
         global $sql;
-        $order = $this->_howchildToOrder($howchild);
+        $order = $this->_howChildrenOrder($howchild);
         if (core::$inEdit && $order==false) {
             $order = 'sec_enabled,sec_showinmenu,sec_from DESC';
             $wherespec = ($showHidden?' ':'and sec_enabled and sec_showinmenu and now()>sec_from').' and not sec_system';
@@ -78,7 +78,7 @@ abstract class CmsPage extends AclProcessor { /* page */
                                         $showHidden = false, $prefix = false, $markSelected = false, $markCurrent = false, $expByPath = false, $deep = 999) {
         global $sql;
         if ($deep===0) return false;
-        $order = $this->_howchildToOrder($howchild); if ($order===false && !$showHidden) return false;
+        $order = $this->_howChildrenOrder($howchild); if ($order===false && !$showHidden) return false;
         $mnulist = $this->_getMenuItems($parentId,$howchild,$showHidden,$prefix);
         if ($mnulist!==false) {
             $putInto = $mnulist;

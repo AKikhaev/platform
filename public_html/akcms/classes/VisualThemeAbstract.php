@@ -223,7 +223,7 @@ abstract class VisualThemeAbstract
         $html = '';
         $query = sprintf ('select * from cms_sections where sec_parent_id=%d '.($editMode?'':'and sec_enabled and now()>sec_from').
             ($skipthis==='t'||$skipthis===true?' AND section_id<>'.$sql->d($pageData['section_id']):'').
-            ' order by '.$page->_howchildToOrder($howchild),
+            ' order by '.$page->_howChildrenOrder($howchild),
             $sql->d((int)$sec_id===-1?$pageData['section_id']:$sec_id));
         if ($limit>0) $query.=' LIMIT '.$sql->d($limit);
 
@@ -264,7 +264,7 @@ abstract class VisualThemeAbstract
         /* @var $page PageUnit */
         global $sql,$page;
         $html = '';
-        $query = sprintf ('select * from cms_sections where sec_parent_id=%d '.($editMode?'':'and sec_enabled and now()>sec_from').' order by '.$page->_howchildToOrder($howchild),
+        $query = sprintf ('select * from cms_sections where sec_parent_id=%d '.($editMode?'':'and sec_enabled and now()>sec_from').' order by '.$page->_howChildrenOrder($howchild),
             $sql->d((int)$sec_id===-1?$pageData['section_id']:$sec_id));
         if ($limit>0) $query.=' LIMIT '.$sql->d($limit);
         $sections = $sql->query_all($query);

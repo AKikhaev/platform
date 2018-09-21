@@ -703,7 +703,7 @@ trait SQLpgModelAdapter {
     }
 
     function __destruct() {
-        if ($this->sqlres) pg_free_result($this->sqlres);
+        if (is_resource($this->sqlres)) pg_free_result($this->sqlres);
     }
 
     function current() {
