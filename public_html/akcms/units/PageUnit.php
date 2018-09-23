@@ -1,5 +1,5 @@
 <?php
-class PageUnit extends CmsPage {
+final class PageUnit extends CmsPage {
 	public $pageUri;
 	public $pageMainUri;
 	public $imgpath;

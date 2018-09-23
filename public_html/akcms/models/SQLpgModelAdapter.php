@@ -530,7 +530,7 @@ trait SQLpgModelAdapter {
         }
     }
 
-    /**
+    /** send changes to DB
      * @param null $where
      * @return int
      * @throws DBException
@@ -542,7 +542,18 @@ trait SQLpgModelAdapter {
         return $this->sql->command($query);
     }
 
-    /**
+    /** Delete records from DB
+     * @param null $where
+     * @return int
+     * @throws DBException
+     */
+    public function delete($where = null) {
+        if ($where==null) $where=$this->_pr_whereID();
+        $query = 'DELETE FROM '.static::$tableName.' WHERE '.$where;
+        return $this->sql->command($query);
+    }
+
+    /** create new recond into DB
      * @return int
      */
     public function insert() {

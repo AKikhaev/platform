@@ -13,7 +13,19 @@ abstract class CmsPage extends AclProcessor { /* page */
     public function noCache() { $this->cacheWholePage=false; }
     public function __construct(&$pageTemplate) {}
     public function getTitle() {return $this->title;}
-    public function initAjx() {return [];}
+    public function initAjx(){
+        $ajaxList = [];
+        $rc = new ReflectionClass($this);
+        foreach ($rc->getMethods() as $method) {
+            if (mb_substr($method->getName(), -4) === 'Ajax') {
+                $ajaxList['_'.mb_substr($method->getName(), 0, -4)] = [
+                    'func' => $method->getName(),
+                    //'object' => $this
+                ];
+            }
+        }
+        return $ajaxList;
+    }
 
     /** Сортировка потомков
      * @param $order

@@ -5,8 +5,7 @@ class ObjGallery extends PgUnitAbstract {
 	
 	function initAjx()
 	{
-		global $page;
-		return array(		
+		return array(
 		'_glrilst' => array(
 			'func' => 'ajxGlrCopList',
 			'object' => $this),

@@ -98,7 +98,19 @@ abstract class PgUnitAbstract extends AclProcessor { /* Pg_ untits */
 		return "$viewUnit/$viewName";
 	}
 	public function __construct($pathParams = array()) { $this->unitParam = $pathParams; }
-	public function initAjx() {return array();}
+    public function initAjx(){
+        $ajaxList = [];
+        $rc = new ReflectionClass($this);
+        foreach ($rc->getMethods() as $method) {
+            if (mb_substr($method->getName(), -4) === 'Ajax') {
+                $ajaxList['_'.mb_substr($method->getName(), 0, -4)] = [
+                    'func' => $method->getName(),
+                    'object' => $this
+                ];
+            }
+        }
+        return $ajaxList;
+    }
 	public static function buildLevelSiteMap(&$putInto,$parentId,$parentUrlFull,$showHidden = false) {} // Строит карту сайта
 }
 
@@ -392,7 +404,7 @@ class CmsUser {
         }
     }
 }
-class core {
+final class core {
     public static $isAjax = false;
     public static $ajaxAction = '';
     public static $inEdit = false;
@@ -457,6 +469,40 @@ class core {
     	else $filename = basename($filename);
 		return $filename;
 	}
+	private static function GlobalErrorHandler_paramToText(&$n, &$v, $lvl, &$parameters, &$d) {
+        ++$lvl;
+        switch (gettype($v)) {
+            case 'boolean': $v = $v===true?'TRUE':'FALSE'; break;
+            case 'integer':
+            case 'double':
+            case 'float': $v = GetTruncString($v,20); break;
+            case 'object': $v = '{'.get_class($v).'}'; break;
+            case 'array':
+                if ($lvl>3) {
+                    $v = '[…'.count($v).']';
+                    break;
+                } else {
+                    $arr = [];
+                    foreach ($v as $nn=>$value) if ($nn<3){
+                        $arr[] = (is_numeric($nn)?'':$nn.'=>').self::GlobalErrorHandler_paramToText($n,$value,$lvl+1,$parameters,$d);
+                    }
+                    $v = '['.implode(',',$arr).(count($v)>count($arr)?',…'.count($v):'').']';
+                }
+                break;
+            case 'string':
+                if (isset($parameters[$n]) && (mb_stripos($parameters[$n]->getName(),'passw')!==false || mb_stripos($parameters[$n]->getName(),'psw')!==false)) $v='*****';
+                elseif (isset($d['function']) && (in_array($d['function'],['require_once','require']) || strrpos($d['function'],'file_')===0))
+                {
+                    if (isset($_SERVER) && isset($_SERVER['DOCUMENT_ROOT']) && strpos($v,$_SERVER['DOCUMENT_ROOT'])===0) {
+                        $v = substr($v, strlen($_SERVER['DOCUMENT_ROOT']));
+                    }
+                }
+                $v = '\''.GetTruncString($v,20).'\'';
+                break;
+            default: $v = gettype($v); break;
+        }
+        return $v;
+    }
     public static function GlobalErrorHandler($errno, $errmsg, $filename, $linenum, $backtrace)
     {
         Global $cfg;
@@ -479,6 +525,7 @@ class core {
             E_USER_DEPRECATED    => 'User deprecated',
             -1					 => 'In try'
         );
+
         if ($errmsg !== 'login_needs' && error_reporting()!==0) {
             $err = $errortype[$errno].': '. $errmsg . "\n";
             if (self::$ErrorFirstTitle=='')
@@ -508,25 +555,7 @@ class core {
                             );
                         }
                         foreach ($d['args'] as $n=>&$v){
-                            switch (gettype($v)) {
-                                case 'boolean': $v = $v===true?'TRUE':'FALSE'; break;
-                                case 'integer':
-                                case 'double':
-                                case 'float': $v = GetTruncString($v,20); break;
-                                case 'object': $v = '{'.get_class($v).'}'; break;
-                                case 'array': $v = '[…'.count($v).']'; break;
-                                case 'string':
-                                    if (isset($parameters[$n]) && (mb_stripos($parameters[$n]->getName(),'passw')!==false || mb_stripos($parameters[$n]->getName(),'psw')!==false)) $v='*****';
-                                    elseif (isset($d['function']) && (in_array($d['function'],['require_once','require']) || strrpos($d['function'],'file_')===0))
-                                    {
-                                        if (isset($_SERVER) && isset($_SERVER['DOCUMENT_ROOT']) && strpos($v,$_SERVER['DOCUMENT_ROOT'])===0) {
-                                            $v = substr($v, strlen($_SERVER['DOCUMENT_ROOT']));
-                                        }
-                                    }
-                                    $v = '\''.GetTruncString($v,20).'\'';
-                                    break;
-                                default: $v = gettype($v); break;
-                            }
+                            $v = self::GlobalErrorHandler_paramToText($n,$v,0,$parameters,$d);
                         }
                         $i .= '('.implode(',',$d['args']).')';
                     }
