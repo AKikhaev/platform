@@ -2,7 +2,7 @@
 
 class SysUnit extends CmsPage {						// Страницы из DB
 	public $pageUri;
-	public $units = array('ObjGallery');
+	public $units = array('ObjGallery','FileManager');
 	private $pageUnits = [];
 
 	public function initAjx()
