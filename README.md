@@ -92,7 +92,7 @@ git reset --hard && git pull
 `$cfg['ssl'] = true;`
 ```text
 * Генерация конфигов для получения сертификата
-cls && acli getStarted nginx --ssl-first && service nginx configtest && service nginx reload
+cls && acli getStarted nginx --ssl-prepare && service nginx configtest && service nginx reload
 * Получение сертификата:
 php server/acme/certs.php
 * Генерация конфигов с использованием сертификатов 

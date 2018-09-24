@@ -6,7 +6,7 @@
  */
 class getStarted extends cliUnit {
     public $projectName = '';
-    protected $options_available = ['-bash_completion','--silence_greetings','--ssl-first'];
+    protected $options_available = ['-bash_completion','--silence_greetings','--ssl-prepare'];
 
     public function __construct()
     {
@@ -45,7 +45,7 @@ class getStarted extends cliUnit {
         $sslEnable = !cli::isWSL() && isset($cfg['ssl']) && $cfg['ssl'] = true;
         if ($sslEnable) {
             $port = '443 ssl';
-            if (!isset(cli::$options['ssl-first'])) $ssl = file_get_contents('../server/nginx/ssl');
+            if (!isset(cli::$options['ssl-prepare'])) $ssl = file_get_contents('../server/nginx/ssl');
             $server_to_ssl = file_get_contents('../server/nginx/server_to_ssl');
         }
 
