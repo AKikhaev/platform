@@ -110,11 +110,7 @@ php server/acme/certs.php
 openssl x509 -text -in /data/certs/project_name/cert.crt
 cat /data/certs/project_name/cert.crt | openssl x509 -text | grep -o 'DNS:[^,]*' | cut -f2 -d:
 cat /data/certs/project_name/cert.crt | openssl x509 -text | grep -o 'Not After :[^,]*'
-
 ```
-
-
-
 ##### Известные проблемы
 
 * opcache:
