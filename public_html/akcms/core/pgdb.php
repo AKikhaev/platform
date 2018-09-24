@@ -79,7 +79,7 @@ class pgdb {
 
     public function __construct() {}
 
-    private function pgconnect()
+    private function connect()
     {
         global $cfg;
         $dbnum = 1;
@@ -94,13 +94,13 @@ class pgdb {
 
     public function getClientEncoding()
     {
-        if (!$this->db_conn) $this->pgconnect();
+        if (!$this->db_conn) $this->connect();
         return pg_client_encoding();
     }
 
     public function query($query)
     {
-        if (!$this->db_conn) $this->pgconnect();
+        if (!$this->db_conn) $this->connect();
         $sqlres = pg_query($this->db_conn,$query); if ($sqlres===false) throw new DBException('DB_no_data: ' .$query,pg_last_error());
         if ($this->debug) {
             ++profiler::$sql_quries;
@@ -111,7 +111,7 @@ class pgdb {
 
     public function command($query)
     {
-        if (!$this->db_conn) $this->pgconnect();
+        if (!$this->db_conn) $this->connect();
         $sqlres = $this->query($query);
         if ($this->debug) {
             --profiler::$sql_quries;
