@@ -94,7 +94,8 @@ git reset --hard && git pull
 * Генерация конфигов для получения сертификата
 cls && acli getStarted nginx --ssl-prepare && service nginx configtest && service nginx reload
 * Получение сертификата:
-php server/acme/certs.php
+php server/acme/v1/certs.php --test
+php server/acme/v1/certs.php --prod
 * Генерация конфигов с использованием сертификатов 
 cls && acli getStarted nginx && service nginx configtest && service nginx reload
 * Обновление сертификатов (для cron)

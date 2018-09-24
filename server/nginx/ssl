@@ -1,4 +1,4 @@
-    ssl_certificate			/data/certs/project_name/cert.crt;
+    ssl_certificate			/data/certs/project_name/fullchain.pem;
     ssl_certificate_key		/data/certs/project_name/key.pem;
     ssl_trusted_certificate	/data/certs/project_name/chain.pem;
 

@@ -323,6 +323,24 @@ function intervalToWords($sec) {
 	return $sec.' '.RightWordForm($sec,array('секунду','секунды','секунд'));
 }
 
+function intervalToWordsExact($sec) {
+    $years = intdiv($sec,365*86400); $sec = $sec % (365*86400);
+    $mnts = intdiv($sec,31*86400); $sec = $sec % (31*86400);
+    $weeks = intdiv($sec,7*86400); $sec = $sec % (7*86400);
+    $days = intdiv($sec,86400); $sec = $sec % 86400;
+    $hrs = intdiv($sec,3600); $sec = $sec % 3600;
+    $min = intdiv($sec,60); $sec = $sec % 60;
+    $text = [];
+    if ($years>1) $text[] = $years.' '.RightWordForm($years,array('год','год','лет'));
+    if ($mnts>1) $text[] =  $mnts.' '.RightWordForm($mnts,array('месяц','месяца','месяцев'));
+    if ($weeks>1) $text[] =  $weeks.' '.RightWordForm($weeks,array('неделя','недели','недель'));
+    if ($days>1) $text[] =  $days.' '.RightWordForm($days,array('день','дня','дней'));
+    if ($hrs>1) $text[] =  $hrs.' '.RightWordForm($hrs,array('час','часа','часов'));
+    if ($min>1) $text[] =  $min.' '.RightWordForm($min,array('минута','минуты','минут'));
+    if ($sec>1) $text[] =  $sec.' '.RightWordForm($sec,array('секунда','секунды','секунд'));
+    return implode(' ',$text);
+}
+
 
 function mb_strpos_all($haystack, $needle) {
     $s = 0;

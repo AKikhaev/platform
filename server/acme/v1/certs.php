@@ -1,7 +1,9 @@
 <?php
 chdir(__DIR__);
-require '../../public_html/akcms/u/config/config.php';
-require 'src/itr-acme-client.php';
+require '../../../public_html/akcms/u/config/config.php';
+require '../../../public_html/akcms/core/functs.php';
+require '../../../public_html/akcms/core/CmsLogger.php';
+require 'src/itr-acme-client.php'; //https://github.com/ITronic/itr-acme-client/
 require 'simplelogger.php';
 
 function getProjectName(){
@@ -17,18 +19,31 @@ try {
     $iac = new itrAcmeClient();
 
     // Activate debug mode, we automatically use staging endpoint in testing mode
-    $iac->testing = false;
+    $iac->testing = !in_array('--prod',$_SERVER['argv']);
 
     // The root directory of the certificate store
     $iac->certDir = "/data/certs/$projectName";
+
+    if ($iac->testing) $iac->certDir .= '/test';
+
     // The root directory of the account store
-    $iac->certAccountDir = "/data/certs/$projectName";
+    $iac->certAccountDir = $iac->certDir."/account";
     // This token will be attached to the $certAccountDir
     $iac->certAccountToken = '';
 
+    $iac->certKeyTypes = ['RSA'];
+
+
     if (file_exists($iac->certDir . '/cert.crt')) {
-        $until = exec("openssl x509 -text -in /data/certs/$projectName/cert.crt | grep -o 'Not After :[^,]*'");  $until = strtotime(mb_substr($until,12));
-        if (time()<$until-86400*30) { echo "Еще рано\n"; die; }
+        $oldKey = file_get_contents($iac->certDir . '/cert.crt');
+        $parsed = openssl_x509_parse($oldKey);
+        $expireDate = DateTime::createFromFormat('ymdHise', $parsed['validTo']);
+        $ramain = $expireDate->getTimestamp() - time();
+        echo @$parsed['name'].PHP_EOL;
+        echo '  Сертификат до '.$expireDate->format('Y-m-d H:i:s.vP').PHP_EOL;
+        echo '  '.@$parsed['extensions']['subjectAltName'].PHP_EOL;
+        echo '  Осталось: '.intervalToWordsExact($ramain).' ('.intdiv($ramain,86400).' дней)'.PHP_EOL;
+        if ($ramain>86400*mt_rand(30,45)) { echo 'Еще рано.'.PHP_EOL; die; }
     }
 
     // The certificate contact information
@@ -72,6 +87,10 @@ try {
     file_put_contents($iac->certDir . '/cert.crt', $pem['RSA']['cert']);
     file_put_contents($iac->certDir . '/key.pem', $pem['RSA']['key']);
     file_put_contents($iac->certDir . '/chain.pem', $pem['RSA']['chain']);
+
+    file_put_contents($iac->certDir . '/fullchain.pem', $pem['RSA']['cert']);
+    file_put_contents($iac->certDir . '/fullchain.pem', $pem['RSA']['chain'],FILE_APPEND);
+
 
     // Output the certificate informatione
     //print_r($pem);
