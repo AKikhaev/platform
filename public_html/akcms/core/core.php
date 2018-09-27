@@ -13,6 +13,7 @@ require_once 'akcms/core/classes.php'; core::init();
 //if ($cfg['debug']===true) CmsLogger::write('===>>> '.$_SERVER['SCRIPT_URL']);
 
 $sql = new pgdb();
+$sphql = new sphdb();
 $Cacher = new CacheController();
 $shape = ['js_admin'=>''];
 
@@ -50,18 +51,19 @@ function LOAD_CORE() {
 	GLOBAL $cfg,$path,$pathstr,$pathlen;
 	
 	# error tracking
-	core::$serverName = strtolower($_SERVER['SERVER_NAME']);
+	core::$serverHost = strtolower($_SERVER['HTTP_HOST']);
 
-	if (isset($cfg['domains_redirects'][core::$serverName])) {
-	  header('Location: '.$cfg['domains_redirects'][core::$serverName].$_SERVER['REQUEST_URI'],true,301);
+	if (isset($cfg['domains_redirects'][core::$serverHost])) {
+	  header('Location: '.$cfg['domains_redirects'][core::$serverHost].$_SERVER['REQUEST_URI'],true,301);
 	  exit;
 	}
 
-	if (!in_array(core::$serverName, $cfg['domains_approved'], true)) {
-        throw new CmsException('domain_not_approved:'.core::$serverName);
+	if (!in_array(core::$serverHost, $cfg['domains_approved'], true)) {
+        throw new CmsException('domain_not_approved:'.core::$serverHost);
     }
-	if (in_array(core::$serverName, $cfg['server_test'], true)) core::$testServer = true;
-	if (in_array(core::$serverName, $cfg['server_prod'], true)) core::$prodServer = true;
+
+	if (in_array(core::$serverHost, $cfg['server_test'], true)) core::$testServer = true;
+	if (in_array(core::$serverHost, $cfg['server_prod'], true)) core::$prodServer = true;
 	core::$devTest = isset($_COOKIE['devtest']) && $_COOKIE['devtest'] === 't';
 
 	// System variables

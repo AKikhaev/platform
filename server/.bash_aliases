@@ -22,7 +22,7 @@ function acli(){
 		mapfile -d / -t pwds <<<"$PWD/"
 		projectName=${pwds[3]}
 		if  [[ "$@" == "monitor" ]] ; then
-		    cls && sh /data/nfs/$projectName/server/monitor.sh
+		    cls && bash /data/nfs/$projectName/server/monitor.sh
 		else
     		php /data/nfs/$projectName/public_html/akcms/core/acli.php "$@"
 		fi

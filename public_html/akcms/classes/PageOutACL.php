@@ -19,9 +19,10 @@ class PageOutACL extends AclProcessor
     public function __construct(array &$pageData)
     {
         global $sql;
-        foreach ($sql->da_a($pageData['sec_ids_closest']) as $id) {
-            $this->acl[] = 'pg'.$id;
-        }
+        if (isset($pageData['sec_ids_closest']))
+            foreach ($sql->da_a($pageData['sec_ids_closest']) as $id) {
+                $this->acl[] = 'pg'.$id;
+            }
 
         //$this->inEditCan = $this->hasRight('inEdit',false,true);
         //$this->editMode = $this->hasRight();

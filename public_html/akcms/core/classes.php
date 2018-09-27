@@ -24,6 +24,7 @@ class DBException extends CmsException {
 }
 
 abstract class AclProcessor { /* acl */
+    public $page = [];
 	private $owner = false;
 	protected $aclSuper = array('admin','owner');
     /**
@@ -408,7 +409,7 @@ final class core {
     public static $isAjax = false;
     public static $ajaxAction = '';
     public static $inEdit = false;
-    public static $serverName = '';
+    public static $serverHost = '';
     public static $testServer = false;
     public static $prodServer = false;
     public static $devTest = false; // Developer test mode. New looks, for example
@@ -530,7 +531,7 @@ final class core {
             $err = $errortype[$errno].': '. $errmsg . "\n";
             if (self::$ErrorFirstTitle=='')
             	self::$ErrorFirstTitle = $errortype[$errno].': '.explode("\n",$errmsg)[0].' '.
-					(isset($_SERVER['SERVER_NAME'])?$_SERVER['SERVER_NAME']:'').' '.(isset($_SERVER['REQUEST_URI'])?$_SERVER['REQUEST_URI']:'');
+					(isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:'').' '.(isset($_SERVER['REQUEST_URI'])?$_SERVER['REQUEST_URI']:'');
             $err .= 'src: ' . self::hidePathForShow($filename).': '.$linenum . "\n";
             if (in_array($errno, array(E_USER_ERROR, E_USER_WARNING, E_USER_NOTICE, E_NOTICE, E_ERROR, E_WARNING, -1, 0))) {#E_WARNING,
                 $tracedata = array();
@@ -563,9 +564,10 @@ final class core {
                 }
                 $err .= implode(PHP_EOL,$tracedata) . PHP_EOL.PHP_EOL;
             }
-            if (isset($cfg['debug']) && $cfg['debug']===true) {
+            if (self::$testServer || isset($cfg['debug']) && $cfg['debug']===true) {
                 if (self::$IS_CLI) {}//echo '/* '.$err.' */';
-                else if (self::$isAjax) ChromePhp::log('error',$err);
+                else if (self::$isAjax) ChromePhp::error($err);
+                //else ChromePhp::error($err);
                 else echo '<script>console.log('.json_encode($err).');</script>';
                 //else echo '<!--'.$err.'-->';
                 //echo ErrorsStringToHTML($err);
@@ -633,7 +635,7 @@ final class core {
             $emailTo = $cfg['email_error'];
             $ip = self::get_client_ip();
             $inf = '';
-            //if (isset($_SERVER['SERVER_NAME'])) $inf .= " addr: " . $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] . PHP_EOL;
+            //if (isset($_SERVER['HTTP_HOST'])) $inf .= " addr: " . $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'] . PHP_EOL;
             if (isset($_SERVER['HTTP_USER_AGENT'])) $inf .= ' useragent: ' . $_SERVER['HTTP_USER_AGENT'] . PHP_EOL;
             if (isset($_SERVER['HTTP_REFERER'])) $inf .= ' referer: ' . $_SERVER['HTTP_REFERER'] . PHP_EOL;
             if ($ip!==false) $inf .= ' ip: ' . $ip  . PHP_EOL;
@@ -750,21 +752,35 @@ class shp{
     }
 
     /***
-     * @param $shape
+     * @param $template
      * Shape name
      * @param array $vars
      * Parameters
      * @param bool $replace_once
      * @return mixed|null|string|string[]
      */
-    public static function tmpl($shape, $vars=array(), $replace_once = false) //Возвращает готовый HTML код
+    public static function tmpl($template, $vars=[], $replace_once = false) //Возвращает готовый HTML код
     {
         global $shapes;
-        if (empty($shapes[$shape]))
-            $shapes[$shape]=load_filecheck($shape.'.shtm',true);
-        $html=$shapes[$shape];
+        if (empty($shapes[$template]))
+            $shapes[$template]=load_filecheck($template.'.shtm',true);
+        $html=$shapes[$template];
 
         $html=self::str($html, $vars, $replace_once);
         return $html;
+    }
+
+    public static function tmpl_e($template,$vars = []) {
+        global $page;
+        $execIntoScope = function($template,$data){
+            if (is_array($data)) extract($data,EXTR_PREFIX_SAME,'new_');
+            ob_start();
+            include 'akcms/u/template/parts/' . $template . '.php';
+            return ob_get_clean();
+        };
+        $childHtml = $execIntoScope($template, $vars);
+        $isEdit = $page->inEditCan && PageOutACL::getInstance($page->page)->hasRight(); //Персональные права этой страницы
+        VisualTheme::replaceStaticHolders($childHtml, $page->page, $isEdit);
+        return $childHtml;
     }
 }

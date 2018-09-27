@@ -38,6 +38,15 @@ abstract class VisualThemeAbstract
         return date($format,$dt);
     }
 
+    /** number_format
+     * @param $value
+     * @param int $decimals
+     * @return string
+     */
+    public static function numberFormat($value,$decimals = 0) {
+        return number_format($value,$decimals,'.',' ');
+    }
+
     public static function toTel($string) {
         $string = preg_replace('/\D/u','',$string);
         if (mb_strpos($string, '8') === 0) {
@@ -270,7 +279,7 @@ abstract class VisualThemeAbstract
         $sections = $sql->query_all($query);
 
         $execIntoScope = function($template,$data){
-            extract($data,EXTR_PREFIX_SAME,'new_');
+            if (is_array($data)) extract($data,EXTR_PREFIX_SAME,'new_');
             ob_start();
             require('akcms/u/template/parts/' . $template . '.php');
             return ob_get_clean();

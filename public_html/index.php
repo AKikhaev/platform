@@ -9,6 +9,8 @@ try {
     $pageClass = '';
     $pageTemplate = '';
 
+    $site = new site(); //custom storage, loader
+
     /* @var  $page CmsPage */
     $page = null;
     foreach ($cfg['CmsPages_load'] as $pageClass) {

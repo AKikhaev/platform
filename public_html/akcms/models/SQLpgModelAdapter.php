@@ -230,11 +230,7 @@ trait SQLpgModelAdapter {
                 /* @var CMSFieldAbstract */
                 if (preg_match('/^(\=|\<|\>)ANY$/iu', $where[1])) {
                     if (!is_array($where[2])) $where[2] = [$where[2]];
-                    $f = [];
-                    foreach ($where[2] as $f_) {
-                        $f[] = '(' . $FieldClass::quote($this->sql, $f_) . ')';
-                    }
-                    return $where[0] . $where[1] . '(VALUES' . implode(',', $f) . ')';
+                    return $where[0] . $where[1] . '(' . $FieldClass::quoteArray($this->sql, $where[2]) . ')';
                 } else return $where[0] . ' ' . $where[1] . ' ' . $FieldClass::quote($this->sql, $where[2]);
             } else throw new DBException('Where field not found ' . $where[0]);
 
