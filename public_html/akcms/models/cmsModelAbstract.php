@@ -4,7 +4,7 @@
  * Class tableDictionary
  */
 class tableKeyValueDictionary{
-    protected $dictionary = [];
+    protected $data = [];
 
     /** tableKeyValueDictionary constructor.
      * @param cmsModelAbstract $table
@@ -17,7 +17,7 @@ class tableKeyValueDictionary{
     {
         $primary = $table->zzJoinData()['primary'];
         foreach ($table as $record) {
-            $this->dictionary[$table->__get($primary)] = $table->__get($textField);
+            $this->data[$record->__get($primary)] = $record->__get($textField);
         }
     }
 
@@ -25,11 +25,34 @@ class tableKeyValueDictionary{
      * @param $key
      * @return mixed
      */
-    public function text($key){
-        if (isset($this->dictionary[$key])) return $this->dictionary[$key];
+    public function value($key){
+        if (isset($this->data[$key])) return $this->data[$key];
         else return $key;
     }
 }
+
+class tableKeyData {
+    protected $data = [];
+    public function __construct(cmsModelAbstract $table)
+    {
+        $table->get();
+        $primary = $table->zzJoinData()['primary'];
+        foreach ($table as $record) {
+            $this->dictionary[$record->__get($primary)] = $record->asArray();
+        }
+    }
+
+    /** returns value associated with key or just key
+     * @param $key
+     * @return mixed
+     */
+    public function data($key){
+        if (isset($this->data[$key])) return $this->data[$key];
+        else return false;
+    }
+
+}
+
 
 /**
  * шаблон для автогенерации модели данных
@@ -123,6 +146,14 @@ abstract class cmsModelAbstract implements SeekableIterator
         }
         return $fieldName;
     }
+
+    /** return current data as array
+     * @return mixed
+     */
+    public function asArray(){
+        return $this->data;
+    }
+
     /*-------------------*/
 
 

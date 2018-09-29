@@ -610,13 +610,6 @@ trait SQLpgModelAdapter {
         return $this->sql->query_all_column($this->query,$col);
     }
 
-    /** return current data as array
-     * @return mixed
-     */
-	public function asArray(){
-        return $this->data;
-    }
-
     /**
      * call as function
      * @return $this|$this[]

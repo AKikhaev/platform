@@ -566,11 +566,7 @@ final class core {
             }
             if (self::$testServer || isset($cfg['debug']) && $cfg['debug']===true) {
                 if (self::$IS_CLI) {}//echo '/* '.$err.' */';
-                else if (self::$isAjax) ChromePhp::error($err);
-                //else ChromePhp::error($err);
-                else echo '<script>console.log('.json_encode($err).');</script>';
-                //else echo '<!--'.$err.'-->';
-                //echo ErrorsStringToHTML($err);
+                else ChromePhp::error($err);
             }
             self::$GlobalErrors .= $err;
         }
