@@ -1,6 +1,9 @@
 <?php
 
 class FileManagerItem{
+    private $folderSecured = '../fileStorage/';
+    private $folderPublic = 's/fileStorage/';
+
     private $hashSalt = 'Fbc|';
     private $fileInfo;
     private $fileManager;
@@ -15,8 +18,8 @@ class FileManagerItem{
      */
     protected function pathShort() {
         $path_ = str_split(str_pad($this->fileInfo->cofId, 12, '0',STR_PAD_LEFT),3);
-        if (!$this->fileManager->secured)
-            $path_[count($path_)-1] = hash('crc32', $this->hashSalt.$this->fileInfo->cofId);
+        //if (!$this->fileInfo->cofSecured)
+        $path_[count($path_)-1] = hash('crc32', $this->hashSalt.$this->fileInfo->cofId);
         $path = implode('/',$path_);
         //$path = implode('/',str_split(hash('md5', $this->$hashSalt.$num),4));
         return $path.($this->fileInfo->cofFileExt==''?'':'.'.$this->fileInfo->cofFileExt);
@@ -26,7 +29,7 @@ class FileManagerItem{
      * @param string $prePath
      * @return string
      */
-    public function pathIn($prePath='o') { return $this->fileManager->folder.$prePath.'/'.$this->pathShort(); }
+    public function pathIn($prePath='o') { return $this->fileInfo->cofSecured ? $this->folderSecured : $this->folderPublic . $prePath . '/' . $this->pathShort(); }
 
     /** User url
      * @param string $prePath
@@ -38,14 +41,14 @@ class FileManagerItem{
         if ($this->fileInfo->cofSrvId>0) {
             $url = $cfg['images_domains_url'][$this->fileInfo->cofSrvId];
         }
-        if ($this->fileManager->secured) {
+        if ($this->fileInfo->cofSecured) {
             $url .= sprintf('ajx/_sys/_fsDownload/%s/%d/%s.%s',
                 $prePath,
                 $this->fileInfo->cofId,
                 $this->fileInfo->cofFile,
                 $this->fileInfo->cofFileExt
             );
-        } else $url .= $this->fileManager->folder.$prePath.'/'.$this->pathShort();
+        } else $url .= $this->folderPublic.$prePath.'/'.$this->pathShort();
         return  $url;
     }
 
@@ -72,16 +75,6 @@ class FileManagerItem{
 
 
 class FileManager extends PgUnitAbstract {
-    public $secured;
-    public $folder;
-    private $folderSecured = '../fileStorage/';
-    private $folderPublic = 's/fileStorage/';
-
-    public function __construct($secured = false)
-    {
-        $this->secured = $secured;
-        $this->folder = $secured ? $this->folderSecured : $this->folderPublic;
-    }
 
     /** Get files list
      * @param $obj
@@ -166,10 +159,25 @@ class FileManager extends PgUnitAbstract {
         } else return false;
     }
 
+    /** Lazy initialization from path build ready parameters without any queries
+     * @param $id
+     * @param string $fileExt
+     * @param int $srvId
+     * @return FileManagerItem
+     * @throws DBException
+     */
+    public function getLazy($id,$fileExt='jpg',$srvId = 0) {
+        $fmiFileInfo = new modelCmsObjFiles();
+        $fmi = new FileManagerItem($fmiFileInfo,$this);
+        $fmiFileInfo->cofId = $id;
+        $fmiFileInfo->cofFileExt = $fileExt;
+        $fmiFileInfo->cofSrvId = $srvId;
+        return $fmi;
+    }
+
     public function objectFileListAjax(){
 
     }
-
 
 
 
