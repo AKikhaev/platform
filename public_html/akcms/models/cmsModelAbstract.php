@@ -38,7 +38,7 @@ class tableKeyData {
         $table->get();
         $primary = $table->zzJoinData()['primary'];
         foreach ($table as $record) {
-            $this->dictionary[$record->__get($primary)] = $record->asArray();
+            $this->data[$record->__get($primary)] = $record->asArray();
         }
     }
 
