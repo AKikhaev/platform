@@ -59,7 +59,7 @@ ORDER BY bytes DESC
 SQL;
         $data = $sql->query_all($query);
         if ($data!==false) {
-            CmsLogger::table($data,['bytes'=>false]);
+            CmsLogger::table($data,['bytes'=>false],['data'=>STR_PAD_LEFT,'total'=>STR_PAD_LEFT]);
 //            foreach ($data as $datum) {
 //                echo implode("\t",$datum).PHP_EOL;
 //            }

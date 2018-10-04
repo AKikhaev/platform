@@ -5,7 +5,14 @@ class CmsLogger
     public static $debug = false;
     public static function enableDebug() {self::$debug=true;}
 
-    public static function table($data,$headers = []) {
+    /** formating array as table
+     * @param $data
+     * @param array $headers
+     * array of headers translations. false to hide column ['name'=>Имя, 'sort'=>false]
+     * @param array $alignment
+     * array of column alignments. STR_PAD_LEFT, STR_PAD_RIGHT, STR_PAD_BOTH ['size'=>STR_PAD_LEFT]
+     */
+    public static function table($data, $headers = [], $alignment = []) {
         $lenghts = [];
         foreach (array_keys($data[0]) as $key)
             $lenghts[$key] = isset($headers[$key])?mb_strlen($headers[$key]):mb_strlen($key);
@@ -23,7 +30,7 @@ class CmsLogger
             foreach ($datum as $key=>$v) {
                 if (isset($headers[$key]) && $headers[$key]===false) continue;
                 if ($v==='f') $v = '-';
-                self::write(mb_str_pad($v,$lenghts[$key]).' ');
+                self::write(mb_str_pad($v,$lenghts[$key],' ',isset($alignment[$key])?$alignment[$key]:STR_PAD_RIGHT).' '); //,
             }
             self::write(PHP_EOL);
         }
