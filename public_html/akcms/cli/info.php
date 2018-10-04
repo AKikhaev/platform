@@ -32,21 +32,34 @@ class info extends cliUnit {
         global $sql,$cfg;
         if (mb_strpos($filter,'.')===false) $filter = $cfg['db'][1]['schema'].'.'.$filter;
         $filter = str_replace('*','%',$filter);
-        $_filter = '(schemaname || \'.\' || tablename) ilike '.$sql->t($filter);
+        $_filter = $sql->t($filter);
+        $_database = $sql->t($cfg['db'][1]['database']);
 
         $query = <<<SQL
+SELECT * FROM (
 select 
-schemaname||'.'||tablename as table,
+schemaname||'.'||tablename as table,pg_total_relation_size(schemaname||'.'||tablename) as bytes,
 pg_size_pretty(pg_relation_size(schemaname||'.'||tablename)) as data,
 pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as total,
 hasindexes,hasrules,hastriggers,rowsecurity
-from pg_tables 
-where tableowner<>'postgres' AND $_filter
-order by pg_total_relation_size(schemaname||'.'||tablename) DESC
+from pg_tables where tableowner<>'postgres'
+
+UNION ALL
+
+SELECT '['||current_database()||'].*',pg_database_size(current_database()),'',pg_size_pretty(pg_database_size(current_database())),false,false,false,false
+
+UNION ALL
+
+SELECT schemaname||'.*',SUM(pg_total_relation_size(schemaname||'.'||tablename)),'',pg_size_pretty(SUM(pg_total_relation_size(schemaname||'.'||tablename))::BIGINT),false,false,false,false
+from pg_tables where tableowner<>'postgres' AND schemaname IN (select DISTINCT schemaname from pg_tables where tableowner<>'postgres')
+group by schemaname
+
+ORDER BY bytes DESC
+) a WHERE "table" ilike $_filter
 SQL;
         $data = $sql->query_all($query);
         if ($data!==false) {
-            CmsLogger::table($data);
+            CmsLogger::table($data,['bytes'=>false]);
 //            foreach ($data as $datum) {
 //                echo implode("\t",$datum).PHP_EOL;
 //            }

@@ -14,11 +14,14 @@ class CmsLogger
             if ($length>$lenghts[$key]) $lenghts[$key] = $length;
         }
         self::write(_ls(1));
-        foreach (array_keys($data[0]) as $key)
-            self::write(mb_str_pad(isset($headers[$key])?$headers[$key]:$key, $lenghts[$key],' ',STR_PAD_BOTH) . ' ');
+        foreach (array_keys($data[0]) as $key) {
+            if (isset($headers[$key]) && $headers[$key]===false) continue;
+            self::write(mb_str_pad(isset($headers[$key]) ? $headers[$key] : $key, $lenghts[$key], ' ', STR_PAD_BOTH) . ' ');
+        }
         self::write(_ls().PHP_EOL);
         foreach ($data as $datum) {
             foreach ($datum as $key=>$v) {
+                if (isset($headers[$key]) && $headers[$key]===false) continue;
                 if ($v==='f') $v = '-';
                 self::write(mb_str_pad($v,$lenghts[$key]).' ');
             }
