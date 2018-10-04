@@ -198,7 +198,7 @@ final class PageUnit extends CmsPage {
 	public static function makeSrchWords($indstr)
 	{
 		$indstr = str_replace(array(chr(10),chr(13)),array(' ',' '),$indstr);
-		$indstr = preg_replace('/&[a-zA-Zа-яА-Я0-9]+;/u', '', strUpCorr($indstr));
+		$indstr = preg_replace('/&[a-zA-Zа-яА-Я0-9]+;/u', '', $indstr);
 		preg_match_all('/[a-zA-Zа-яА-Я0-9]+/u',$indstr,$findArray); $indarr = $findArray[0];
 
         /* @var $morphy phpMorphyAdapter */
@@ -843,7 +843,7 @@ final class PageUnit extends CmsPage {
 					else $img = '';
 					$res .= '<tr class="'.(++$i%2===0?'':'even').'">'.
                         '<td colspan=2><a onclick="selectURL(\'/'.$targetDir.'/'.$file['file'].'\');" href="#">'.$img.$file['file'].'</a>'.
-                        '<div class="fsize">'.$file['mTimeText'].'<br/>'.prettySize($file['size']).'<br/>'.
+                        '<div class="fsize">'.$file['mTimeText'].'<br/>'.functs::prettySize($file['size']).'<br/>'.
                         '<a onclick="removeFile(\''.$file['file'].'\',this);" href="#">Удалить</a>'.
                         '</div></td></tr>';
 				}

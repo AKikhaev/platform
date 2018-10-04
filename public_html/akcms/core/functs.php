@@ -1,17 +1,28 @@
 <?php
-function br2nl($string)
-{
-    return preg_replace('/\<br(\s*)?\/?\>/iu', "\n", $string);
+class functs {
+    static function strHasValue($str) {
+        return $str!==null && $str!=='';
+    }
+
+    static function strValue($str) {
+        return $str===null?'':$str;
+    }
+
+    static function implodeIgnoreEmptyNull($glue , array $pieces){
+        return implode($glue, array_filter($pieces,function ($element){
+            return $element!==null && $element !='';
+        }));
+    }
+
+    static function prettySize($size,array $unit=array('б.','Кб.','Мб.','Гб.','Тб.','Пб.'))
+    {
+        if ($size===0) return '0 '.$unit[0];
+        return round($size/ (1024 ** $i = floor(log($size, 1024))),2).' '.$unit[$i];
+    }
 }
 
 function mb_trim($string, $trim_chars = '\s'){
     return preg_replace('/^['.$trim_chars.']*(?U)(.*)['.$trim_chars.']*$/um', '\\1',$string);
-}
-
-function prettySize($size,array $unit=array('б.','Кб.','Мб.','Гб.','Тб.','Пб.'))
-{
-    if ($size===0) return '0 '.$unit[0];
-    return round($size/ (1024 ** $i = floor(log($size, 1024))),2).' '.$unit[$i];
 }
 
 function makePager($pager_Count, $pager_pgSize, $pager_pgNum, $urlstr, $NoFirstNum=true) {
@@ -76,17 +87,6 @@ function html_arrIdValPairs_toOptions($data,$colimnVal,$columnName,$valSeected=0
         }
 	}
 	return $res;
-}
-
-function sendMailHTML($to, $subject, $message, $headersAdds = '', $from = 'noreply@beside.ru') {
-  $headers  = 'MIME-Version: 1.0' . "\r\n";
-  $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-  $headers .= 'From: '.$from. "\r\n";
-  $headers .= $headersAdds;
-  #$headers .= 'To: Mary <mary@example.com>, Kelly <kelly@example.com>' . "\r\n";
-  #$headers .= 'Cc: birthdayarchive@example.com' . "\r\n";
-  #$headers .= 'Bcc: birthdaycheck@example.com' . "\r\n";
-  return mail($to, $subject, $message, $headers);
 }
 
 /**
@@ -223,34 +223,14 @@ function messagesToErrorArray($messages,$errors) {
 	return $narr;
 }
 
-Function convertArrayEncoding__(&$item, &$key, $encodeFromTo) {
-  $item = mb_convert_encoding($item,$encodeFromTo[1],$encodeFromTo[0]);
-}
-
-Function convertArrayEncoding(&$arr,$strFrom,$strTo) {
-  array_walk_recursive($arr,'convertArrayEncoding__',array($strFrom,$strTo));
-}
-
 Function dgtToChar($dgt) {
 	return $dgt<10?$dgt:chr($dgt+87);
-}
-
-Function Intwz($dg) { // Возращает двухзначное число
-  if ($dg<10) return '0'. (int)$dg; else return (int)$dg;
 }
 
 Function Str_($str,$cnt) { //Возвращает n-значное число
   if ($cnt>strlen($str))
    return str_repeat('0',$cnt-strlen($str)).$str;
   else return $str;
-}
-
-Function DayOfwWeek($datastr,$dayfmt = 1) { // Возвращает день недели
-											//, , , , , ,
-	$DaysOfWeek[1] = array('Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота');
-	$DaysOfWeek[2] = array('ВС','ПН','ВТ','СР','ЧТ','ПТ','СБ');
-	$DaysOfWeek[3] = array('7','1','2','3','4','5','6');
-	return $DaysOfWeek[$dayfmt][date("w", mktime(0, 0, 0, mb_substr($datastr,5,2), mb_substr($datastr,8,2), mb_substr($datastr,0,4)))];
 }
 
 Function GetTruncText($str,$cnt,$p3after = true) // Возвращает часть строки. Обрезает строку
@@ -438,15 +418,6 @@ function load_filecheck($filepath,$use_include=false) // Чтение файла
 	else return $str;
 }
 
-Function SendMailKoi8r($emilto,$emailfrom,$emailsbj,$mailcontent) // Отправляет Email
-{
-	$headers  = 'Content-type: text/plain; charset=windows-koi8-r \r\n';
-	$headers .= 'From: '.$emailfrom."\r\n";
-	$headers .= 'Return-path: '.$emailfrom."\r\n";
-	$headers .= 'Reply-To: '.$emailfrom."\r\n";
-	return mail($emilto, '=?koi8-r?B?'.base64_encode(convert_cyr_string($emailsbj,'w','k')).'?=', convert_cyr_string($mailcontent,'w','k'), $headers);
-}
-
 function TextToHTMLess($text)   // Выводит весь текст как есть, включая HTML
 {
 	$search=array(
@@ -563,14 +534,6 @@ function getCoordsByAddress($addr)
 		$result = array(-1,-1);
 	}  else $result = array(-2,-2);
 	return $result;  
-}
-
-function strUpCorr($str)
-{
-  $findstring = isset($str)?mb_strtoupper($str):'';
-  if ($findstring==='' && isset($str))
-    $findstring = mb_strtoupper(mb_convert_encoding($str,mb_internal_encoding(),'CP-1251'));
-  return $findstring;
 }
 
 function mb_str_pad($input, $length, $pad_str=' ', $type = STR_PAD_RIGHT)
