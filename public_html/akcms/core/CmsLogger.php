@@ -5,6 +5,27 @@ class CmsLogger
     public static $debug = false;
     public static function enableDebug() {self::$debug=true;}
 
+    public static function table($data,$headers = []) {
+        $lenghts = [];
+        foreach (array_keys($data[0]) as $key)
+            $lenghts[$key] = isset($headers[$key])?mb_strlen($headers[$key]):mb_strlen($key);
+        foreach ($data as $datum) foreach ($datum as $key=>$v) {
+            $length = mb_strlen($v);
+            if ($length>$lenghts[$key]) $lenghts[$key] = $length;
+        }
+        self::write(_ls(1));
+        foreach (array_keys($data[0]) as $key)
+            self::write(mb_str_pad(isset($headers[$key])?$headers[$key]:$key, $lenghts[$key],' ',STR_PAD_BOTH) . ' ');
+        self::write(_ls().PHP_EOL);
+        foreach ($data as $datum) {
+            foreach ($datum as $key=>$v) {
+                if ($v==='f') $v = '-';
+                self::write(mb_str_pad($v,$lenghts[$key]).' ');
+            }
+            self::write(PHP_EOL);
+        }
+    }
+
     /**
      * Текстовое форматированное представление переданных переменных любого типа
      * @return false|null|string|string[]
