@@ -51,7 +51,7 @@ SELECT '['||current_database()||'].*',pg_database_size(current_database()),'',pg
 UNION ALL
 
 SELECT schemaname||'.*',SUM(pg_total_relation_size(schemaname||'.'||tablename)),'',pg_size_pretty(SUM(pg_total_relation_size(schemaname||'.'||tablename))::BIGINT),false,false,false,false
-from pg_tables where tableowner<>'postgres' AND schemaname IN (select DISTINCT schemaname from pg_tables where tableowner<>'postgres')
+from pg_tables where schemaname IN (select DISTINCT schemaname from pg_tables where tableowner<>'postgres')
 group by schemaname
 
 ORDER BY bytes DESC
