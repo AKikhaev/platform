@@ -33,9 +33,8 @@ class info extends cliUnit {
         if (mb_strpos($filter,'.')===false) $filter = $cfg['db'][1]['schema'].'.'.$filter;
         $filter = str_replace('*','%',$filter);
         $_filter = $sql->t($filter);
-        $_database = $sql->t($cfg['db'][1]['database']);
 
-        $query = <<<SQL
+        $query = "
 SELECT * FROM (
 select 
 schemaname||'.'||tablename as table,pg_total_relation_size(schemaname||'.'||tablename) as bytes,
@@ -55,8 +54,8 @@ from pg_tables where schemaname IN (select DISTINCT schemaname from pg_tables wh
 group by schemaname
 
 ORDER BY bytes DESC
-) a WHERE "table" ilike $_filter
-SQL;
+) a WHERE \"table\" ilike $_filter";
+        echo $query;
         $data = $sql->query_all($query);
         if ($data!==false) {
             CmsLogger::table($data,['bytes'=>false],['data'=>STR_PAD_LEFT,'total'=>STR_PAD_LEFT]);
