@@ -89,6 +89,25 @@ function html_arrIdValPairs_toOptions($data,$colimnVal,$columnName,$valSeected=0
 	return $res;
 }
 
+/** classic send mail
+ * @param $to
+ * @param $subject
+ * @param $message
+ * @param string $headersAdds
+ * @param string $from
+ * @return bool
+ */
+function sendMailHTML($to, $subject, $message, $headersAdds = '', $from = 'noreply@beside.ru') {
+    $headers  = 'MIME-Version: 1.0' . "\r\n";
+    $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+    $headers .= 'From: '.$from. "\r\n";
+    $headers .= $headersAdds;
+    #$headers .= 'To: Mary <mary@example.com>, Kelly <kelly@example.com>' . "\r\n";
+    #$headers .= 'Cc: birthdayarchive@example.com' . "\r\n";
+    #$headers .= 'Bcc: birthdaycheck@example.com' . "\r\n";
+    return mail($to, $subject, $message, $headers);
+}
+
 /**
  * @param $text
  * @param string $to
