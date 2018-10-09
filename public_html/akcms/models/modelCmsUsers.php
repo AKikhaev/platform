@@ -7,18 +7,18 @@
  * @property int     idUsr ИД
  * @property string  usrLogin Логин
  * @property string  usrEmail Почта
+ * @property string  usrPasswordMd5 Хеш
+ * @property bool    usrEnabled Разрешен
+ * @property string  usrAutohash Автовход
+ * @property string  usrLastLogin Последний вход
  * @property array   usrGrp Группа
  * @property string  usrName Имя
  * @property string  usrSoname Фамилия
- * @property string  usrLastLogin Последний вход
- * @property bool    usrEnabled Разрешен
  * @property bool    usrAdmin Админ
  * @property string  usrActcode Код активации
  * @property bool    usrActivated Активирован
  * @property string  usrLostcode Код восстановления
- * @property string  usrPasswordMd5 Хеш
- * @property string  usrRegisteredStamp Дата регистрации
- * @property string  usrRegisteredId IP адрес регистрации
+ * @property string  usrRegisteredStamp Дата создания
  */
 class modelCmsUsers extends cmsModelAbstract
 {
@@ -27,18 +27,18 @@ class modelCmsUsers extends cmsModelAbstract
     public static $_idUsr               = 'id_usr';
     public static $_usrLogin            = 'usr_login';
     public static $_usrEmail            = 'usr_email';
+    public static $_usrPasswordMd5      = 'usr_password_md5';
+    public static $_usrEnabled          = 'usr_enabled';
+    public static $_usrAutohash         = 'usr_autohash';
+    public static $_usrLastLogin        = 'usr_last_login';
     public static $_usrGrp              = 'usr_grp';
     public static $_usrName             = 'usr_name';
     public static $_usrSoname           = 'usr_soname';
-    public static $_usrLastLogin        = 'usr_last_login';
-    public static $_usrEnabled          = 'usr_enabled';
     public static $_usrAdmin            = 'usr_admin';
     public static $_usrActcode          = 'usr_actcode';
     public static $_usrActivated        = 'usr_activated';
     public static $_usrLostcode         = 'usr_lostcode';
-    public static $_usrPasswordMd5      = 'usr_password_md5';
     public static $_usrRegisteredStamp  = 'usr_registered_stamp';
-    public static $_usrRegisteredId     = 'usr_registered_id';
 
     public static $tableName = 'cms_users';
     protected $schemaName = '{default}';
@@ -67,6 +67,32 @@ class modelCmsUsers extends cmsModelAbstract
         'COMMENT' => 'Почта',
         'FIELD_CLASS' => 'FieldText',
       ),
+      'usrPasswordMd5' => array(
+        'COLUMN_NAME' => 'usr_password_md5',
+        'NULLABLE' => false,
+        'LENGTH' => '64',
+        'COMMENT' => 'Хеш',
+        'FIELD_CLASS' => 'FieldString',
+      ),
+      'usrEnabled' => array(
+        'COLUMN_NAME' => 'usr_enabled',
+        'NULLABLE' => false,
+        'COMMENT' => 'Разрешен',
+        'FIELD_CLASS' => 'FieldBool',
+      ),
+      'usrAutohash' => array(
+        'COLUMN_NAME' => 'usr_autohash',
+        'NULLABLE' => false,
+        'LENGTH' => '64',
+        'COMMENT' => 'Автовход',
+        'FIELD_CLASS' => 'FieldString',
+      ),
+      'usrLastLogin' => array(
+        'COLUMN_NAME' => 'usr_last_login',
+        'NULLABLE' => true,
+        'COMMENT' => 'Последний вход',
+        'FIELD_CLASS' => 'FieldDateTime',
+      ),
       'usrGrp' => array(
         'COLUMN_NAME' => 'usr_grp',
         'NULLABLE' => false,
@@ -85,18 +111,6 @@ class modelCmsUsers extends cmsModelAbstract
         'NULLABLE' => false,
         'COMMENT' => 'Фамилия',
         'FIELD_CLASS' => 'FieldText',
-      ),
-      'usrLastLogin' => array(
-        'COLUMN_NAME' => 'usr_last_login',
-        'NULLABLE' => true,
-        'COMMENT' => 'Последний вход',
-        'FIELD_CLASS' => 'FieldDateTime',
-      ),
-      'usrEnabled' => array(
-        'COLUMN_NAME' => 'usr_enabled',
-        'NULLABLE' => false,
-        'COMMENT' => 'Разрешен',
-        'FIELD_CLASS' => 'FieldBool',
       ),
       'usrAdmin' => array(
         'COLUMN_NAME' => 'usr_admin',
@@ -122,42 +136,29 @@ class modelCmsUsers extends cmsModelAbstract
         'COMMENT' => 'Код восстановления',
         'FIELD_CLASS' => 'FieldText',
       ),
-      'usrPasswordMd5' => array(
-        'COLUMN_NAME' => 'usr_password_md5',
-        'NULLABLE' => false,
-        'COMMENT' => 'Хеш',
-        'FIELD_CLASS' => 'FieldText',
-      ),
       'usrRegisteredStamp' => array(
         'COLUMN_NAME' => 'usr_registered_stamp',
         'NULLABLE' => false,
-        'COMMENT' => 'Дата регистрации',
+        'COMMENT' => 'Дата создания',
         'FIELD_CLASS' => 'FieldDateTime',
-      ),
-      'usrRegisteredId' => array(
-        'COLUMN_NAME' => 'usr_registered_id',
-        'NULLABLE' => true,
-        'LENGTH' => '46',
-        'COMMENT' => 'IP адрес регистрации',
-        'FIELD_CLASS' => 'FieldString',
       ),
     ),
     'fieldsDB' => array(
       'id_usr' => 'idUsr',
       'usr_login' => 'usrLogin',
       'usr_email' => 'usrEmail',
+      'usr_password_md5' => 'usrPasswordMd5',
+      'usr_enabled' => 'usrEnabled',
+      'usr_autohash' => 'usrAutohash',
+      'usr_last_login' => 'usrLastLogin',
       'usr_grp' => 'usrGrp',
       'usr_name' => 'usrName',
       'usr_soname' => 'usrSoname',
-      'usr_last_login' => 'usrLastLogin',
-      'usr_enabled' => 'usrEnabled',
       'usr_admin' => 'usrAdmin',
       'usr_actcode' => 'usrActcode',
       'usr_activated' => 'usrActivated',
       'usr_lostcode' => 'usrLostcode',
-      'usr_password_md5' => 'usrPasswordMd5',
       'usr_registered_stamp' => 'usrRegisteredStamp',
-      'usr_registered_id' => 'usrRegisteredId',
     ),
     'primary' => 'idUsr',
     'primaryDB' => 'id_usr',

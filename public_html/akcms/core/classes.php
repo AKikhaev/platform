@@ -356,7 +356,7 @@ class CmsUser {
 
     public static function genNewAutohash_id($id) {
         global $sql;
-        $autohash = md5(rand(10000000,99999999));
+        $autohash = md5(mt_rand(10000000,99999999));
         $query = sprintf('UPDATE cms_users SET usr_autohash=%s WHERE id_usr = %d;',
             $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$autohash)),
             $sql->d($id)
