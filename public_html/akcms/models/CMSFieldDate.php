@@ -6,6 +6,7 @@
 class CMSFieldDate extends CMSFieldAbstract
 {
     protected static $typeDb = 'DATE';
+    public static function dbType() { return self::$typeDb; }
     public static function quote(pgdb $sql,$v){
         $dt = $v;
         if (gettype($v)=='object' && get_class($v)=='DateTime') $dt = $v->format('Y-m-d O');

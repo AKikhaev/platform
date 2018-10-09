@@ -356,12 +356,111 @@ class pgCmsModelGenerator {
             CmsLogger::logInfo('Модель '.$tableInfo['model'].' обновлена '.mb_strlen($updateTemplate));
 		}
 	}
+
+	public function check($tableName, $schemaName = 'public') {
+        global $cfg;
+        $tableInfo = $this->describeTable($tableName,$schemaName);
+        $isView = preg_match('/view$/iu',$tableInfo['table'])===1;
+
+        $tableCommentRaw = $tableInfo['comment'];
+        if (!$tableInfo['comment']) CmsLogger::logError($tableInfo['table'].' Без описания');
+        $tableAttr = array();
+        if (mb_strpos($tableInfo['comment'],'|')!==false) {
+            $tableCommentInfo = explode('|',$tableInfo['comment']);
+            for($i=1;$i<count($tableCommentInfo);$i++) {
+                @list($a,$v) = explode('=',$tableCommentInfo[$i]);
+                $tableAttr[$a]=$v;
+            }
+            unset($a,$v);
+            if (isset($tableAttr['name'])) $objnameDB = $tableAttr['name'];
+            $tableInfo['comment'] = $tableCommentInfo[0];
+        }
+        if (array_key_exists('i',$tableAttr)) {
+            CmsLogger::log("  $schemaName.$tableName пропущена");
+            return;
+        }
+
+        $_schema = $tableInfo['schema'];
+        $_name = $tableInfo['table'];
+        $_model = $this->TableNameToModel($_name);
+
+        try {
+            $model = new $_model;
+            $modelFields = $model->zzJoinData();
+
+            foreach ($tableInfo['fields'] as &$dbField) {
+                if (!isset($modelFields['fieldsDB'][$dbField['COLUMN_NAME']]))
+                    CmsLogger::logError("Избыточное поле $dbField[COLUMN_NAME] в таблице $_name");
+            }
+            foreach ($modelFields['fields'] as $modelFieldName=>$modelField) {
+                if (!isset($tableInfo['fields'][$modelFieldName])) {
+                    $CLASS = 'CMS'.$modelField['FIELD_CLASS'];
+                    CmsLogger::logError(
+                        "Отсутствует поле в таблице $_name: $modelField[COLUMN_NAME] ".
+                        $CLASS::dbType().
+                        (isset($modelField['NULLABLE'])&&$modelField['NULLABLE']?'?':'').
+                        (isset($modelField['LENGTH']) && $modelField['LENGTH']>0 ? "[$modelField[LENGTH]]":'').
+                        " $modelField[COMMENT]"
+                    );
+
+                    CmsLogger::logInfo(
+                        "ALTER TABLE $_schema.$_name ADD COLUMN $modelField[COLUMN_NAME] ".
+                        $CLASS::dbType().
+                        (isset($modelField['LENGTH']) && $modelField['LENGTH']>0 ? "($modelField[LENGTH])":'').
+                        (in_array($CLASS::dbType(),['TEXT','VARCHAR'])?' DEFAULT \'\'':'').
+                        (isset($modelField['NULLABLE'])&&$modelField['NULLABLE']?'':' NOT NULL').
+                        "; COMMENT ON COLUMN $_schema.$_name.$modelField[COLUMN_NAME] IS '$modelField[COMMENT]';");
+                }
+            }
+
+
+        } catch (Throwable $e) {
+            CmsLogger::logError('Не удалось найти модель '.$_model.' для таблицы '.$_name);
+            //CmsLogger::logError($e->getMessage());
+        }
+
+
+
+    }
 }
 
 /**
  * GenModel - Generate DB model from DBMS Postgres
  */
 class genModel extends cliUnit {
+
+    /** Check fields present
+     * @param string $filter
+     */
+    public function checkAllAction($filter = ''){
+        global $sql,$cfg;
+        $schema = $cfg['db'][1]['schema'];
+        $md = new pgCmsModelGenerator();
+
+        if ($filter == '') {
+            $_filter = sprintf('table_schema = %s AND NOT (table_name ilike %s)',
+                $sql->t($schema),
+                $sql->t('cms_%')
+            );
+        }
+        else {
+            if (mb_strpos($filter,'.')===false) $filter = $schema.'.'.$filter;
+            $filter = str_replace('*','%',$filter);
+            $_filter = '(table_schema || \'.\' || table_name) ilike '.$sql->t($filter);
+        }
+
+        $query = 'SELECT table_schema || \'.\' || table_name as table,table_schema,table_name FROM information_schema.tables WHERE table_schema NOT IN (\'information_schema\',\'pg_catalog\') AND '.$_filter.' ORDER BY table_schema,table_name;';
+        //$query = 'select tablename from pg_tables where schemaname='.$sql->t($cfg['db'][1]['schema']).$_filter.' order by 1';
+        $tables = $sql->query_all($query);
+        if ($tables !== false) {
+            CmsLogger::log('Подходящих таблиц: '.count($tables));
+            foreach ($tables as $table) {
+                //CmsLogger::logInfo('Проверка '.$table['table']);
+                $md->check($table['table_name'], $table['table_schema']);
+            }
+        }
+        else CmsLogger::logInfo('Нет подходящих таблиц');
+    }
 
     /**
      * Generate all models
@@ -371,21 +470,19 @@ class genModel extends cliUnit {
     public function genAllAction($filter = ''){
         global $sql,$cfg;
 
-        $md = new pgCmsModelGenerator();
-        //profiler::showOverallTimeToTerminal();
-
         $schema = $cfg['db'][1]['schema'];
+        $md = new pgCmsModelGenerator();
 
         if ($filter == '') {
             if (readline("  Conform generation of all user tables? [yN]: ") == 'y') {
                 $_filter = sprintf('table_schema = %s AND NOT (table_name ilike %s)',
-                    $sql->t($cfg['db'][1]['schema']),
+                    $sql->t($schema),
                     $sql->t('cms_%')
                 );
             } else CmsLogger::logDie__('Отменено пользователем');
         }
         else {
-            if (mb_strpos($filter,'.')===false) $filter = $cfg['db'][1]['schema'].'.'.$filter;
+            if (mb_strpos($filter,'.')===false) $filter = $schema.'.'.$filter;
             $filter = str_replace('*','%',$filter);
             $_filter = '(table_schema || \'.\' || table_name) ilike '.$sql->t($filter);
         }

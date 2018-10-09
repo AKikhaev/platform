@@ -9,7 +9,7 @@
  * @property string  usrEmail Почта
  * @property string  usrPasswordMd5 Хеш
  * @property bool    usrEnabled Разрешен
- * @property string  usrAutohash Автовход
+ * @property string  usrAutohash Хеш автовхода
  * @property string  usrLastLogin Последний вход
  * @property array   usrGrp Группа
  * @property string  usrName Имя
@@ -18,7 +18,8 @@
  * @property string  usrActcode Код активации
  * @property bool    usrActivated Активирован
  * @property string  usrLostcode Код восстановления
- * @property string  usrRegisteredStamp Дата создания
+ * @property string  usrRegisteredStamp Дата регистрации
+ * @property string  usrRegisteredId IP адрес регистрации
  */
 class modelCmsUsers extends cmsModelAbstract
 {
@@ -39,6 +40,7 @@ class modelCmsUsers extends cmsModelAbstract
     public static $_usrActivated        = 'usr_activated';
     public static $_usrLostcode         = 'usr_lostcode';
     public static $_usrRegisteredStamp  = 'usr_registered_stamp';
+    public static $_usrRegisteredId     = 'usr_registered_id';
 
     public static $tableName = 'cms_users';
     protected $schemaName = '{default}';
@@ -84,7 +86,7 @@ class modelCmsUsers extends cmsModelAbstract
         'COLUMN_NAME' => 'usr_autohash',
         'NULLABLE' => false,
         'LENGTH' => '64',
-        'COMMENT' => 'Автовход',
+        'COMMENT' => 'Хеш автовхода',
         'FIELD_CLASS' => 'FieldString',
       ),
       'usrLastLogin' => array(
@@ -139,8 +141,15 @@ class modelCmsUsers extends cmsModelAbstract
       'usrRegisteredStamp' => array(
         'COLUMN_NAME' => 'usr_registered_stamp',
         'NULLABLE' => false,
-        'COMMENT' => 'Дата создания',
+        'COMMENT' => 'Дата регистрации',
         'FIELD_CLASS' => 'FieldDateTime',
+      ),
+      'usrRegisteredId' => array(
+        'COLUMN_NAME' => 'usr_registered_id',
+        'NULLABLE' => true,
+        'LENGTH' => '46',
+        'COMMENT' => 'IP адрес регистрации',
+        'FIELD_CLASS' => 'FieldString',
       ),
     ),
     'fieldsDB' => array(
@@ -159,6 +168,7 @@ class modelCmsUsers extends cmsModelAbstract
       'usr_activated' => 'usrActivated',
       'usr_lostcode' => 'usrLostcode',
       'usr_registered_stamp' => 'usrRegisteredStamp',
+      'usr_registered_id' => 'usrRegisteredId',
     ),
     'primary' => 'idUsr',
     'primaryDB' => 'id_usr',
