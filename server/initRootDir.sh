@@ -42,7 +42,7 @@ mkdir -p /data/certs/www
 chown mstr:www-data /data/certs
 chown mstr:www-data /data/certs/www
 
-chmod 0774 /data/nfs/$projectName/git_pull.cmd
+chmod 0774 /data/nfs/$projectName/git_pull.bat
 
 echo
 echo "Add this line to /etc/fstab (for auto terminal notification feature):"
