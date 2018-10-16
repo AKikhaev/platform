@@ -1,4 +1,4 @@
-﻿SET search_path TO newsite;
+﻿SET search_path TO newsite;           --SELECT setval('cms_users_id_usr_seq',COALESCE((SELECT max(id_usr)+1 FROM cms_users),1));
 TRUNCATE cms_comments;                ALTER SEQUENCE cms_comments_cmnt_id_seq RESTART 1;
 TRUNCATE cms_galeries;				      	ALTER SEQUENCE adv_galeries_id_glr_seq RESTART 1;
 TRUNCATE cms_gallery_photos;	      	ALTER SEQUENCE adv_gallery_photos_id_cgp_seq RESTART 3;

@@ -545,6 +545,7 @@ trait SQLpgModelAdapter {
      */
     public function delete($where = null) {
         if ($where==null) $where=$this->_pr_whereID();
+        else $where = $this->_where(func_get_args());
         $query = 'DELETE FROM '.static::$tableName.' WHERE '.$where;
         return $this->sql->command($query);
     }
