@@ -712,11 +712,16 @@ class shp{
         return $html;
     }
 
+    /** Hiden redirect to destination
+     *  {#uri#} - template to back url encoded part to current uri
+     * @param $url
+     */
     public static function redirectHidden($url){
 		//header('HTTP/1.0 401 Unauthorized');
 		header('HTTP/1.0 404 Not Found');
 		header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 		header('Expires: 0');
+		$url = str_replace('{#uri#}',$_SERVER['REQUEST_URI'],$url);
 		echo self::tmpl('errors/error_redirect_hidden',[
 			'metas'=>'<meta http-equiv="Refresh" content="0; URL='.$url.'">',
 			'js'=>'<script>document.location="'.$url.'";</script>',
