@@ -25,7 +25,12 @@ cd /data/nfs
 * ... и далее по инсрукции
 
 ##### Использование
+
 * `mc` работает только в станлартной консоли
 * Но работать удобнее в ConEmu из-за сворачивания консоли в трей. При закрытии консоли WSL убивается. Поэтому важно:
 * Запуск: `server/win/startAll.sh`
 * Отановка: `server/win/stopAll.sh` (Обязательно!)
+* Подключение [Xming](https://sourceforge.net/projects/xming/): `declare -x DISPLAY="localhost:0.0"`
+* Путь к rootfs 
+
+`%LOCALAPPDATA%\Packages\CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc\LocalState\rootfs`
