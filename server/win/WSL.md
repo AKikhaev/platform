@@ -5,7 +5,7 @@
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
 ```
 * [Ubuntu](https://www.microsoft.com/store/p/ubuntu/9nblggh4msv6)
-* [ConEmu](https://conemu.github.io/en/Downloads.html). Options->task bar->TSA always show, TSA auto minimize
+* [ConEmu](https://conemu.github.io/en/Downloads.html). Настройки ниже
 * `cmd`, `bash`, `sudo bash`
 * Указать пользователя mstr, пароль значения не имеет
 * `visudo`
@@ -13,8 +13,9 @@ Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-L
 * или `%sudo  ALL=(ALL) NOPASSWD:ALL` добавить для всех
 * Скопировать .bash_aliases и добавить туда строки:
 ```bash
-mount --bind /mnt/d/Documents/Projects /data/nfs
-cd /data/nfs
+declare -x DISPLAY="localhost:0.0"
+sudo mount --bind /mnt/d/Documents/Projects /data/nfs
+cd ~/
 ```
 ##### Развертывание
 * `add-apt-repository ppa:ondrej/php`
@@ -23,6 +24,26 @@ cd /data/nfs
 * `apt install libfcgi-bin mc nginx socat php7.2-fpm php7.2-cli php7.2-common php7.2-curl php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-pgsql php7.2-xml p7zip-full`
 * `apt install postgresql-10`
 * ... и далее по инсрукции
+
+##### Конфигурирование [ConEmu](https://conemu.github.io/en/Downloads.html)
+* Параметры
+```
+Main -> Appearance
+- Single instance mode (use existing window instead of running new instance)
+- Multiple consoles in one ConEmu window
+Main -> Task bar:
+- Always show TSA icon
+- Auto minimize to TSA
+0 Close ConEmu with last tab
+- Minimize on dosing last tab
+- Hide to the TSA
+0 Quit on dose (e.g. caption bar cross dicking)
+Features -> Status bar
+> Terminal modes
+```
+* Создать ярлык `ConEmu64.exe -run {bash}`
+* Если терминал зпапущен другим способом:
+  кликнуть в статус баре терминала на Terminal modes и включить XTerm, AppKeys
 
 ##### Использование
 
