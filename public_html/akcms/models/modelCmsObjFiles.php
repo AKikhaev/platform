@@ -13,7 +13,7 @@
  * @property bool    cofEnabled Разрешен
  * @property int     cofOwnerId Владелец
  * @property string  cofFileExt Расширение исходного файла
- * @property bool    cofFilePacked Файл упакован
+ * @property bool    cofPacked Файл упакован
  * @property int     cofSrvId Сервер хранилища
  * @property bool    cofDraft Черновик (еще не загружен)
  * @property bool    cofSecured Доступ ограничен
@@ -32,7 +32,7 @@ class modelCmsObjFiles extends cmsModelAbstract
     public static $_cofEnabled        = 'cof_enabled';
     public static $_cofOwnerId        = 'cof_owner_id';
     public static $_cofFileExt        = 'cof_file_ext';
-    public static $_cofFilePacked     = 'cof_file_packed';
+    public static $_cofPacked         = 'cof_packed';
     public static $_cofSrvId          = 'cof_srv_id';
     public static $_cofDraft          = 'cof_draft';
     public static $_cofSecured        = 'cof_secured';
@@ -103,8 +103,8 @@ class modelCmsObjFiles extends cmsModelAbstract
         'COMMENT' => 'Расширение исходного файла',
         'FIELD_CLASS' => 'FieldString',
       ),
-      'cofFilePacked' => array(
-        'COLUMN_NAME' => 'cof_file_packed',
+      'cofPacked' => array(
+        'COLUMN_NAME' => 'cof_packed',
         'NULLABLE' => false,
         'COMMENT' => 'Файл упакован',
         'FIELD_CLASS' => 'FieldBool',
@@ -144,7 +144,7 @@ class modelCmsObjFiles extends cmsModelAbstract
       'cof_enabled' => 'cofEnabled',
       'cof_owner_id' => 'cofOwnerId',
       'cof_file_ext' => 'cofFileExt',
-      'cof_file_packed' => 'cofFilePacked',
+      'cof_packed' => 'cofPacked',
       'cof_srv_id' => 'cofSrvId',
       'cof_draft' => 'cofDraft',
       'cof_secured' => 'cofSecured',

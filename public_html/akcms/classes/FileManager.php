@@ -7,9 +7,10 @@ class FileManagerItem{
     private $hashSalt = 'Fbc|';
     private $fileInfo;
     private $fileManager;
+    public $isDuplicate = false;
     public function __construct(modelCmsObjFiles &$fileInfo,FileManager &$fileManager)
     {
-        $this->fileInfo = clone $fileInfo;
+        $this->fileInfo = $fileInfo;
         $this->fileManager = $fileManager;
     }
 
@@ -22,14 +23,17 @@ class FileManagerItem{
         $path_[count($path_)-1] = hash('crc32', $this->hashSalt.$this->fileInfo->cofId);
         $path = implode('/',$path_);
         //$path = implode('/',str_split(hash('md5', $this->$hashSalt.$num),4));
-        return $path.($this->fileInfo->cofFileExt==''?'':'.'.$this->fileInfo->cofFileExt);
+        return
+            $path.
+            ($this->fileInfo->cofFileExt==''?'':'.'.$this->fileInfo->cofFileExt).
+            ($this->fileInfo->cofPacked=='t'?'.7z':'');
     }
 
     /** path into storage
      * @param string $prePath
      * @return string
      */
-    public function pathIn($prePath='o') { return $this->fileInfo->cofSecured ? $this->folderSecured : $this->folderPublic . $prePath . '/' . $this->pathShort(); }
+    public function pathIn($prePath='o') { return ($this->fileInfo->cofSecured=='t' ? $this->folderSecured : $this->folderPublic) . $prePath . '/' . $this->pathShort(); }
 
     /** User url
      * @param string $prePath
@@ -41,12 +45,11 @@ class FileManagerItem{
         if ($this->fileInfo->cofSrvId>0) {
             $url = $cfg['images_domains_url'][$this->fileInfo->cofSrvId];
         }
-        if ($this->fileInfo->cofSecured) {
-            $url .= sprintf('ajx/_sys/_fsDownload/%s/%d/%s.%s',
+        if ($this->fileInfo->cofSecured=='t') {
+            $url .= sprintf('ajx/_sys/_fsDownload/%s/%d/%s',
                 $prePath,
                 $this->fileInfo->cofId,
-                $this->fileInfo->cofFile,
-                $this->fileInfo->cofFileExt
+                $this->fileInfo->cofFile
             );
         } else $url .= $this->folderPublic.$prePath.'/'.$this->pathShort();
         return  $url;
@@ -71,6 +74,150 @@ class FileManagerItem{
         }
         return $this->fileInfo->delete();
     }
+
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->fileInfo->cofId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getObj()
+    {
+        return $this->fileInfo->cofObj;
+    }
+
+    /**
+     * @return int
+     */
+    public function getObjId()
+    {
+        return $this->fileInfo->cofObjId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getObjField()
+    {
+        return $this->fileInfo->cofObjField;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->fileInfo->cofTitle;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFile()
+    {
+        return $this->fileInfo->cofFile;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabled()
+    {
+        return $this->fileInfo->cofEnabled;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOwnerId()
+    {
+        return $this->fileInfo->cofOwnerId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFileExt()
+    {
+        return $this->fileInfo->cofFileExt;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPacked()
+    {
+        return $this->fileInfo->cofPacked;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSrvId()
+    {
+        return $this->fileInfo->cofSrvId;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDraft()
+    {
+        return $this->fileInfo->cofDraft;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSecured()
+    {
+        return $this->fileInfo->cofSecured;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUploadedStamp()
+    {
+        return $this->fileInfo->cofUploadedStamp;
+    }
+
+    /**
+     * @param string $cofTitle
+     * @throws DBException
+     */
+    public function setTitle($cofTitle)
+    {
+        $this->fileInfo->cofTitle = $cofTitle;
+        $this->fileInfo->update();
+    }
+
+    /**
+     * @param bool $cofEnabled
+     * @throws DBException
+     */
+    public function setEnabled($cofEnabled)
+    {
+        $this->fileInfo->cofEnabled = $cofEnabled;
+        $this->fileInfo->update();
+    }
+
+    /**
+     * @param bool $cofPacked
+     * @throws DBException
+     */
+    public function setPacked($cofPacked)
+    {
+        $this->fileInfo->cofPacked = $cofPacked;
+        $this->fileInfo->update();
+    }
+
 }
 
 
@@ -93,7 +240,8 @@ class FileManager extends PgUnitAbstract {
         $filesInfo = (new modelCmsObjFiles())->fields()->where(
             [modelCmsObjFiles::$_cofObj,'=',$obj],
             [modelCmsObjFiles::$_cofObjId,'=',$objId],
-            [modelCmsObjFiles::$_cofObjField,'=',$field]
+            [modelCmsObjFiles::$_cofObjField,'=',$field],
+            [modelCmsObjFiles::$_cofEnabled,'=',true]
         );
         if ($ext!=='') $filesInfo->and_(modelCmsObjFiles::$_cofFileExt,'=',$ext);
         $list = [];
@@ -110,7 +258,8 @@ class FileManager extends PgUnitAbstract {
      */
     public function getById($id) {
         $fileInfo = (new modelCmsObjFiles())->fields()->where(
-            [modelCmsObjFiles::$_cofId,'=',$id]
+            [modelCmsObjFiles::$_cofId,'=',$id],
+            [modelCmsObjFiles::$_cofEnabled,'=',true]
         );
         if ($fileInfo->get()->hasData())
             return new FileManagerItem($fileInfo,$this);
@@ -131,8 +280,20 @@ class FileManager extends PgUnitAbstract {
      * @throws DBException
      * @throws Throwable
      */
-    public function newFile($fileTempPath,$obj,$objId,$objField,$fileName,$fileExt,$title = '',$secured = false, $srvId = 0){
+    public function newFile($fileTempPath,$obj,$objId,$objField,$fileName,$title = '',$secured = false, $srvId = 0){
         if (file_exists($fileTempPath)) {
+
+            foreach ($this->get($obj,$objId,$objField) as $file) {
+                if ($file->getFile()==$fileName &&
+                    filesize($file->pathIn())==filesize($fileTempPath) &&
+                    md5_file($file->pathIn())==md5_file($fileTempPath)
+                ) {
+                    unlink($fileTempPath);
+                    $file->isDuplicate = true;
+                    return $file;
+                }
+            }
+
             $fmiFileInfo = new modelCmsObjFiles();
             $fmi = new FileManagerItem($fmiFileInfo,$this);
             $fmiFileInfo->cofObj = $obj;
@@ -140,21 +301,37 @@ class FileManager extends PgUnitAbstract {
             $fmiFileInfo->cofObjField = $objField;
             $fmiFileInfo->cofTitle = $title;
             $fmiFileInfo->cofFile = $fileName;
-            $fmiFileInfo->cofFileExt = $fileExt;
+            $fmiFileInfo->cofFileExt = (new SplFileInfo($fileName))->getExtension();
             $fmiFileInfo->cofOwnerId = (CmsUser::isLogin())?CmsUser::$user['id_usr']:0;
             $fmiFileInfo->cofSrvId = $srvId;
             $fmiFileInfo->cofSecured = $secured;
             $fmiFileInfo->cofDraft = true;
-            $fmiFileInfo->insert();
             try {
-                rename($fileTempPath, $fmi->pathIn());
+                $fmiFileInfo->insert();
+                $filePath = (new SplFileInfo($fmi->pathIn()))->getPath();
+                if ($fmi->getSrvId()<1) {
+                    if (!file_exists($filePath)) mkdir($filePath,0777,true);
+                    rename($fileTempPath, $fmi->pathIn());
+                } else {
+                    global $cfg;
+                    $post = array('file'=>curl_file_create($fileTempPath));
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL,$cfg['images_domains_url'][$fmi->getSrvId()].'_api/img/upld?path='.$fmi->pathIn());
+                    curl_setopt($ch, CURLOPT_POST,1);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    $result=curl_exec ($ch);
+                    if ($result != 't') throw new CmsException('error to upload to another server');
+                    curl_close ($ch);
+                    @unlink($fileTempPath);####
+                }
             } catch (Throwable $e) {
                 $fmiFileInfo->delete();
                 core::GlobalExceptionHandler($e);
                 return false;
             }
             $fmiFileInfo->cofDraft = false;
-            $fmiFileInfo->insert();
+            $fmiFileInfo->update();
             return $fmi;
         } else return false;
     }
@@ -176,68 +353,12 @@ class FileManager extends PgUnitAbstract {
     }
 
     public function objectFileListAjax(){
+        $data = $_POST;
+        $checkRule = array();
+        $checkRule[] = array('capp_id'      , '/^\d+/');
+        $checkRule[] = array('capp_capps_id', '/^\d+/');
+        $checkRule[] = array('cappm_text'   , '');
 
-    }
-
-
-
-    static function saveImg($tmpPath,$obj,$objId,$ext='jpg',$prePath='o/',$name='',$file='') {
-        if (!file_exists($tmpPath)) return false;
-        global $sql,$cfg;
-
-        $srv_id = 2; //Куда класть картинки
-
-        $query = $sql->pr_i('cms_obj_photos',array(
-            'cop_obj' => $sql->t($obj),
-            'cop_obj_id' => $sql->d($objId),
-            'cop_name' => $sql->t($name),
-            'cop_file' => $sql->t($file),
-            'cop_srv_id' => $sql->d($srv_id),
-        )).' RETURNING *';
-        $imgData = $sql->query_first($query);
-
-        $shortpath = self::pathByNum_Short($imgData['id_cop'], $ext);
-
-        if ($srv_id<=1) {
-            $fileinfo = pathinfo($shortpath);
-            $filefolder = self::$folder . $prePath . $fileinfo['dirname'];
-            #$filename = $fileinfo['basename'];
-            $fullpath = self::$folder . $prePath . $shortpath;
-
-            @mkdir($filefolder, 0777, true);
-            @rename($tmpPath, $fullpath);
-        } else {
-            $post = array('file'=>curl_file_create($tmpPath));
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL,$cfg['images_domains_url'][$srv_id].'_api/img/upld?path='.$shortpath);
-            curl_setopt($ch, CURLOPT_POST,1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            $result=curl_exec ($ch);
-            if ($result != 't') $imgData['error'] = 'error to upload to another server';//rollback
-
-            curl_close ($ch);
-            @unlink($tmpPath);####
-        }
-
-        return $imgData;
-    }
-
-    static function setHeaderImg($obj,$objId,$id,$ext='jpg') {
-        global $sql;
-        $query = sprintf ('UPDATE cms_obj_photos SET cop_hdr = false WHERE id_cop <> %d AND cop_obj=%s AND cop_obj_id=%d;',
-            $sql->d($id),
-            $sql->pgf_text($obj),
-            $sql->d($objId)
-        );
-        $res_count = $sql->command($query);
-        $query = sprintf ('UPDATE cms_obj_photos SET cop_hdr = true WHERE id_cop = %d AND cop_obj=%s AND cop_obj_id=%d',
-            $sql->d($id),
-            $sql->pgf_text($obj),
-            $sql->d($objId)
-        ).' returning *';
-        $res = $sql->query_first($query);
-        return $res;
     }
 
     static function ajx_GlrIList($obj,$objId) {

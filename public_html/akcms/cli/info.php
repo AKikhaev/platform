@@ -55,7 +55,6 @@ group by schemaname
 
 ORDER BY bytes DESC
 ) a WHERE \"table\" ilike $_filter";
-        echo $query;
         $data = $sql->query_all($query);
         if ($data!==false) {
             CmsLogger::table($data,['bytes'=>false],['data'=>STR_PAD_LEFT,'total'=>STR_PAD_LEFT]);

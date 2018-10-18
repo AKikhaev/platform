@@ -14,6 +14,7 @@ Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-L
 * Скопировать .bash_aliases и добавить туда строки:
 ```bash
 declare -x DISPLAY="localhost:0.0"
+declare -x PULSE_SERVER="tcp:127.0.0.1"
 sudo mount --bind /mnt/d/Documents/Projects /data/nfs
 cd ~/
 ```
@@ -50,8 +51,9 @@ Features -> Status bar
 * `mc` работает только в станлартной консоли
 * Но работать удобнее в ConEmu из-за сворачивания консоли в трей. При закрытии консоли WSL убивается. Поэтому важно:
 * Запуск: `server/win/startAll.sh`
-* Отановка: `server/win/stopAll.sh` (Обязательно!)
+* Оcтановка: `server/win/stopAll.sh` (Обязательно!)
 * Подключение [Xming](https://sourceforge.net/projects/xming/): `declare -x DISPLAY="localhost:0.0"`
+* Подключение [PulseAudio](https://www.freedesktop.org/wiki/Software/PulseAudio/Ports/Windows/Support/): [manual](https://token2shell.com/howto/x410/enabling-sound-in-wsl-ubuntu-let-it-sing/), `declare -x PULSE_SERVER="tcp:127.0.0.1"`
 * Путь к rootfs 
 
 `%LOCALAPPDATA%\Packages\CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc\LocalState\rootfs`
