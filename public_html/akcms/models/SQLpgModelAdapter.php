@@ -231,7 +231,12 @@ trait SQLpgModelAdapter {
                 if (preg_match('/^(\=|\<|\>)ANY$/iu', $where[1])) {
                     if (!is_array($where[2])) $where[2] = [$where[2]];
                     return $where[0] . $where[1] . '(' . $FieldClass::quoteArray($this->sql, $where[2]) . ')';
-                } else return $where[0] . ' ' . $where[1] . ' ' . $FieldClass::quote($this->sql, $where[2]);
+                }
+                else if ((strcasecmp($where[1], '!IN') === 0)) {
+                    if (!is_array($where[2])) $where[2] = [$where[2]];
+                    return 'NOT ('.$where[0] . '=ANY(' . $FieldClass::quoteArray($this->sql, $where[2]) . '))';
+                }
+                else return $where[0] . ' ' . $where[1] . ' ' . $FieldClass::quote($this->sql, $where[2]);
             } else throw new DBException('Where field not found ' . $where[0]);
 
         } elseif (count($where) == 4 && is_string($where[1])) {
@@ -326,6 +331,32 @@ trait SQLpgModelAdapter {
         $this->query = '!';
         $where = $this->_where(func_get_args());
         $this->query_where .= ' AND ('.$where.')';
+        return $this;
+    }
+
+    /**
+     * And not where ...
+     *
+     * field = value
+     *
+     * field =ANY [values]
+     *
+     * field BETWEEN 1 2
+     *
+     * [where] AND [where] AND [...] | set of AND wheres
+     *
+     * id
+     *
+     * instanceof cmsModelAbstract
+     *
+     * @param array $where
+     * @return $this|$this[]
+     * @throws DBException
+     */
+    public function andNot_($where = []) {
+        $this->query = '!';
+        $where = $this->_where(func_get_args());
+        $this->query_where .= ' AND NOT('.$where.')';
         return $this;
     }
 
@@ -568,6 +599,19 @@ trait SQLpgModelAdapter {
                 $this->filled = [];
                 return 1;
             } else return 0;
+        }
+    }
+
+    /**  create new recond into DB. Ignores unique key error. Require unique index
+     * @return int
+     * @throws DBException
+     */
+    public function insertUnique() {
+        try {
+            return $this->insert();
+        } catch (DBException $e) {
+            if ($e->isDuplicate) return 1;
+            else throw $e;
         }
     }
 

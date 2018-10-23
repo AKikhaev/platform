@@ -14,7 +14,7 @@ class DBException extends CmsException {
 	public $field = '';
 	public function __construct($message = '', $text = '') {
 		$this->text = $text;
-		if (mb_stripos($text,'ERROR:  duplicate key value violates unique constraint')!==false) {
+		if (mb_stripos($text,'duplicate key value violates unique constraint')!==false) {
 			$this->isDuplicate = true;
 			$matches = array();
 			if (preg_match('/DETAIL:  Key \(([^\)]+)\)/ui',$text,$matches)>0) $this->field = $matches[1];
