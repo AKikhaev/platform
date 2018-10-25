@@ -5,7 +5,7 @@ class CmsLogger
     public static $debug = false;
     public static function enableDebug() {self::$debug=true;}
 
-    /** formating array as table
+    /** formating array as horizontal table
      * @param $data
      * @param array $headers
      * array of headers translations. false to hide column ['name'=>Имя, 'sort'=>false]
@@ -13,15 +13,17 @@ class CmsLogger
      * array of column alignments. STR_PAD_LEFT, STR_PAD_RIGHT, STR_PAD_BOTH ['size'=>STR_PAD_LEFT]
      */
     public static function table($data, $headers = [], $alignment = []) {
-        $lenghts = [];
-        foreach (array_keys($data[0]) as $key)
+        $lenghts = []; $keys = [];
+        //reset($data);
+        //self::var_dump__(__LINE__,current($data));
+        foreach (array_keys(current($data)) as $key)
             $lenghts[$key] = isset($headers[$key])?mb_strlen($headers[$key]):mb_strlen($key);
         foreach ($data as $datum) foreach ($datum as $key=>$v) {
             $length = mb_strlen($v);
             if ($length>$lenghts[$key]) $lenghts[$key] = $length;
         }
         self::write(_ls(1));
-        foreach (array_keys($data[0]) as $key) {
+        foreach (array_keys(current($data)) as $key) {
             if (isset($headers[$key]) && $headers[$key]===false) continue;
             self::write(mb_str_pad(isset($headers[$key]) ? $headers[$key] : $key, $lenghts[$key], ' ', STR_PAD_BOTH) . ' ');
         }
@@ -34,6 +36,32 @@ class CmsLogger
             }
             self::write(PHP_EOL);
         }
+    }
+
+    /** formatting model data as vertical table
+     * @param cmsModelAbstract $model
+     * @param string $mode
+     * skipEmpty|all
+     */
+    public static function models($models,$mode = 'skipEmpty') {
+        $data = [];
+        $models_count = count($models);
+        if (is_object($models)) $models = [$models];
+        foreach ($models as $n=>$model) {
+            foreach ($model->asArray() as $k => $v) {
+                if ($v !== null && $v != '' || mb_strtolower($mode) == 'all') {
+                    $item = isset($data[$k])?$data[$k]:[
+                        0 => $k,
+                        1 => $model->__getFieldDescription($k),
+                    ];
+                    for ($i = 0; $i<$models_count;$i++) if (!isset($item[$i+2])) $item[$i+2] = '';
+                    $item [$n + 2] = ': ' . $v;
+                    $data[$k] = $item;
+                }
+            }
+        }
+        ksort($data);
+        self::table($data,['Название','Имя','Значение'],[1=>STR_PAD_LEFT]);
     }
 
     /**
@@ -170,7 +198,7 @@ class CmsLogger
      * @param null $terminal
      * @return bool
      */
-    public static function writeLn($data, $terminal=null){ self::write($data.PHP_EOL, $terminal); }
+    public static function writeLn($data, $terminal=null){ return self::write($data.PHP_EOL, $terminal); }
 
     /**
      * Выдает в лог последовательность очистки окна терминала
@@ -201,7 +229,7 @@ class CmsLogger
      * Время фиолетовое, сообщение обычное
      * @param $msg
      */
-    public static function log($msg)          { self::write("\r\e[K"._ls(35).date('H:i:s ')._ls()                     .$msg._ls().PHP_EOL); }
+    public static function log($msg)          { self::write("\r\e[K"._ls(35).date('H:i:s ')._ls().$msg._ls().PHP_EOL); }
 
     /**
      * Время фиолетовое, сообщение серое без новой строки
@@ -225,6 +253,6 @@ class CmsLogger
      * Время фиолетовое, сообщение зеленое
      * @param $msg
      */
-    public static function logInfo($msg)      { self::write("\r\e[K"._ls(35).date('H:i:s ')._ls(32)             .$msg._ls().PHP_EOL); }
+    public static function logInfo($msg)      { self::write("\r\e[K"._ls(35).date('H:i:s ')._ls(32) .$msg._ls().PHP_EOL); }
 
 }
