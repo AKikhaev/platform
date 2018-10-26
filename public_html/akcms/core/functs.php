@@ -19,6 +19,14 @@ class functs {
         if ($size===0) return '0 '.$unit[0];
         return round($size/ (1024 ** $i = floor(log($size, 1024))),2).' '.$unit[$i];
     }
+
+    static function json_encode_objectsArray($objectsArray) {
+        $items = [];
+        foreach ($objectsArray as $item) {
+            $items[] = (string)$item;
+        }
+        return '['.implode(',',$items).']';
+    }
 }
 
 function mb_trim($string, $trim_chars = '\s'){

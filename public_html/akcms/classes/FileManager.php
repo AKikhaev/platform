@@ -75,6 +75,12 @@ class FileManagerItem{
         return $this->fileInfo->delete();
     }
 
+    public function __toString()
+    {
+        $data = $this->fileInfo->asArray();
+        $data['uri'] = $this->pathUrl();
+        return json_encode($data);
+    }
 
     /**
      * @return int
@@ -353,13 +359,38 @@ class FileManager extends PgUnitAbstract {
     }
 
     public function objectFileListAjax(){
-        $data = $_POST;
+        //https://knpz-ken.ru/ajx/_sys/_objectFileList?obj=capp&objId=7&field=files
+        $data = $_GET;
         $checkRule = array();
-        $checkRule[] = array('capp_id'      , '/^\d+/');
-        $checkRule[] = array('capp_capps_id', '/^\d+/');
-        $checkRule[] = array('cappm_text'   , '');
+        $checkRule[] = array('obj'  ,'/[a-zA-Z0-9_]+/');
+        $checkRule[] = array('objId','/^\d+/');
+        $checkRule[] = array('field','/[a-zA-Z0-9_]+/');
+        $checkResult = checkForm($data,$checkRule);
+        if (count($checkResult)==0) {
+            return functs::json_encode_objectsArray($this->get($data['obj'], $data['objId'], $data['field']));
+        }
+        else return json_encode(['error'=>$checkResult]);
+    }
+
+    public function objectFileRemoveAjax(){
+        //https://knpz-ken.ru/ajx/_sys/_objectFileRemove?id=60
+        $data = $_GET;
+        $checkRule = array();
+        $checkRule[] = array('id','/^\d+/');
+        $checkResult = checkForm($data,$checkRule);
+        if (count($checkResult)==0) {
+            $res = false;
+            $fmi = $this->getById($data['id']);
+            if ($fmi!==false) $res = $fmi->drop()==1;
+            return json_encode($res);
+        }
+        else return json_encode(['error'=>$checkResult]);
+    }
+
+    public function objectFileUpload(){
 
     }
+
 
     static function ajx_GlrIList($obj,$objId) {
         $dataset = self::getImages($obj, $objId);
