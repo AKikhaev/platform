@@ -410,7 +410,7 @@ _akcms.editPage = {
                         node.$el.append(
                             $("<div class='node-buttons'>" +
                                 "<a target='_blank' class='view' href='" + node.href + "'><i class='node-button fa fa-eye' data-toggle='tooltip' data-placement='top' title='Посмотреть страницу'></i></a> " +
-                                "<i class='node-button sec_new fa fa-plus-square' data-toggle='tooltip' data-placement='top' title='Создать дочернюю страницу'></i>" +
+                                "<i class='node-button sec_new fa fa-plus-square' data-toggle='tooltip' data-placement='top' title='Создать дочернюю страницу'></i> " +
                                 "<i class='node-button sec_edit fa fa-pencil-square' data-toggle='tooltip' data-placement='top' title='Редактировать страницу'></i>" +
                                 "</div>")
                         );
