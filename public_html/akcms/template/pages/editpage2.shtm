@@ -322,6 +322,7 @@
 	<script src="/akcms/assets/jQuery-File-Upload/jquery.iframe-transport.js"></script>
 	<script src="/akcms/assets/jQuery-File-Upload/jquery.fileupload.js"></script>
 
+	<script src="/akcms/assets/pages/akcms.js"></script>
 	<script src="/akcms/assets/pages/editpage.js"></script>
 	{#jses#}
 	<script>
