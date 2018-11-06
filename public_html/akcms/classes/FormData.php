@@ -26,10 +26,17 @@ class FormData
      * FormData constructor.
      * @param $data
      * $_GET or $_POST data
-     * @param $rules
-        [varName,TYPE or regular expression,required or not,ignore expression],
-        ['pid' ,'/^\\d{1,}$/'],
-        ['type','/^(1|2)$/']
+     * @param $rules array of rules:
+     *
+     * [paramName,TYPE or regular expression,required or not,ignore expression]:
+     *
+     * 0 - paramName
+     *
+     * 1 - Type or regular expression
+     *
+     * 2 - required or not
+     *
+     * 3 - ignore expression
      */
     public function __construct($data,$rules = [])
     {
@@ -61,10 +68,6 @@ class FormData
      * @return array
      */
     public function validateData($permissionOk = true) {
-        // 0 - varName
-        // 1 - regular expression
-        // 2 - required or not
-        // 3 - ignore expression
         $this->result = array();
         if (!$permissionOk) $this->result[] = array('f'=>'!','s'=>'!');
         foreach ($this->rules as $rule)

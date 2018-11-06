@@ -98,7 +98,7 @@ _akcms.editPage = {
 
             this.secImageInp.prop("data-src",ajaxUrl + "_seciupl");
 
-            _akcms.loadaing.start();
+            _akcms.loading.start();
             $.ajax({
                 type: "POST",
                 url: ajaxUrl+"_sec"+(_this.secItem.section_id!==0?"sve":"ins"),
@@ -107,7 +107,7 @@ _akcms.editPage = {
                 //contentType: false,
                 dataType: "json"
             }).done(function(sres) {
-                _akcms.loadaing.finish();
+                _akcms.loading.finish();
                 if (typeof(sres.r)!=="undefined"?sres.r==="t":false) {
                     _this.secItem.sec_url_full = sres.url;
                     ajaxUrl = "/ajx/"+sres.url;
@@ -147,7 +147,7 @@ _akcms.editPage = {
                     });
                 }
             }).fail(function(jqXHR, textStatus) {
-                _akcms.loadaing.finish();
+                _akcms.loading.finish();
                 _akcms.alerts.warning("Неудалось сохранить! " + textStatus);
             });
         }
@@ -293,7 +293,7 @@ _akcms.editPage = {
         _this.secImageImg = $("#e_sec_imgfile");
         _this.secImageBtn = $("#e_sec_imgfile_btn");
         _this.secImageInp = $("#e_sec_imgfile_inp").prop("accept","image/jpeg,image/png"); //.change( $.proxy(_this.onImageChosen,_this) );
-        _akcms.loadaing.start();
+        _akcms.loading.start();
         $(document.body).append($("<div class='admcntrl_cnt inedit'><div id='admcntrl' class='admcntrl'><nobr><img class='admlogo' width='212' height='19' src='/img/adm/adm_logo.png' alt=''><img id='admexit' src='/img/edt/btnlgout.png' title='Выход'><a href='/_/'><img src='/img/edt/btnhome.png' title='На главную редактора'></a><a id='akcms_viewPage' href='#'><img src='/img/edt/btnview.png' title='Посмотреть страницу'></a></nobr></div></div>"));
         $("#admexit").click(function(){if (confirm("Выйти из панели управления?")) { document.location="/_logout/"; }});
 
@@ -324,14 +324,14 @@ _akcms.editPage = {
                     if (treeLoaded) {
                         history.pushState(null, null, "/_" + href);
                         $("#akcms_viewPage").attr("href", href);
-                        _akcms.loadaing.start();
+                        _akcms.loading.start();
                         $.ajax({
                             type: "POST",
                             url: "/ajx/" + href + "_sec_data",
                             data: [],
                             success: function (sres) {
                                 document.akcms.currpage = sres;
-                                _akcms.loadaing.finish();
+                                _akcms.loading.finish();
                             },
                             dataType: "json"
                         });
@@ -372,7 +372,7 @@ _akcms.editPage = {
                     });
                     treeLoaded = true;
                     $("[data-toggle=tooltip]").tooltip();
-                    _akcms.loadaing.finish();
+                    _akcms.loading.finish();
                 },
                 data: document.akcms.treeViewData
             }).treeview(true);

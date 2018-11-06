@@ -1,5 +1,5 @@
 /* Absolute Center Spinner */
-.loading {
+.akcms_loading {
     position: fixed;
     z-index: 999;
     height: 2em;
@@ -13,7 +13,7 @@
 }
 
 /* Transparent Overlay */
-.loading:before {
+.akcms_loading:before {
     content: '';
     display: block;
     position: fixed;
@@ -27,7 +27,7 @@
 }
 
 /* :not(:required) hides these rules from IE9 and below */
-.loading:not(:required) {
+.akcms_loading:not(:required) {
     /* hide "loading..." text */
     font: 0/0 a;
     color: transparent;
@@ -36,7 +36,7 @@
     border: 0;
 }
 
-.loading:not(:required):after {
+.akcms_loading:not(:required):after {
     content: '';
     display: block;
     font-size: 10px;

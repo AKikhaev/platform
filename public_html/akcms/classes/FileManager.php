@@ -234,7 +234,7 @@ class FileManager extends PgUnitAbstract {
      * Объект
      * @param $objId
      * ИД объекта
-     * @param string $field
+     * @param string $objField
      * Поле привязки
      * @param string $ext
      * Расширение файлов
@@ -242,11 +242,11 @@ class FileManager extends PgUnitAbstract {
      * Список файлов
      * @throws DBException
      */
-    public function get($obj,$objId,$field='',$ext='') {
+    public function get($obj, $objId, $objField='', $ext='') {
         $filesInfo = (new modelCmsObjFiles())->fields()->where(
             [modelCmsObjFiles::$_cofObj,'=',$obj],
             [modelCmsObjFiles::$_cofObjId,'=',$objId],
-            [modelCmsObjFiles::$_cofObjField,'=',$field],
+            [modelCmsObjFiles::$_cofObjField,'=',$objField],
             [modelCmsObjFiles::$_cofEnabled,'=',true]
         );
         if ($ext!=='') $filesInfo->and_(modelCmsObjFiles::$_cofFileExt,'=',$ext);
@@ -364,10 +364,10 @@ class FileManager extends PgUnitAbstract {
         $checkRule = array();
         $checkRule[] = array('obj'  ,'/[a-zA-Z0-9_]+/');
         $checkRule[] = array('objId','/^\d+/');
-        $checkRule[] = array('field','/[a-zA-Z0-9_]+/');
+        $checkRule[] = array('objField','/[a-zA-Z0-9_]+/');
         $checkResult = checkForm($data,$checkRule);
         if (count($checkResult)==0) {
-            return functs::json_encode_objectsArray($this->get($data['obj'], $data['objId'], $data['field']));
+            return functs::json_encode_objectsArray($this->get($data['obj'], $data['objId'], $data['objField']));
         }
         else return json_encode(['error'=>$checkResult]);
     }
@@ -387,7 +387,7 @@ class FileManager extends PgUnitAbstract {
         else return json_encode(['error'=>$checkResult]);
     }
 
-    public function objectFileUpload(){
+    public function objectFileUploadAjax(){
 
     }
 
