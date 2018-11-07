@@ -608,7 +608,7 @@ trait SQLpgModelAdapter {
      */
     public function insertUnique() {
         try {
-            return $this->insert();
+            return @$this->insert();
         } catch (DBException $e) {
             if ($e->isDuplicate) return 1;
             else throw $e;

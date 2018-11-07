@@ -63,33 +63,47 @@ class FormData
      */
     public function errors() { return $this->result; }
 
-    /** Validate data
+    /** Validate data depends constructor rules
      * @param bool $permissionOk
      * @return array
      */
     public function validateData($permissionOk = true) {
-        $this->result = array();
-        if (!$permissionOk) $this->result[] = array('f'=>'!','s'=>'!');
-        foreach ($this->rules as $rule)
+        $this->result = $this->validateRules($this->rules,$permissionOk);
+        return $this->result;
+    }
+
+    /** Validate data depends this rules
+     * @param $rules
+     * @param bool $permissionOk
+     * @return array
+     */
+    public function validateRules($rules,$permissionOk = true) {
+        $result = array();
+        if (!$permissionOk) $result[] = array('f'=>'!','s'=>'!');
+        foreach ($rules as $rule)
         {
             $need = isset($rule[2])?$rule[2]:true;
             $isset = isset($this->data[$rule[0]]);
             if ($need && (!$isset || $this->data[$rule[0]]==''))
             {
-                $this->result[] = array('f'=>$rule[0],'s'=>'empty');
+                $result[] = array('f'=>$rule[0],'s'=>'empty');
+            }
+            if ($isset && !$need && $this->data[$rule[0]]=='') {
+                unset($this->data[$rule[0]]);
+                continue;
             }
             elseif ($isset && !empty($rule[1]) && !in_array(mb_substr($rule[1],0,1),['/','~','.'])) {
                 $class = $rule[1];
-                if (!$class::valid($this->data[$rule[0]])) $this->result[] = array('f'=>$rule[0],'s'=>'Wrong');
+                if (!$class::valid($this->data[$rule[0]])) $result[] = array('f'=>$rule[0],'s'=>'Wrong');
             }
             elseif ($isset && !empty($rule[1]) && $rule[1] != FormData::$RequiredAny)
             {
-                if (preg_match($rule[1],$this->data[$rule[0]])!==1) $this->result[] = array('f'=>$rule[0],'s'=>'wrong');
+                if (preg_match($rule[1],$this->data[$rule[0]])!==1) $result[] = array('f'=>$rule[0],'s'=>'wrong');
                 elseif (isset($rule[3])?$rule[3]!=''?preg_match($rule[3],$this->data[$rule[0]])===1:false:false)
-                    $this->result[] = array('f'=>$rule[0],'s'=>'Wrong');
+                    $result[] = array('f'=>$rule[0],'s'=>'Wrong');
             }
         }
-        return $this->result;
+        return $result;
     }
 
     /** when not true add [f:!,s:!]
@@ -99,7 +113,7 @@ class FormData
     public function validateRights($trueOrNot, $errorResult = '!') {
         if (!$trueOrNot)
         {
-            $this->result[] = array('f'=>'!','s'=>$errorResult);
+            array_unshift($this->result,array('f'=>'!','s'=>$errorResult));
         }
     }
 
