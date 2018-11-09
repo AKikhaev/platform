@@ -2,7 +2,11 @@ var _akcms = _akcms || {};
 _akcms.loading = {
     template:$("<div class='akcms_loading'></div>"),
     tag:null,
-    start: function(){this.tag = this.template.clone().appendTo(document.body);},
+    start: function(){
+            var $this = this;
+            $this.tag = $this.template.clone().appendTo(document.body);
+            setTimeout(function () { $this.tag.addClass("akcms_loading_started"); },1);
+        },
     finish: function(){if (this.tag!==null) { this.tag.remove(); }},
     stop: function(){ this.finish(); }
 };

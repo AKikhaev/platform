@@ -569,6 +569,22 @@ trait SQLpgModelAdapter {
         return $this->sql->command($query);
     }
 
+    /** send changes to DB
+     * @param $returning
+     * fields
+     * @param null $where
+     * @return array|bool|string
+     * @throws DBException
+     */
+    public function updateReturning($returning,$where = null) {
+        if ($where==null) $where=$this->_pr_whereID();
+        $returning_sql = $returning;
+        if (is_array($returning)) $returning_sql = implode(',',$returning_sql);
+        $query = $this->pr_u($where).' RETURNING '.$returning_sql;
+        $this->filled = [];
+        return is_string($returning_sql) || is_array($returning_sql) && count($returning_sql)===1 ? $this->sql->query_one($query) : $this->sql->query_first($query);
+    }
+
     /** Delete records from DB
      * @param null $where
      * @return int

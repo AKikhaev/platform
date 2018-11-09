@@ -5,7 +5,8 @@ abstract class VisualThemeAbstract
     const weekdays = array('Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота');
     const weekdaysShort = array('вс','пн','вт','ср','чт','пт','сб');
     const months = array('','января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря');
-    const monthsShort = array('','янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек');
+    const monthsShort = array('','янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек');
+
     /**
      * 7 июля в 14:17         - j F в H:i
      *
@@ -16,10 +17,19 @@ abstract class VisualThemeAbstract
      * E - год, как Y, если год отличный от текущего
      * @param $format
      * @param $dt
+     * @param null $formatToday
      * @return false|string
      */
-    public static function dateRus($format,$dt) {
+    public static function dateRus($format,$dt,$formatToday = null) {
         if (!is_numeric($dt)) $dt = strtotime($dt);
+        if (
+            $formatToday !== null &&
+            date('Y',$dt)==date('Y') &&
+            date('n',$dt)==date('n') &&
+            date('j',$dt)==date('j')
+        ) {
+            $format = $formatToday;
+        }
         if (mb_strpos($format,'l')!==false) {
             $format = str_replace('l',self::weekdays[date('w',$dt)],$format);
         }
