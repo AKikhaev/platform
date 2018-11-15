@@ -61,6 +61,30 @@ _akcms.switchClass=function(isTrue,el,className){
     if (isTrue) { el.addClass(className); }
     else { el.removeClass(className); }
 };
+_akcms.cookie = {
+    set: function(name,value,expires, options) {
+        if (options===undefined) { options = {path:"/"}; }
+        var expires_date = new Date();
+        if ( expires ) {
+            expires_date.setHours(expires_date.getHours() + expires)
+        }
+        document.cookie = name+"="+encodeURIComponent( value ) +
+            ( ( expires ) ? ";expires="+expires_date.toGMTString() : "" ) +
+            ( ( options.path ) ? ";path=" + options.path : "/" ) +
+            ( ( options.domain ) ? ";domain=" + options.domain : "" ) +
+            ( ( options.secure ) ? ";secure" : "" );
+    },
+    get:function(key) {
+        var keyValue = document.cookie.match('(^|;) ?' + key + '=([^;]*)(;|$)');
+        return keyValue ? decodeURIComponent(keyValue[2]) : null;
+    },
+    remove:function(name) {
+        this.set(name, "", -10);
+    }
+};
+_akcms.replaceAll = function(str, find, replace) {
+    return str.replace(new RegExp(find, "g"), replace);
+};
 _akcms.FileUploader = function(container,options){
     var _this = this,filesUpload = [];
     if (typeof container === "string") { container = $(container); }
@@ -68,7 +92,7 @@ _akcms.FileUploader = function(container,options){
     var settings = $.extend({
         container:container,
         ajaxPrefix:"/ajx/_sys/",
-        paramName: "files[]",
+        paramName: "file[]",
         dropZone: document.body,
         tn_width:100,
         tn_height:100,
@@ -81,7 +105,7 @@ _akcms.FileUploader = function(container,options){
         maxChunkSize:0,
 
         color: "#556b2f",
-        backgroundColor: "white",
+        backgroundColor: "white"
     }, options );
     if (typeof settings.dropZone === "string") { settings.dropZone = $(settings.dropZone); }
     if (typeof settings.addBtn === "string") { settings.addBtn = $(settings.addBtn); }
@@ -104,9 +128,10 @@ _akcms.FileUploader = function(container,options){
         });
         itemDiv.find("div.FileUploader_dropBtn").click(function(){
             var name = data.files[0].name;
-            if (confirm("Удалить "+name+"?"))
+            if (window.confirm("Удалить "+name+"?"))
             {
                 itemDiv.remove();
+                data.removed = true;
             }
             //todo removing from queue or server
         });
@@ -163,6 +188,39 @@ _akcms.FileUploader = function(container,options){
         };
         if (file) { reader.readAsDataURL(file); }
     };
+
+    var getServerFiles = function() {
+        $.ajax({
+            type: "POST",
+            url: settings.ajaxPrefix+"_objectFileList",
+            data: {
+                obj:settings.obj,
+                objId:settings.objId,
+                objField:settings.objField
+            },
+            dataType: "json"
+        }).done(function (filesList) {
+            if (filesList.error) {
+                window.console.log(filesList.error);
+            } else {
+                filesList.forEach(function (data) {
+                    var itemDiv = template.clone().appendTo(container);
+                    itemDiv.find("img.FileUploader_img").attr("src",data.uri);
+                    itemDiv.find("div.FileUploader_rotateBtn").remove();
+                    addEvents(itemDiv,filesList);
+
+                    window.console.log(data);
+                });
+            }
+        }).fail(function (jqXHR, textStatus) {
+            window.console.log(textStatus);
+        });
+    };
+
+    if (settings.obj!==null) {
+        getServerFiles();
+    }
+
     var fileInput = $("<input type='file' name='"+settings.paramName+"' class='d-none hidden' id='"+id+"' multiple accept='"+settings.accept+"'>")
         .appendTo(document.body)
         .fileupload({
@@ -222,6 +280,7 @@ _akcms.FileUploader = function(container,options){
         settings.obj = obj;
         settings.objId = objId;
         settings.objField = objField;
+        getServerFiles();
     };
 
     this.uploadAll = function(){

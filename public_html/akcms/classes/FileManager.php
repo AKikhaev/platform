@@ -8,10 +8,18 @@ class FileManagerItem{
     private $fileInfo;
     private $fileManager;
     public $isDuplicate = false;
-    public function __construct(modelCmsObjFiles &$fileInfo,FileManager &$fileManager)
+    public function __construct(modelCmsObjFiles $fileInfo,FileManager &$fileManager)
     {
-        $this->fileInfo = $fileInfo;
+        $this->fileInfo = clone $fileInfo;
         $this->fileManager = $fileManager;
+    }
+
+    /**
+     * @return modelCmsObjFiles
+     */
+    public function getFileInfo()
+    {
+        return $this->fileInfo;
     }
 
     /** Short last part of path
@@ -79,6 +87,7 @@ class FileManagerItem{
     {
         $data = $this->fileInfo->asArray();
         $data['uri'] = $this->pathUrl();
+        $data['uriPreview'] = $this->pathUrl('s');
         return json_encode($data);
     }
 
@@ -300,8 +309,8 @@ class FileManager extends PgUnitAbstract {
                 }
             }
 
-            $fmiFileInfo = new modelCmsObjFiles();
-            $fmi = new FileManagerItem($fmiFileInfo,$this);
+            $fmi = new FileManagerItem(new modelCmsObjFiles(),$this);
+            $fmiFileInfo = $fmi->getFileInfo();
             $fmiFileInfo->cofObj = $obj;
             $fmiFileInfo->cofObjId = $objId;
             $fmiFileInfo->cofObjField = $objField;
@@ -313,11 +322,13 @@ class FileManager extends PgUnitAbstract {
             $fmiFileInfo->cofSecured = $secured;
             $fmiFileInfo->cofDraft = true;
             try {
+                $pathIn = $fmi->pathIn();
                 $fmiFileInfo->insert();
-                $filePath = (new SplFileInfo($fmi->pathIn()))->getPath();
+                $filePath = (new SplFileInfo($pathIn))->getPath();
                 if ($fmi->getSrvId()<1) {
                     if (!file_exists($filePath)) mkdir($filePath,0777,true);
-                    rename($fileTempPath, $fmi->pathIn());
+                    rename($fileTempPath, $pathIn);
+                    if (!$fmiFileInfo->cofSecured) chmod($pathIn,0664);
                 } else {
                     global $cfg;
                     $post = array('file'=>curl_file_create($fileTempPath));
@@ -360,7 +371,7 @@ class FileManager extends PgUnitAbstract {
 
     public function objectFileListAjax(){
         //https://knpz-ken.ru/ajx/_sys/_objectFileList?obj=capp&objId=7&field=files
-        $data = $_GET;
+        $data = $_POST;
         $checkRule = array();
         $checkRule[] = array('obj'  ,'/[a-zA-Z0-9_]+/');
         $checkRule[] = array('objId','/^\d+/');
@@ -388,7 +399,22 @@ class FileManager extends PgUnitAbstract {
     }
 
     public function objectFileUploadAjax(){
-
+        $data = (new FormData($_POST,[
+            ['obj'  ,'/[a-zA-Z0-9_]+/'],
+            ['objId',FormData::$Integer],
+            ['objField','/[a-zA-Z0-9_]+/']
+        ]))->validateData();
+        if (
+            $data->addToErrors(isset($_FILES['file']),'file','empty')
+        ) {
+            $data->addToErrors(is_uploaded_file($_FILES['file']['tmp_name'][0]),'file','Wrong');
+            //$data->addToErrors(in_array($_FILES['file']['type'],['image/jpeg','image/png','image/bmp']),'file','wrong');
+        }
+        if ($data->isValid()) {
+            $fmi = $this->newFile($_FILES['file']['tmp_name'][0],$data->obj,$data->objId,$data->objField,$_FILES['file']['name'][0]);
+            return $fmi;
+        }
+        else return json_encode(['error'=>$data->errors()]);
     }
 
 

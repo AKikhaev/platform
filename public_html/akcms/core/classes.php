@@ -653,7 +653,7 @@ final class core {
                 "\x07\033]0;".date('M d H:i:s ').self::$ErrorFirstTitle."\007" .
                 self::$GlobalErrors . $GlobalVars . '<=='.PHP_EOL
             );
-            if (!$sent) $sent = sendTelegram(self::$ErrorFirstTitle.PHP_EOL.$inf);
+            if (!$sent) $sent = @sendTelegram(self::$ErrorFirstTitle.PHP_EOL.$inf);
             if (!$sent) sendMailHTML($emailTo, 'ERROR '.self::$ErrorFirstTitle, self::ErrorsStringToHTML(self::$GlobalErrors).'<pre>'.$GlobalVars.'</pre>','',$cfg['email_from']);
             //if (self::$IS_CLI) sleep(2);
         }

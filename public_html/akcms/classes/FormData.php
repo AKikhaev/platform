@@ -65,11 +65,11 @@ class FormData
 
     /** Validate data depends constructor rules
      * @param bool $permissionOk
-     * @return array
+     * @return FormData
      */
     public function validateData($permissionOk = true) {
         $this->result = $this->validateRules($this->rules,$permissionOk);
-        return $this->result;
+        return $this;
     }
 
     /** Validate data depends this rules
@@ -121,12 +121,14 @@ class FormData
      * @param $trueOrNot
      * @param $field
      * @param $error
+     * @return bool
      */
     public function addToErrors($trueOrNot, $field, $error) {
         if (!$trueOrNot)
         {
             $this->result[] = array('f'=>$field,'s'=>$error);
         }
+        return $trueOrNot;
     }
 
 }
