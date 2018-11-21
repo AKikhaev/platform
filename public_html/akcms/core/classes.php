@@ -170,20 +170,39 @@ class CmsUser {
     public static $user = array();
 	private static $fields = 'id_usr,usr_login,usr_name,usr_admin,usr_enabled,usr_grp,usr_activated,usr_email';
 
-	/**
-	 * @param int $length
-	 * @return string
-	 * @throws Exception
-	 */
-	public static function generate_password_string($length = 20){
-		$chars =  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`-=~!@#$%^&*()_+,./<>?;:[]{}\|';
-
+    /**
+     * @param int $length
+     * @param string $chars
+     * A : ABC…
+     *
+     * a : abc…
+     *
+     * Я : АБВ…
+     *
+     * я : абв…
+     *
+     * 9 : 0123…
+     *
+     * % : `-=~!#$%^&*()_+,./<>?;:[]{}\|
+     *
+     * - : -_=/+*
+     * @return string
+     * @throws Exception
+     */
+	public static function generate_password_string($length = 20, $chars = 'aA9_'){
+	    $chars = str_replace('Я','АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ',$chars);
+	    $chars = str_replace('я','абвгдеёжзийклмнопрстуфхцчшщъыьэюя',$chars);
+	    $chars = str_replace('A','ABCDEFGHIJKLMNOPQRSTUVWXYZ',$chars);
+	    $chars = str_replace('a','abcdefghijklmnopqrstuvwxyz',$chars);
+	    $chars = str_replace('9','0123456789',$chars);
+	    $chars = str_replace('-','-_=/+*',$chars);
+	    $chars = str_replace('%','`-=~!#$%^&*()_+,./<>?;:[]{}\|',$chars);
+	    //$charset
 		$str = '';
 		$max = strlen($chars) - 1;
-
-		for ($i=0; $i < $length; $i++)
-			$str .= $chars[random_int(0, $max)];
-
+		for ($i=0; $i < $length; $i++) {
+            $str .= $chars[random_int(0, $max)];
+        }
 		return $str;
 	}
 

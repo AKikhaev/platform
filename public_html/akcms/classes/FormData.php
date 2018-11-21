@@ -7,6 +7,12 @@ class FormDataValidatorPhone{
     }
 }
 
+class FormDataValidatorCaptcha{
+    static function valid($value) {
+        return isset($_SESSION['securityCode']) && functs::strHasValue($_SESSION['securityCode']) && $value == $_SESSION['securityCode'];
+    }
+}
+
 /** Receive form data. Validate, give access
  * Class FormData
  */
@@ -17,10 +23,12 @@ class FormData
     static $Boolean = '/^(t|f|true|false|1|0)$/iu';
     static $Float = '/^\d+(\.+\d+)?$/iu';
     static $Phone = 'FormDataValidatorPhone';
+    static $Captcha = 'FormDataValidatorCaptcha';
 
     private $data = [];
     private $rules = [];
     private $result = [];
+    private $callbackWrong = null;
 
     /**
      * FormData constructor.
@@ -28,20 +36,41 @@ class FormData
      * $_GET or $_POST data
      * @param $rules array of rules:
      *
-     * [paramName,TYPE or regular expression,required or not,ignore expression]:
+     * [paramName,TYPE or regular expression,required or not,ignore expression,callback wrong function]:
      *
      * 0 - paramName
      *
-     * 1 - Type or regular expression
+     * 1 - type or regular expression or callable checker closure($value, &$errorText)
      *
      * 2 - required or not
      *
      * 3 - ignore expression
+     *
+     * 4 - callBackWrong
      */
     public function __construct($data,$rules = [])
     {
         $this->data = $data;
         $this->rules = $rules;
+    }
+
+    /**
+     * @param $name
+     * @param $type
+     * type or regular expression or callable checker closure($value, &$errorText)
+     * @param bool $required
+     * @param null $excludeExpression
+     * @param null $callbackWrong
+     * @return $this
+     */
+    public function addCheck($name, $type, $required = true, $excludeExpression = null, $callbackWrong = null){
+        $this->rules[] = [$name, $type, $required, $excludeExpression, $callbackWrong];
+        return $this;
+    }
+
+    public function addCallbackWrong(Closure $callbackWrong){
+        $this->callbackWrong = $callbackWrong;
+        return $this;
     }
 
     public function __get($name) { return isset($this->data[$name]) ? $this->data[$name] : null; }
@@ -64,6 +93,16 @@ class FormData
     public function errors() { return $this->result; }
 
     /** Validate data depends constructor rules
+     *
+     * 0 - paramName
+     *
+     * 1 - type or regular expression or callable checker closure($value, &$errorText)
+     *
+     * 2 - required or not
+     *
+     * 3 - ignore expression
+     *
+     * 4 - callBackWrong
      * @param bool $permissionOk
      * @return FormData
      */
@@ -73,6 +112,16 @@ class FormData
     }
 
     /** Validate data depends this rules
+     *
+     * 0 - paramName
+     *
+     * 1 - type or regular expression or callable checker closure($value, &$errorText)
+     *
+     * 2 - required or not
+     *
+     * 3 - ignore expression
+     *
+     * 4 - callBackWrong
      * @param $rules
      * @param bool $permissionOk
      * @return array
@@ -84,23 +133,59 @@ class FormData
         {
             $need = isset($rule[2])?$rule[2]:true;
             $isset = isset($this->data[$rule[0]]);
-            if ($need && (!$isset || $this->data[$rule[0]]==''))
+            if ($need && (!$isset || $this->data[$rule[0]]=='')) //required
             {
                 $result[] = array('f'=>$rule[0],'s'=>'empty');
+
+                if (isset($rule[4]) && $rule[4] instanceof Closure) $rule[4]($rule[0],'empty');
+                elseif ($this->callbackWrong !== null) {
+                    call_user_func($this->callbackWrong,$rule[0],'empty');
+                }
+                continue;
             }
-            if ($isset && !$need && $this->data[$rule[0]]=='') {
+            if ($isset && !$need && $this->data[$rule[0]]=='') { //not required and empty - skip
                 unset($this->data[$rule[0]]);
                 continue;
             }
-            elseif ($isset && !empty($rule[1]) && !in_array(mb_substr($rule[1],0,1),['/','~','.'])) {
-                $class = $rule[1];
-                if (!$class::valid($this->data[$rule[0]])) $result[] = array('f'=>$rule[0],'s'=>'Wrong');
+            elseif ($isset && !empty($rule[1]) && $rule[1] instanceof Closure) { // validate function
+                $errorText = 'Wrong';
+                if (!$rule[1]( $this->data[$rule[0]], $errorText)) {
+                    $result[] = array('f'=>$rule[0],'s'=>$errorText);
+
+                    if (isset($rule[4]) && $rule[4] instanceof Closure) $rule[4]($rule[0],'wrong');
+                    elseif ($this->callbackWrong !== null) {
+                        call_user_func($this->callbackWrong,$rule[0],'wrong');
+                    }
+                }
             }
-            elseif ($isset && !empty($rule[1]) && $rule[1] != FormData::$RequiredAny)
-            {
-                if (preg_match($rule[1],$this->data[$rule[0]])!==1) $result[] = array('f'=>$rule[0],'s'=>'wrong');
-                elseif (isset($rule[3])?$rule[3]!=''?preg_match($rule[3],$this->data[$rule[0]])===1:false:false)
-                    $result[] = array('f'=>$rule[0],'s'=>'Wrong');
+            elseif ($isset && !empty($rule[1]) && !in_array(mb_substr($rule[1],0,1),['/','~','.']) && class_exists($rule[1],false)) { // validate class
+                $errorText = 'Wrong';
+                if (!$rule[1]::valid($this->data[$rule[0]],$errorText)) {
+                    $result[] = array('f'=>$rule[0],'s'=>$errorText);
+
+                    if (isset($rule[4]) && $rule[4] instanceof Closure) $rule[4]($rule[0],'wrong');
+                    elseif ($this->callbackWrong !== null) {
+                        call_user_func($this->callbackWrong,$rule[0],'wrong');
+                    }
+                }
+            }
+            elseif ($isset && !empty($rule[1]) && $rule[1] != FormData::$RequiredAny) { // validate regular expressions
+                if (preg_match($rule[1],$this->data[$rule[0]])!==1) {
+                    $result[] = array('f'=>$rule[0],'s'=>'wrong');
+
+                    if (isset($rule[4]) && $rule[4] instanceof Closure) $rule[4]($rule[0],'wrong');
+                    elseif ($this->callbackWrong !== null) {
+                        call_user_func($this->callbackWrong,$rule[0],'wrong');
+                    }
+                }
+                elseif (isset($rule[3]) && $rule[3] !== '' && $rule[3] !== null && preg_match($rule[3],$this->data[$rule[0]])===1) {
+                    $result[] = array('f' => $rule[0], 's' => 'Wrong');
+
+                    if (isset($rule[4]) && $rule[4] instanceof Closure) $rule[4]($rule[0],'wrong');
+                    elseif ($this->callbackWrong !== null) {
+                        call_user_func($this->callbackWrong,$rule[0],'wrong');
+                    }
+                }
             }
         }
         return $result;
@@ -131,4 +216,12 @@ class FormData
         return $trueOrNot;
     }
 
+
+    /** return data as array
+     * @return array
+     */
+    public function asArray()
+    {
+        return $this->data;
+    }
 }
