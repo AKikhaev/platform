@@ -66,7 +66,7 @@ _akcms.cookie = {
         if (options===undefined) { options = {path:"/"}; }
         var expires_date = new Date();
         if ( expires ) {
-            expires_date.setHours(expires_date.getHours() + expires)
+            expires_date.setHours(expires_date.getHours() + expires);
         }
         document.cookie = name+"="+encodeURIComponent( value ) +
             ( ( expires ) ? ";expires="+expires_date.toGMTString() : "" ) +

@@ -121,16 +121,36 @@ class CacheController { /* cache */
      */
     public $forceCache = false;
 
-	public function getpath($key, $cd=false) {
+	private function getPath($key, $cd=false) {
 		global $cfg;
 		$key = md5($key);
 		$dirpath = $cfg['filecache']['path'].substr($key,0,1).'/';
 		if ($cd && !file_exists($dirpath)) mkdir($dirpath,0755,true);
 		return $dirpath.$key;
 	}
-	
+
+    /** Cache closure function result and reuse it when life time not exceed
+     * @param $key
+     * @param Closure $function
+     * @param int $life
+     * @return mixed|null
+     */
+	public function cacheFunction($key,Closure $function, $life = 86400) {
+        $result = null;
+        if ($this->cache_read($key,$result)) {
+        } else {
+            $result = $function();
+            if ($result !== null && $result != '') {
+                $this->cache_write($key, $result, $life);
+            }
+        }
+        return $result;
+    }
+
+	/// Todo:Renaming needed
+
 	public function cache_read($key, &$val) {
-		$ipath = $this->getpath($key);
+		$ipath = $this->getPath($key);
 		$dump = file_exists($ipath)?file_get_contents($ipath):false;
 		if ($dump!==false) {
 			$c_obj = unserialize($dump);
@@ -149,18 +169,18 @@ class CacheController { /* cache */
 	}
 	
 	public function cache_write($key, &$val, $life=86400, $until=0) {
-		$ipath = $this->getpath($key,true);
+		$ipath = $this->getPath($key,true);
 		$c_obj = array('d'=>$val,'u'=> $until==0?time()+$life:$until);
 		return file_put_contents($ipath,serialize($c_obj))>0;
 	}
 	
 	public function cache_exists($key) {
-		$ipath = $this->getpath($key);
+		$ipath = $this->getPath($key);
 		return file_exists($ipath);
 	}
 	
 	public function cache_drop($key) {
-		$ipath = $this->getpath($key);
+		$ipath = $this->getPath($key);
 		if (file_exists($ipath)) @unlink($ipath);
 	}
 }
