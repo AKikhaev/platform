@@ -185,6 +185,42 @@ class CacheController { /* cache */
 	}
 }
 
+/** Output cached whole page content or throw CmsException page_not_found
+ * Class CacheWholePage
+ */
+class CacheWholePage {
+    public static $cacheThis = false;
+
+    /** Cache whole url when $cacheThis is true
+     * @param $content
+     * @param int $life
+     */
+    public static function cacheTry($content,$life=31536000) { // 86400*365
+        if (!self::$cacheThis) return;
+        global $Cacher;
+        $key = $_SERVER['REQUEST_URI'];
+        $Cacher->cache_write($key,$content,$life);
+    }
+
+    private static function outWholePage() {
+        global $Cacher;
+        $key = $_SERVER['REQUEST_URI'];
+        $content = '';
+        if (
+            //!CmsUser::isLogin() &&
+            !isset($_COOKIE['cacheskip']) &&
+            $Cacher->cache_read($key,$content)
+        ) {
+            echo $content; die;
+        }
+        return false;
+    }
+
+    public function __construct()
+    {
+        if (!self::outWholePage()) { throw new CmsException("page_not_found"); }
+    }
+}
 class CmsUser {
     public static $rights = array();
     public static $user = array();

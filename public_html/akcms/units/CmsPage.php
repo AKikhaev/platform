@@ -8,9 +8,6 @@ abstract class CmsPage extends AclProcessor { /* page */
     protected $pageMenu = array();		// Меню страницы
     protected $pageAllMenu = array();		// Полное меню
     protected $title;
-    protected $cacheWholePage = true;
-    public function canCache() { return $this->cacheWholePage;}
-    public function noCache() { $this->cacheWholePage=false; }
     public function __construct(&$pageTemplate) {}
     public function getTitle() {return $this->title;}
     public function initAjx(){

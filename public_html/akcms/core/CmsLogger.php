@@ -3,7 +3,7 @@ class CmsLogger
 {
     private static $terminals = [];
     public static $debug = false;
-    public static function enableDebug() {self::$debug=true;}
+    public static function enableDebug() { self::$debug=true; }
 
     /** formating array as horizontal table
      * @param $data
@@ -254,5 +254,9 @@ class CmsLogger
      * @param $msg
      */
     public static function logInfo($msg)      { self::write("\r\e[K"._ls(35).date('H:i:s ')._ls(32) .$msg._ls().PHP_EOL); }
+
+    public static function logWho() {
+        self::log($_SERVER['HTTP_USER_AGENT'].' '.$_SERVER['REMOTE_ADDR']. ' '.$_SERVER['REQUEST_URI']);
+    }
 
 }

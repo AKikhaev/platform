@@ -322,8 +322,8 @@ class FileManager extends PgUnitAbstract {
             $fmiFileInfo->cofSecured = $secured;
             $fmiFileInfo->cofDraft = true;
             try {
-                $pathIn = $fmi->pathIn();
                 $fmiFileInfo->insert();
+                $pathIn = $fmi->pathIn();
                 $filePath = (new SplFileInfo($pathIn))->getPath();
                 if ($fmi->getSrvId()<1) {
                     if (!file_exists($filePath)) mkdir($filePath,0777,true);
@@ -371,38 +371,44 @@ class FileManager extends PgUnitAbstract {
 
     public function objectFileListAjax(){
         //https://knpz-ken.ru/ajx/_sys/_objectFileList?obj=capp&objId=7&field=files
-        $data = $_POST;
-        $checkRule = array();
-        $checkRule[] = array('obj'  ,'/[a-zA-Z0-9_]+/');
-        $checkRule[] = array('objId','/^\d+/');
-        $checkRule[] = array('objField','/[a-zA-Z0-9_]+/');
-        $checkResult = checkForm($data,$checkRule);
-        if (count($checkResult)==0) {
-            return functs::json_encode_objectsArray($this->get($data['obj'], $data['objId'], $data['objField']));
+        $data = (new FormData($_POST))
+            ->addCheck('obj','/[a-zA-Z0-9_]+/')
+            ->addCheck('objId',FormData::$Integer)
+            ->addCheck('objField','/[a-zA-Z0-9_]+/')
+            ->validateData();
+        if ($data->isValid()) {
+            return functs::json_encode_objectsArray($this->get($data->obj, $data->objId, $data->objField));
         }
-        else return json_encode(['error'=>$checkResult]);
+        else return json_encode(['error'=>$data->errors()]);
     }
 
     public function objectFileRemoveAjax(){
         //https://knpz-ken.ru/ajx/_sys/_objectFileRemove?id=60
-        $data = $_GET;
-        $checkRule = array();
-        $checkRule[] = array('id','/^\d+/');
-        $checkResult = checkForm($data,$checkRule);
-        if (count($checkResult)==0) {
+        $data = (new FormData($_POST))
+            ->addCheck('obj','/[a-zA-Z0-9_]+/')
+            ->addCheck('objId',FormData::$Integer)
+            ->addCheck('objField','/[a-zA-Z0-9_]+/')
+            ->addCheck('id',FormData::$Integer)
+            ->validateData();
+        if ($data->isValid()) {
             $res = false;
-            $fmi = $this->getById($data['id']);
-            if ($fmi!==false) $res = $fmi->drop()==1;
+            $fmi = $this->getById($data->id);
+            if ($fmi!==false) {
+                $fmiInfo = $fmi->getFileInfo();
+                if ($fmiInfo->cofObj == $data->obj && $fmiInfo->cofObjId == $data->objId && $fmiInfo->cofObjField == $data->objField)
+                    $res = $fmi->drop()==1;
+            }
             return json_encode($res);
         }
-        else return json_encode(['error'=>$checkResult]);
+        else return json_encode(['error'=>$data->errors()]);
     }
 
     public function objectFileUploadAjax(){
         $data = (new FormData($_POST,[
             ['obj'  ,'/[a-zA-Z0-9_]+/'],
             ['objId',FormData::$Integer],
-            ['objField','/[a-zA-Z0-9_]+/']
+            ['objField','/[a-zA-Z0-9_]+/'],
+            ['fileSize',FormData::$Integer],
         ]))->validateData();
         if (
             $data->addToErrors(isset($_FILES['file']),'file','empty')

@@ -24,6 +24,7 @@ class FormData
     static $Float = '/^\d+(\.+\d+)?$/iu';
     static $Phone = 'FormDataValidatorPhone';
     static $Captcha = 'FormDataValidatorCaptcha';
+    static $String = '';
 
     private $data = [];
     private $rules = [];

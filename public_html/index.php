@@ -28,6 +28,7 @@ try {
 
     if (core::$isAjax) {
         core::$outputData .= core::proceedAjax();
+        die(core::$outputData);
     }
     else {
         if (core::$inEdit) {
@@ -38,7 +39,6 @@ try {
         } else {
             $html = '';
             #if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') {var_dump__($pathstr);}
-            //if (core::$renderPage || !$Cacher->cache_read($pathstr,$html))
             {
                 $pagecontent = $page->getContent();
                 $pagecontent = preg_replace('/\<img\s/','<img itemprop="image" ',$pagecontent,1);
@@ -48,7 +48,6 @@ try {
                 VisualTheme::replaceStaticHolders($html, $page->page);
                 //$html = Minify_HTML::minify($html);
                 //
-                //if (!core::$userAuth && $page->canCache()) $Cacher->cache_write($pathstr,$html,600);
             }
             if (core::$testServer) {
                 $html = str_replace('<head>', '<head><meta name="robots" content="noindex, nofollow, noarchive"/>', $html);
@@ -62,6 +61,7 @@ try {
     #$outputData = ob_get_contents(); ob_end_clean();
     echo core::$outputData;
     if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
+    CacheWholePage::cacheTry(core::$outputData);
 } catch(Exception $e) {
     if (class_exists('core')) core::InTryErrorHandler($e);
     else echo '<script>console.log('.json_encode(sprintf("%s, %s(%s)",$e->getMessage(),basename($e->getFile(),'php'),$e->getLine())).')</script>';

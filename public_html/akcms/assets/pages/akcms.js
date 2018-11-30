@@ -75,7 +75,7 @@ _akcms.cookie = {
             ( ( options.secure ) ? ";secure" : "" );
     },
     get:function(key) {
-        var keyValue = document.cookie.match('(^|;) ?' + key + '=([^;]*)(;|$)');
+        var keyValue = document.cookie.match("(^|;) ?" + key + "=([^;]*)(;|$)");
         return keyValue ? decodeURIComponent(keyValue[2]) : null;
     },
     remove:function(name) {
@@ -100,9 +100,10 @@ _akcms.FileUploader = function(container,options){
         objId:null,
         objField:null,
         addBtn:"#addFileUpload",
+        uploadBtn:"#uploadFileUpload",
         accept:"image/jpeg,image/png",
         maxNumberOfFiles:0,
-        maxChunkSize:0,
+        maxChunkSize:512*1024,
 
         color: "#556b2f",
         backgroundColor: "white"
@@ -114,6 +115,7 @@ _akcms.FileUploader = function(container,options){
     var template = $(
         "<div class='FileUploader_Item' style='width: "+settings.tn_width+"px; height: "+settings.tn_height+"px'>" +
         "<img width='"+settings.tn_width+"' height='"+settings.tn_height+"' class='FileUploader_img'>" +
+        "<div class='FileUploader_progress'></div>" +
         "<div class='FileUploader_rotateBtn'><i class='fa fa-repeat text-primary'></i></div>" +
         "<div class='FileUploader_dropBtn'><i class='fa fa-times text-danger'></i></div>" +
         "</div>");
@@ -132,8 +134,42 @@ _akcms.FileUploader = function(container,options){
             {
                 itemDiv.remove();
                 data.removed = true;
+                if (typeof data.files[0].server !== "undefined" && data.files[0].server === true) {
+                    $.ajax({
+                        type: "POST",
+                        url: settings.ajaxPrefix+"_objectFileRemove",
+                        data: {
+                            obj:settings.obj,
+                            objId:settings.objId,
+                            objField:settings.objField,
+                            id:data.cof_id
+                        },
+                        dataType: "json"
+                    }).done(function (resultData) {
+                        if (resultData.error) {
+                            window.console.log(resultData.error);
+                        } else {
+                            //removed
+                        }
+                    }).fail(function (jqXHR, textStatus) {
+                        window.console.log(textStatus);
+                    });
+                } else {
+                    //todo removing from queue or server
+                    /*
+                    var array = [2, 5, 9];
+                    console.log(array)
+                    var index = array.indexOf(5);
+                    if (index > -1) {
+                      array.splice(index, 1);
+                    }
+                    // array = [2, 9]
+                    console.log(array);
+                     */
+                }
+
+
             }
-            //todo removing from queue or server
         });
 
 
@@ -180,6 +216,7 @@ _akcms.FileUploader = function(container,options){
                 var itemDiv = template.clone().appendTo(container);
                 itemDiv.find("img.FileUploader_img").attr("src",canvas.toDataURL("image/jpeg"));
                 addEvents(itemDiv,data);
+                data.context = itemDiv;
 
                 //document.getElementById("e_sec_imgfile").src = canvas.toDataURL("image/jpeg");
                 //ctx = null; canvas = null; img = null; // clean
@@ -188,6 +225,18 @@ _akcms.FileUploader = function(container,options){
         };
         if (file) { reader.readAsDataURL(file); }
     };
+
+    var createServerFile = function(itemData){
+        var itemDiv = template.clone();
+        itemDiv.find("img.FileUploader_img").attr("src",itemData.uri);
+        itemDiv.find("div.FileUploader_rotateBtn").remove();
+        itemData.files = [{
+            name:itemData.cof_file,
+            server:true
+        }];
+        addEvents(itemDiv,itemData);
+        return itemDiv;
+    }
 
     var getServerFiles = function() {
         $.ajax({
@@ -203,13 +252,9 @@ _akcms.FileUploader = function(container,options){
             if (filesList.error) {
                 window.console.log(filesList.error);
             } else {
-                filesList.forEach(function (data) {
-                    var itemDiv = template.clone().appendTo(container);
-                    itemDiv.find("img.FileUploader_img").attr("src",data.uri);
-                    itemDiv.find("div.FileUploader_rotateBtn").remove();
-                    addEvents(itemDiv,filesList);
-
-                    window.console.log(data);
+                container.empty();
+                filesList.forEach(function (itemData) {
+                    createServerFile(itemData).appendTo(container);
                 });
             }
         }).fail(function (jqXHR, textStatus) {
@@ -221,6 +266,7 @@ _akcms.FileUploader = function(container,options){
         getServerFiles();
     }
 
+    //https://github.com/blueimp/jQuery-File-Upload/wiki/Options
     var fileInput = $("<input type='file' name='"+settings.paramName+"' class='d-none hidden' id='"+id+"' multiple accept='"+settings.accept+"'>")
         .appendTo(document.body)
         .fileupload({
@@ -235,8 +281,6 @@ _akcms.FileUploader = function(container,options){
             add: function (e, data) {
                 data.formData = { angle:0 };
                 showUploadingFileThumbnail(data);
-                console.log(data);
-
                 filesUpload.push(data);
 
                 if (settings.obj===null) {
@@ -249,25 +293,44 @@ _akcms.FileUploader = function(container,options){
                     // _this.secItem.sec_imgfile = _this.secItem.section_id+".jpg";
                 }
             },
+            progress:function (e, data) {
+                data.context.find("div.FileUploader_progress").css("width",parseInt(data.loaded / data.total * 100, 10) + "px");
+            },
             done: function (e, data) {
-                data.context.text("Upload finished.");
+                var itemDiv = createServerFile(data.result).insertAfter(data.context);
+                data.context.remove();
+                data.context = itemDiv;
+            },
+            fail: function (e, data) {
+                data.context.remove();
+                window.console.log(data.textStatus + ": " + data.files[0].name + " " + data.errorThrown);
+            },
+            submit: function (e, data) {
+                data.formData.obj = settings.obj;
+                data.formData.objId = settings.objId;
+                data.formData.objField = settings.objField;
+                data.formData.fileSize = data.files[0].size;
+                if (settings.maxChunkSize>0 && data.formData.fileSize>settings.maxChunkSize) {
+                    data.formData.maxChunkSize = settings.maxChunkSize;
+                    data.formData.chunks = Math.ceil(data.formData.fileSize/settings.maxChunkSize);
+                    data.formData.chunkNum = 1;
+                }
+            },
+            // chunksend: function (e,data) {
+            //     console.log(e,data);
+            //     data.formData.chunkNum = 2;
+            // },
+            chunkdone:function (e,data) {
+                console.log(e,data);
+                data.formData.chunkNum++;
             }
-
+            //stop: function () { getServerFiles(); }
             // done: function (e, data) {
             //     console.log(data);
             //     $.each(data.result.files, function (index, file) {
             //         $("<p/>").text(file.name).appendTo(document.body);
             //     });
             // }
-        }).bind("fileuploadsubmit", function (e, data) {
-            // data.formData = {
-            //     obj:settings.obj,
-            //     objId:settings.objId,
-            //     objField:settings.objField
-            // };
-            data.formData.obj = settings.obj;
-            data.formData.objId = settings.objId;
-            data.formData.objField = settings.objField;
         });
 
     settings.addBtn.click(function(e){
@@ -284,8 +347,15 @@ _akcms.FileUploader = function(container,options){
     };
 
     this.uploadAll = function(){
-        filesUpload.forEach(function (data) { data.submit(); });
+        filesUpload.forEach(function (data) {
+            if (typeof data.removed !== "undefined" && data.removed) { return; }
+            data.submit();
+        });
         filesUpload = [];
     };
 
+    $(settings.uploadBtn).click(function (e) {
+        e.preventDefault(); e.stopPropagation();
+        _this.uploadAll();
+    });
 };
