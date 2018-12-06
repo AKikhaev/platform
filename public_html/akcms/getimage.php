@@ -78,7 +78,7 @@ try {
 	$imgRszr = new ImgResizer();
 	$prePath = getcwd().'/../';
 
-	if ($pathlen==4) 
+	if ($pathlen>=4)
 	{
 		require('../akcms/u/config/images.php');
 	}
@@ -97,6 +97,7 @@ try {
 	if ($meta==false) $imgRszr->ResizeSave($pathstrOrgn,$pathstr,$max_width,$max_height,$mode,true,$effector); 
 	else $imgRszr->ResizeSave($pathstrOrgn,$pathstr,$max_width,$max_height,$mode,true,$effector,$meta[0],$meta[1]);	
 } catch(Exception $e) {
-	header("HTTP/1.0 404 Not Found"); 
+	header("HTTP/1.0 404 Not Found");
+//	require_once('../akcms/classes/ChromePhp.php');	ChromePhp::log($e);
 	exit($e->getMessage());	
 }

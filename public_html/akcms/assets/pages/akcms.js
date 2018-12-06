@@ -104,6 +104,7 @@ _akcms.FileUploader = function(container,options){
         accept:"image/jpeg,image/png",
         maxNumberOfFiles:0,
         maxChunkSize:512*1024,
+        onDone: null,
 
         color: "#556b2f",
         backgroundColor: "white"
@@ -228,7 +229,7 @@ _akcms.FileUploader = function(container,options){
 
     var createServerFile = function(itemData){
         var itemDiv = template.clone();
-        itemDiv.find("img.FileUploader_img").attr("src",itemData.uri);
+        itemDiv.find("img.FileUploader_img").attr("src",itemData.urlPreview);
         itemDiv.find("div.FileUploader_rotateBtn").remove();
         itemData.files = [{
             name:itemData.cof_file,
@@ -238,7 +239,7 @@ _akcms.FileUploader = function(container,options){
         return itemDiv;
     }
 
-    var getServerFiles = function() {
+    this.getServerFiles = function() {
         $.ajax({
             type: "POST",
             url: settings.ajaxPrefix+"_objectFileList",
@@ -263,7 +264,7 @@ _akcms.FileUploader = function(container,options){
     };
 
     if (settings.obj!==null) {
-        getServerFiles();
+        this.getServerFiles();
     }
 
     //https://github.com/blueimp/jQuery-File-Upload/wiki/Options
@@ -283,9 +284,7 @@ _akcms.FileUploader = function(container,options){
                 showUploadingFileThumbnail(data);
                 filesUpload.push(data);
 
-                if (settings.obj===null) {
-                    _this.imageData = data;
-                } else {
+                {
                     // var ajaxUrl = "/ajx/";
                     // ajaxUrl += document.akcms.secs[_this.secItem.section_id]["sec_url_full"];
                     // data.url = ajaxUrl+"_seciupl";
@@ -305,26 +304,28 @@ _akcms.FileUploader = function(container,options){
                 data.context.remove();
                 window.console.log(data.textStatus + ": " + data.files[0].name + " " + data.errorThrown);
             },
-            submit: function (e, data) {
-                data.formData.obj = settings.obj;
-                data.formData.objId = settings.objId;
-                data.formData.objField = settings.objField;
-                data.formData.fileSize = data.files[0].size;
-                if (settings.maxChunkSize>0 && data.formData.fileSize>settings.maxChunkSize) {
-                    data.formData.maxChunkSize = settings.maxChunkSize;
-                    data.formData.chunks = Math.ceil(data.formData.fileSize/settings.maxChunkSize);
-                    data.formData.chunkNum = 1;
-                }
-            },
+            // submit: function (e, data) {
+                // data.formData.obj = settings.obj;
+                // data.formData.objId = settings.objId;
+                // data.formData.objField = settings.objField;
+                // data.formData.fileSize = data.files[0].size;
+                // if (settings.maxChunkSize>0 && data.formData.fileSize>settings.maxChunkSize) {
+                //     data.formData.maxChunkSize = settings.maxChunkSize;
+                //     data.formData.chunks = Math.ceil(data.formData.fileSize/settings.maxChunkSize);
+                //     data.formData.chunkNum = 1;
+                // }
+            // },
             // chunksend: function (e,data) {
             //     console.log(e,data);
             //     data.formData.chunkNum = 2;
             // },
             chunkdone:function (e,data) {
-                console.log(e,data);
                 data.formData.chunkNum++;
+                data.formData.id = data.result.cof_id;
+            },
+            stop: function () {
+                if (settings.onDone!==null) { settings.onDone(); }
             }
-            //stop: function () { getServerFiles(); }
             // done: function (e, data) {
             //     console.log(data);
             //     $.each(data.result.files, function (index, file) {
@@ -343,15 +344,37 @@ _akcms.FileUploader = function(container,options){
         settings.obj = obj;
         settings.objId = objId;
         settings.objField = objField;
-        getServerFiles();
+        settings.autoUpload = true;
+    };
+
+    this.setAjaxPrefix = function(ajaxPrefix){
+        settings.ajaxPrefix = ajaxPrefix;
     };
 
     this.uploadAll = function(){
+        var countStarted = 0;
         filesUpload.forEach(function (data) {
             if (typeof data.removed !== "undefined" && data.removed) { return; }
+            data.url = settings.ajaxPrefix+"_objectFileUpload";
+            data.formData.obj = settings.obj;
+            data.formData.objId = settings.objId;
+            data.formData.objField = settings.objField;
+            data.formData.fileSize = data.files[0].size;
+            if (settings.maxChunkSize>0 && data.formData.fileSize>settings.maxChunkSize) {
+                data.formData.chunkCount = Math.ceil(data.files[0].size/settings.maxChunkSize);
+                data.formData.maxChunkSize = settings.maxChunkSize;
+                data.formData.chunkNum = 1;
+            }
             data.submit();
+            countStarted++;
         });
         filesUpload = [];
+        if (settings.onDone!==null && countStarted===0) { settings.onDone(); }
+    };
+
+    this.done = function(callBack){
+        settings.onDone = callBack;
+        return this;
     };
 
     $(settings.uploadBtn).click(function (e) {

@@ -10,8 +10,7 @@ abstract class CmsPage extends AclProcessor { /* page */
     protected $title;
     public function __construct(&$pageTemplate) {}
     public function getTitle() {return $this->title;}
-    public function initAjx(){
-        $ajaxList = [];
+    public function initAjx(&$ajaxList = []){
         $rc = new ReflectionClass($this);
         foreach ($rc->getMethods() as $method) {
             if (mb_substr($method->getName(), -4) === 'Ajax') {

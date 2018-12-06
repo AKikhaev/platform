@@ -99,14 +99,13 @@ abstract class PgUnitAbstract extends AclProcessor { /* Pg_ untits */
 		return "$viewUnit/$viewName";
 	}
 	public function __construct($pathParams = array()) { $this->unitParam = $pathParams; }
-    public function initAjx(){
-        $ajaxList = [];
+    public function initAjx(&$ajaxList = []){
         $rc = new ReflectionClass($this);
         foreach ($rc->getMethods() as $method) {
             if (mb_substr($method->getName(), -4) === 'Ajax') {
                 $ajaxList['_'.mb_substr($method->getName(), 0, -4)] = [
                     'func' => $method->getName(),
-                    'object' => $this
+                    'object' => &$this
                 ];
             }
         }

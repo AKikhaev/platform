@@ -1,13 +1,21 @@
 <?php
 
-class FormDataValidatorPhone{
+abstract class FormValidatorItem{
+    /**
+     * @param $value
+     * @return boolean
+     */
+    abstract static function valid($value);
+}
+
+class FormDataValidatorPhone extends FormValidatorItem{
     static function valid($value) {
         $value = preg_replace('/[^0-9]/','',$value);
         return preg_match('/^\d{10,11}$/',$value)==1;
     }
 }
 
-class FormDataValidatorCaptcha{
+class FormDataValidatorCaptcha extends FormValidatorItem{
     static function valid($value) {
         return isset($_SESSION['securityCode']) && functs::strHasValue($_SESSION['securityCode']) && $value == $_SESSION['securityCode'];
     }
@@ -159,6 +167,7 @@ class FormData
                     }
                 }
             }
+            //is_subclass_of($rule[1],'FormValidatorItem',false)
             elseif ($isset && !empty($rule[1]) && !in_array(mb_substr($rule[1],0,1),['/','~','.']) && class_exists($rule[1],false)) { // validate class
                 $errorText = 'Wrong';
                 if (!$rule[1]::valid($this->data[$rule[0]],$errorText)) {
@@ -207,7 +216,7 @@ class FormData
      * @param $trueOrNot
      * @param $field
      * @param $error
-     * @return bool
+     * @return bool $trueOrNot
      */
     public function addToErrors($trueOrNot, $field, $error) {
         if (!$trueOrNot)

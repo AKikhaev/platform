@@ -3,7 +3,18 @@
 		$effector = null;
         //$effector = new ImgEffcts_watermark('../img/t/i_288_255_p.png',0,0,0);
         //$effector = new ImgEffcts_watermark('../img/t/mw_mask.png',2,0,0);
-        if ($path[0]==='img' && $path[1]==='pages' && $path[2]==='s') # админ привью раздела !
+        if ($path[0]==='s' && $path[1]==='fileStorage' && $path[2]==='s') # Превью файлохранилище !
+        {
+            $path[2] = 'o';
+            $pathstrOrgn = implode('/',$path);
+            #$pathstr = $pathstr;
+            unset($path[0]);
+            $metaPathStr = implode('/',$path);
+            $max_width = 200;
+            $max_height = 200;
+            $mode = 1;
+        }
+        elseif ($path[0]==='img' && $path[1]==='pages' && $path[2]==='s') # админ привью раздела !
         {
             unset($path[2]);
             $pathstrOrgn = implode('/',$path);

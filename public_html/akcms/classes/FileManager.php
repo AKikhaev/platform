@@ -6,12 +6,16 @@ class FileManagerItem{
 
     private $hashSalt = 'Fbc|';
     private $fileInfo;
-    private $fileManager;
     public $isDuplicate = false;
-    public function __construct(modelCmsObjFiles $fileInfo,FileManager &$fileManager)
+
+    /**
+     * FileManagerItem constructor.
+     * @param modelCmsObjFiles|null $fileInfo
+     * @throws DBException
+     */
+    public function __construct(modelCmsObjFiles $fileInfo = null)
     {
-        $this->fileInfo = clone $fileInfo;
-        $this->fileManager = $fileManager;
+        $this->fileInfo = $fileInfo===null ? new modelCmsObjFiles() : clone $fileInfo;
     }
 
     /**
@@ -41,7 +45,10 @@ class FileManagerItem{
      * @param string $prePath
      * @return string
      */
-    public function pathIn($prePath='o') { return ($this->fileInfo->cofSecured=='t' ? $this->folderSecured : $this->folderPublic) . $prePath . '/' . $this->pathShort(); }
+    public function pathIn($prePath='o') {
+        if ($this->fileInfo->cofSrvId>0) return $this->pathShort();
+        else return ($this->fileInfo->cofSecured=='t' ? $this->folderSecured : $this->folderPublic) . $prePath . '/' . $this->pathShort();
+    }
 
     /** User url
      * @param string $prePath
@@ -49,17 +56,16 @@ class FileManagerItem{
      */
     public function pathUrl($prePath='o') {
         global $cfg;
-        $url = '/';
-        if ($this->fileInfo->cofSrvId>0) {
-            $url = $cfg['images_domains_url'][$this->fileInfo->cofSrvId];
-        }
-        if ($this->fileInfo->cofSecured=='t') {
-            $url .= sprintf('ajx/_sys/_fsDownload/%s/%d/%s',
+        if ($this->fileInfo->cofSecured===true || $this->fileInfo->cofSecured=='t') {
+            $url = sprintf('/ajx/_sys/_fsDownload/%s/%d/%s',
                 $prePath,
                 $this->fileInfo->cofId,
                 $this->fileInfo->cofFile
             );
-        } else $url .= $this->folderPublic.$prePath.'/'.$this->pathShort();
+        } else
+        if ($this->fileInfo->cofSrvId>0) {
+            $url = $cfg['images_domains_url'][$this->fileInfo->cofSrvId].$prePath.'/'.$this->pathShort();
+        } else $url = '/'.$this->folderPublic.$prePath.'/'.$this->pathShort();
         return  $url;
     }
 
@@ -70,7 +76,10 @@ class FileManagerItem{
     public function drop() {
         if ($this->fileInfo->cofSrvId<1) {
             $files = glob($this->pathIn('*'));
-            foreach ($files as $file) @unlink($file);
+            foreach ($files as $file) {
+                @unlink($file);
+                @unlink($file.'.tmp');
+            }
         } else {
             global $cfg;
             $ch = curl_init();
@@ -86,8 +95,8 @@ class FileManagerItem{
     public function __toString()
     {
         $data = $this->fileInfo->asArray();
-        $data['uri'] = $this->pathUrl();
-        $data['uriPreview'] = $this->pathUrl('s');
+        $data['url'] = $this->pathUrl();
+        $data['urlPreview'] = $this->pathUrl('s');
         return json_encode($data);
     }
 
@@ -203,14 +212,25 @@ class FileManagerItem{
         return $this->fileInfo->cofUploadedStamp;
     }
 
+    /** rename file for disposition header
+     * @param $name
+     * @return int
+     * @throws DBException
+     */
+    public function setName($name) {
+        $this->fileInfo->cofFile = $name;
+        return $this->fileInfo->update();
+    }
+
     /**
      * @param string $cofTitle
+     * @return int
      * @throws DBException
      */
     public function setTitle($cofTitle)
     {
         $this->fileInfo->cofTitle = $cofTitle;
-        $this->fileInfo->update();
+        return $this->fileInfo->update();
     }
 
     /**
@@ -237,6 +257,62 @@ class FileManagerItem{
 
 
 class FileManager extends PgUnitAbstract {
+    private $serverUploadId = 0;
+    private $hashSalt = 'Fbc|';
+
+    private $onACLcheckCallback = null; //todo
+
+    private $onUploadCallback = null; //todo
+    private $onUploadedCallback = null;
+
+    private $onRemoveCallback = null; //todo
+    private $onRemovedCallback = null;
+
+    /**
+     * @param null $onUploadCallback
+     */
+    public function onUpload($onUploadCallback)
+    {
+        $this->onUploadCallback = $onUploadCallback;
+    }
+
+    /**
+     * @param null $onUploadedCallback
+     */
+    public function onUploaded($onUploadedCallback)
+    {
+        $this->onUploadedCallback = $onUploadedCallback;
+    }
+    private function onUploadedProcess(FileManagerItem $fmi){
+        if ($this->onUploadedCallback instanceof Closure) {
+            $callBack = $this->onUploadedCallback;
+            $callBack($fmi);
+        }
+    }
+
+    /**
+     * @param null $onRemovedCallback
+     */
+    public function setOnRemoved($onRemovedCallback)
+    {
+        $this->onRemovedCallback = $onRemovedCallback;
+    }
+    private function onRemovedProcess(FileManagerItem $fmi){
+        if ($this->onRemovedCallback instanceof Closure) {
+            $callBack = $this->onRemovedCallback;
+            $callBack($fmi);
+        }
+    }
+
+
+
+    /**
+     * @param int $serverUploadId
+     */
+    public function setServerUploadId($serverUploadId)
+    {
+        $this->serverUploadId = $serverUploadId;
+    }
 
     /** Get files list
      * @param $obj
@@ -251,17 +327,17 @@ class FileManager extends PgUnitAbstract {
      * Список файлов
      * @throws DBException
      */
-    public function get($obj, $objId, $objField='', $ext='') {
+    public static function get($obj, $objId, $objField='', $ext='') {
         $filesInfo = (new modelCmsObjFiles())->fields()->where(
             [modelCmsObjFiles::$_cofObj,'=',$obj],
             [modelCmsObjFiles::$_cofObjId,'=',$objId],
             [modelCmsObjFiles::$_cofObjField,'=',$objField],
             [modelCmsObjFiles::$_cofEnabled,'=',true]
-        );
+        )->order(modelCmsObjFiles::$_cofId);
         if ($ext!=='') $filesInfo->and_(modelCmsObjFiles::$_cofFileExt,'=',$ext);
         $list = [];
         foreach ($filesInfo->get() as $fileInfo) {
-            $list[] = new FileManagerItem($fileInfo,$this);
+            $list[] = new FileManagerItem($fileInfo);
         }
         return $list;
     }
@@ -277,8 +353,108 @@ class FileManager extends PgUnitAbstract {
             [modelCmsObjFiles::$_cofEnabled,'=',true]
         );
         if ($fileInfo->get()->hasData())
-            return new FileManagerItem($fileInfo,$this);
+            return new FileManagerItem($fileInfo);
         else return false;
+    }
+
+    private function tempPath(FileManagerItem $fmi) {
+        return sys_get_temp_dir().'/upl_'.hash('crc32', $this->hashSalt.$fmi->getId()).'.'.$fmi->getFileExt();
+    }
+
+    /**
+     * @param FormData $data
+     * @param $file
+     * @param bool $secured
+     * @param int $srvId
+     * @return FileManagerItem|false
+     * @throws DBException
+     * @throws CmsException
+     */
+    public function newChunk(FormData $data,$file,$secured = false, $srvId = 0){
+        $tmp = '.tmp';
+
+        $fileName = $file['name'][0];
+        $fileName = preg_replace('/\.jpeg$/iu','.jpg',$fileName);
+        $fileTempPath = $file['tmp_name'][0];
+        if ($data->chunkNum==1) { // first part
+            $fmi = new FileManagerItem(new modelCmsObjFiles());
+            $fmiFileInfo = $fmi->getFileInfo();
+            $fmiFileInfo->cofObj = $data->obj;
+            $fmiFileInfo->cofObjId = $data->objId;
+            $fmiFileInfo->cofObjField = $data->objField;
+            $fmiFileInfo->cofTitle = $data->title;
+            $fmiFileInfo->cofFile = $fileName;
+            $fmiFileInfo->cofFileExt = mb_strtolower((new SplFileInfo($fileName))->getExtension());
+            $fmiFileInfo->cofOwnerId = (CmsUser::isLogin())?CmsUser::$user['id_usr']:0;
+            $fmiFileInfo->cofSrvId = $srvId;
+            $fmiFileInfo->cofSecured = $secured;
+            $fmiFileInfo->cofDraft = true;
+            try {
+                $fmiFileInfo->insert();
+                $tempPath = $this->tempPath($fmi);
+                rename($fileTempPath, $tempPath);
+            } catch (Throwable $e) {
+                $fmiFileInfo->delete();
+                core::GlobalExceptionHandler($e);
+                return false;
+            }
+        }
+
+        if ($data->chunkNum == $data->chunkCount || $data->chunkNum > 1 && $data->chunkNum < $data->chunkCount) { // next part or last
+            if(isset($data->id)) {
+                $fmi = $this->getById($data->id);
+                $fmiFileInfo = $fmi->getFileInfo();
+                if (
+                    $fmiFileInfo->cofObj == $data->obj &&
+                    $fmiFileInfo->cofObjId == $data->objId &&
+                    $fmiFileInfo->cofObjField == $data->objField
+                ) {
+                    $tempPath = $this->tempPath($fmi);
+                    $pathIn = $fmi->pathIn();
+
+                    try {
+                        // next
+                        if ($data->chunkNum > 1) {
+                            if (!file_exists($tempPath) || !file_put_contents($tempPath, file_get_contents($fileTempPath), FILE_APPEND | LOCK_EX)) {
+                                throw new CmsException('first chunk doesnt exists');
+                            }
+                            unlink($fileTempPath);
+                        }
+                        if ($data->chunkNum == $data->chunkCount) { // last
+
+                            if ($fmi->getSrvId()<1) {
+                                $filePath = (new SplFileInfo($pathIn))->getPath();
+                                if (!file_exists($filePath)) mkdir($filePath,0777,true);
+                                rename($tempPath, $pathIn);
+                                if ($fmiFileInfo->cofSecured == false || $fmiFileInfo->cofSecured == 'f') chmod($pathIn,0664);
+                            } else {
+                                global $cfg;
+                                $post = array('file'=>curl_file_create($tempPath));
+                                $ch = curl_init();
+                                curl_setopt($ch, CURLOPT_URL,$cfg['images_domains_url'][$fmi->getSrvId()].'_api/img/upld?path='.$fmi->pathIn());
+                                curl_setopt($ch, CURLOPT_POST,1);
+                                curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+                                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                                $result=curl_exec ($ch);
+                                if ($result != 't') throw new CmsException('error to upload to another server: '.$result.' '.$fmi->pathIn());
+                                curl_close ($ch);
+                                @unlink($tempPath);####
+                            }
+
+                            $fmiFileInfo->cofDraft = false;
+                            $fmiFileInfo->update();
+                            $this->onUploadedProcess($fmi);
+                        }
+                    } catch (Throwable $e) {
+                        $fmiFileInfo->delete();
+                        core::GlobalExceptionHandler($e);
+                        return false;
+                    }
+
+                } else return false;
+            } else return false;
+        }
+        return $fmi;
     }
 
     /**
@@ -297,6 +473,7 @@ class FileManager extends PgUnitAbstract {
      */
     public function newFile($fileTempPath,$obj,$objId,$objField,$fileName,$title = '',$secured = false, $srvId = 0){
         if (file_exists($fileTempPath)) {
+            $fileName = preg_replace('/\.jpeg$/iu','.jpg',$fileName);
 
             foreach ($this->get($obj,$objId,$objField) as $file) {
                 if ($file->getFile()==$fileName &&
@@ -309,14 +486,14 @@ class FileManager extends PgUnitAbstract {
                 }
             }
 
-            $fmi = new FileManagerItem(new modelCmsObjFiles(),$this);
+            $fmi = new FileManagerItem(new modelCmsObjFiles());
             $fmiFileInfo = $fmi->getFileInfo();
             $fmiFileInfo->cofObj = $obj;
             $fmiFileInfo->cofObjId = $objId;
             $fmiFileInfo->cofObjField = $objField;
             $fmiFileInfo->cofTitle = $title;
             $fmiFileInfo->cofFile = $fileName;
-            $fmiFileInfo->cofFileExt = (new SplFileInfo($fileName))->getExtension();
+            $fmiFileInfo->cofFileExt = mb_strtolower((new SplFileInfo($fileName))->getExtension());
             $fmiFileInfo->cofOwnerId = (CmsUser::isLogin())?CmsUser::$user['id_usr']:0;
             $fmiFileInfo->cofSrvId = $srvId;
             $fmiFileInfo->cofSecured = $secured;
@@ -328,7 +505,7 @@ class FileManager extends PgUnitAbstract {
                 if ($fmi->getSrvId()<1) {
                     if (!file_exists($filePath)) mkdir($filePath,0777,true);
                     rename($fileTempPath, $pathIn);
-                    if (!$fmiFileInfo->cofSecured) chmod($pathIn,0664);
+                    if ($fmiFileInfo->cofSecured == false || $fmiFileInfo->cofSecured == 'f') chmod($pathIn,0664);
                 } else {
                     global $cfg;
                     $post = array('file'=>curl_file_create($fileTempPath));
@@ -338,10 +515,11 @@ class FileManager extends PgUnitAbstract {
                     curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                     $result=curl_exec ($ch);
-                    if ($result != 't') throw new CmsException('error to upload to another server');
+                    if ($result != 't') throw new CmsException('error to upload to another server: '.$result.' '.$fmi->pathIn());
                     curl_close ($ch);
                     @unlink($fileTempPath);####
                 }
+                $this->onUploadedProcess($fmi);
             } catch (Throwable $e) {
                 $fmiFileInfo->delete();
                 core::GlobalExceptionHandler($e);
@@ -358,15 +536,30 @@ class FileManager extends PgUnitAbstract {
      * @param string $fileExt
      * @param int $srvId
      * @return FileManagerItem
-     * @throws DBException
      */
-    public function getLazy($id,$fileExt='jpg',$srvId = 0) {
-        $fmiFileInfo = new modelCmsObjFiles();
-        $fmi = new FileManagerItem($fmiFileInfo,$this);
+    static public function getLazy($id,$srvId = 0,$fileExt='jpg') {
+        $fmi = new FileManagerItem();
+        $fmiFileInfo = $fmi->getFileInfo();
         $fmiFileInfo->cofId = $id;
-        $fmiFileInfo->cofFileExt = $fileExt;
         $fmiFileInfo->cofSrvId = $srvId;
+        $fmiFileInfo->cofFileExt = $fileExt;
         return $fmi;
+    }
+
+    /**
+     * @param $id
+     * @param int $srvId
+     * @param string $prePath
+     * @param string $fileExt
+     * @return string
+     */
+    static public function getLazyPreview($id,$prePath = 'o',$srvId = 0,$fileExt='jpg') {
+        $fmi = new FileManagerItem();
+        $fmiFileInfo = $fmi->getFileInfo();
+        $fmiFileInfo->cofId = $id;
+        $fmiFileInfo->cofSrvId = $srvId;
+        $fmiFileInfo->cofFileExt = $fileExt;
+        return $fmi->pathUrl($prePath);
     }
 
     public function objectFileListAjax(){
@@ -395,8 +588,10 @@ class FileManager extends PgUnitAbstract {
             $fmi = $this->getById($data->id);
             if ($fmi!==false) {
                 $fmiInfo = $fmi->getFileInfo();
-                if ($fmiInfo->cofObj == $data->obj && $fmiInfo->cofObjId == $data->objId && $fmiInfo->cofObjField == $data->objField)
-                    $res = $fmi->drop()==1;
+                if ($fmiInfo->cofObj == $data->obj && $fmiInfo->cofObjId == $data->objId && $fmiInfo->cofObjField == $data->objField) {
+                    $res = $fmi->drop() == 1;
+                    if ($res) $this->onRemovedProcess($fmi);
+                }
             }
             return json_encode($res);
         }
@@ -404,46 +599,79 @@ class FileManager extends PgUnitAbstract {
     }
 
     public function objectFileUploadAjax(){
-        $data = (new FormData($_POST,[
-            ['obj'  ,'/[a-zA-Z0-9_]+/'],
-            ['objId',FormData::$Integer],
-            ['objField','/[a-zA-Z0-9_]+/'],
-            ['fileSize',FormData::$Integer],
-        ]))->validateData();
-        if (
-            $data->addToErrors(isset($_FILES['file']),'file','empty')
-        ) {
+        $data = (new FormData($_POST))
+            ->addCheck('obj','/[a-zA-Z0-9_]+/')
+            ->addCheck('objId',FormData::$Integer)
+            ->addCheck('objField','/[a-zA-Z0-9_]+/')
+            ->addCheck('fileSize',FormData::$Integer)
+            ->addCheck('chunkCount',FormData::$Integer,false)
+            ->addCheck('chunkNum',FormData::$Integer,false)
+            ->addCheck('id',FormData::$Integer,false)
+            ->validateData();
+        if ($data->addToErrors(isset($_FILES['file']),'file','empty')) {
             $data->addToErrors(is_uploaded_file($_FILES['file']['tmp_name'][0]),'file','Wrong');
             //$data->addToErrors(in_array($_FILES['file']['type'],['image/jpeg','image/png','image/bmp']),'file','wrong');
         }
         if ($data->isValid()) {
-            $fmi = $this->newFile($_FILES['file']['tmp_name'][0],$data->obj,$data->objId,$data->objField,$_FILES['file']['name'][0]);
+            if (isset($data->chunkCount)) {
+                $fmi = $this->newChunk($data,$_FILES['file'],false,$this->serverUploadId);
+            }
+            else {
+                $fmi = $this->newFile($_FILES['file']['tmp_name'][0], $data->obj, $data->objId, $data->objField, $_FILES['file']['name'][0],'',false,$this->serverUploadId);
+            }
             return $fmi;
         }
         else return json_encode(['error'=>$data->errors()]);
     }
 
-
-    static function ajx_GlrIList($obj,$objId) {
-        $dataset = self::getImages($obj, $objId);
-        if ($dataset!==false) foreach($dataset as &$item) {
-            $item['cop_full'] = ImgManger::pathByNum('cmps',$item['id_cop'],$item['cop_srv_id']);
-            unset($item['cop_file']);
+    /**
+     * @return false|string
+     * @throws DBException
+     */
+    public function objectFileSetTitle() {
+        $data = (new FormData($_POST))
+            ->addCheck('obj','/[a-zA-Z0-9_]+/')
+            ->addCheck('objId',FormData::$Integer)
+            ->addCheck('objField','/[a-zA-Z0-9_]+/')
+            ->addCheck('id',FormData::$Integer)
+            ->addCheck('title',FormData::$String)
+            ->validateData();
+        if ($data->isValid()) {
+            $res = false;
+            $fmi = $this->getById($data->id);
+            if ($fmi!==false) {
+                $fmiInfo = $fmi->getFileInfo();
+                if ($fmiInfo->cofObj == $data->obj && $fmiInfo->cofObjId == $data->objId && $fmiInfo->cofObjField == $data->objField)
+                    $res = $fmi->setTitle($data->title);
+            }
+            return json_encode($res);
         }
-        return $dataset;
+        else return json_encode(['error'=>$data->errors()]);
     }
 
-    static function ajx_GlrINameUpd($obj,$objId,$id,$name)
-    {
-        global $sql;
-        $query = sprintf ('UPDATE cms_obj_photos SET cop_name = %s WHERE id_cop = %d AND cop_obj=%s AND cop_obj_id=%d;',
-            $sql->pgf_text($name),
-            $sql->d($id),
-            $sql->pgf_text($obj),
-            $sql->d($objId)
-        );
-        $res_count = $sql->command($query);
-        return $res_count>0?'t':'f';
+    /**
+     * @return false|string
+     * @throws DBException
+     */
+    public function objectFileSetName() {
+        $data = (new FormData($_POST))
+            ->addCheck('obj','/[a-zA-Z0-9_]+/')
+            ->addCheck('objId',FormData::$Integer)
+            ->addCheck('objField','/[a-zA-Z0-9_]+/')
+            ->addCheck('id',FormData::$Integer)
+            ->addCheck('name',FormData::$String)
+            ->validateData();
+        if ($data->isValid()) {
+            $res = false;
+            $fmi = $this->getById($data->id);
+            if ($fmi!==false) {
+                $fmiInfo = $fmi->getFileInfo();
+                if ($fmiInfo->cofObj == $data->obj && $fmiInfo->cofObjId == $data->objId && $fmiInfo->cofObjField == $data->objField)
+                    $res = $fmi->setName($data->name);
+            }
+            return json_encode($res);
+        }
+        else return json_encode(['error'=>$data->errors()]);
     }
 
     static function ajx_GlrIUpload($obj,$objId)
