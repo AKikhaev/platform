@@ -814,7 +814,7 @@ trait SQLpgModelAdapter {
         return $res;
     }
 
-    function fetch() {
+    private function fetch() {
         $this->datapos = $this->sqlpos;
         $res = pg_fetch_array($this->sqlres,null,$this->result_type);
         $this->__hasData = $res!==false;

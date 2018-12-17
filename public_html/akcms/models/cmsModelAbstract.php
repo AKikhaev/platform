@@ -124,6 +124,11 @@ abstract class cmsModelAbstract implements SeekableIterator
         } else throw new DBException('Field not found '.$name);
     }
 
+    public function __toString()
+    {
+        return json_encode($this->data);
+    }
+
     /**
      * set filled array for non empty date values
      */

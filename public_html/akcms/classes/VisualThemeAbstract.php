@@ -4,7 +4,8 @@ abstract class VisualThemeAbstract
 {
     const weekdays = array('Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота');
     const weekdaysShort = array('вс','пн','вт','ср','чт','пт','сб');
-    const months = array('','января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря');
+    const months_rod = array('','января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря');
+    const months = array('','январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь');
     const monthsShort = array('','янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек');
 
     /**
@@ -14,7 +15,18 @@ abstract class VisualThemeAbstract
      *
      * Пятница, 7 янв 2017г. - l, j M Y г.
      *
+     * l (строчная 'L')	Полное наименование дня недели	от Воскресенье до Суббота
+     *
+     * k (строчная 'L')	Полное наименование дня недели	от вс до сб
+     *
+     * F Полное наименование месяца в родительном подеже, например, января или марта	от января до декабря
+     *
+     * f Полное наименование месяца в именительном подеже, например, январь или март	от январь до декабрь
+     *
+     * M Сокращенное наименование месяца, 3 символа	от янв до дек
+     *
      * E - год, как Y, если год отличный от текущего
+     *
      * @param $format
      * @param $dt
      * @param null $formatToday
@@ -37,7 +49,10 @@ abstract class VisualThemeAbstract
             $format = str_replace('k',self::weekdaysShort[date('w',$dt)],$format);
         }
         if (mb_strpos($format,'F')!==false) {
-            $format = str_replace('F',self::months[date('n',$dt)],$format);
+            $format = str_replace('F',self::months_rod[date('n',$dt)],$format);
+        }
+        if (mb_strpos($format,'f')!==false) {
+            $format = str_replace('f',self::months[date('n',$dt)],$format);
         }
         if (mb_strpos($format,'M')!==false) {
             $format = str_replace('M',self::monthsShort[date('n',$dt)],$format);
