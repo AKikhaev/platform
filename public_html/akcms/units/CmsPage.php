@@ -1,6 +1,7 @@
 <?php
 abstract class CmsPage extends AclProcessor { /* page */
     public $pageUri;
+    protected $runAction = 'defaultAction';
     public $inEditCan = false;
     public $page = [];
     protected $pagePath = array();		// Крошки
@@ -21,6 +22,21 @@ abstract class CmsPage extends AclProcessor { /* page */
             }
         }
         return $ajaxList;
+    }
+
+    /**
+     * @param $action
+     * @throws CmsException
+     * @throws ReflectionException
+     */
+    function assignAction($action){
+        $this->runAction = $action . 'Action';
+        if (!(new ReflectionClass($this))->hasMethod($this->runAction)) throw new CmsException("page_not_found");
+    }
+
+    function getContent()
+    {
+        return call_user_func([$this,$this->runAction]);
     }
 
     /** Сортировка потомков

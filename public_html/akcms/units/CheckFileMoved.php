@@ -19,7 +19,7 @@ class CheckFileMoved extends CmsPage {
      * @param $pageTemplate
      * @throws CmsException
      */
-	public function __construct(&$pageTemplate)
+	public function __construct()
 	{
 		global $pathlen,$path,$pathstr;
 

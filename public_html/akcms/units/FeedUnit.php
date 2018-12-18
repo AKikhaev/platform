@@ -14,7 +14,7 @@ class FeedUnit extends CmsPage {
 		);
 	}
 
-	public function __construct(&$pageTemplate)
+	public function __construct()
 	{
 		global $sql,$cfg,$pathlen,$path;
         if ($pathlen===2 && $path[0] === 'feed') {

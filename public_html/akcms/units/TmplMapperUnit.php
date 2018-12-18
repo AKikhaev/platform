@@ -190,9 +190,9 @@ class TmplMapperUnit extends CmsPage {
 
     }
 
-	public function __construct(&$pageTemplate)
+	public function __construct()
 	{
-		global $pathlen;
+		global $pathlen, $pageTemplate;
 
 		if ($GLOBALS['path'][0] === '_tmpl') {
             if (!$this->hasRight('1',false)) throw new CmsException('login_needs');

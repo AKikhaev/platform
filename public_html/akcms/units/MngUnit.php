@@ -41,9 +41,9 @@ class MngUnit extends CmsPage {
 		return json_encode(mb_substr(md5($qr.'!'),1,11));
 	}
 
-	public function __construct(&$pageTemplate)
+	public function __construct()
 	{
-		global $cfg,$shape,$Cacher;
+		global $cfg,$shape,$Cacher, $pageTemplate;
 
 		$pathstr_part = $GLOBALS['path'][0];
 

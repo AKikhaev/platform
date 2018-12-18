@@ -71,10 +71,10 @@ final class PageUnit extends CmsPage {
 		);
 	}
 
-	public function __construct(&$pageTemplate)
+	public function __construct()
 	{
 
-        global $sql,$cfg;
+        global $sql,$cfg, $pageTemplate;
 		define('MENU_FIELDS','section_id,sec_parent_id,sec_url_full,sec_url,sec_nameshort,sec_namefull,sec_imgfile,sec_showinmenu,sec_openfirst,sec_to_news,sec_enabled,sec_title,sec_keywords,sec_description,sec_units,sec_from,sec_howchild,sec_page,sec_page_child, not sec_enabled or not sec_showinmenu as sec_hidden ');
 		$pathstr_str = $GLOBALS['pathstr'];
 

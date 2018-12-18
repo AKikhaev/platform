@@ -14,7 +14,7 @@ class RootFolder extends CmsPage {
 		return array();
 	}
 
-	public function __construct(&$pageTemplate)
+	public function __construct()
 	{
 		global $pathlen;
 

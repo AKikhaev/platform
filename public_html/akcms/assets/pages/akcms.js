@@ -27,6 +27,14 @@ _akcms.ru2lt = {
         }
     }
 };_akcms.ru2lt.init();
+_akcms.ruWordForm = function($n, $f1, $f2, $f5) {
+    $n = Math.abs(Math.ceil($n)) % 100;
+    if ($n>10 && $n<20) { return $f5; }
+    $n = $n % 10;
+    if ($n>1 && $n<5) { return $f2; }
+    if ($n==1) { return $f1; }
+    return $f5;
+};
 _akcms.alerts={
     template: $("<div class='alert alert-dismissible fade show' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button></div>"),
     show:function(msg,type,wait){

@@ -22,7 +22,7 @@ class SysUnit extends CmsPage {						// Страницы из DB
 		);
 	}
 
-	public function __construct(&$pageTemplate)
+	public function __construct()
 	{
 		global $pathlen,$path;
         if ($pathlen<=2 && $path[0] === '_sys') {
@@ -36,5 +36,5 @@ class SysUnit extends CmsPage {						// Страницы из DB
 	
 	}
 	
-	public static function getContent() { throw new CmsException('page_not_found'); }
+	public function getContent() { throw new CmsException('page_not_found'); }
 }
