@@ -15,7 +15,7 @@ try {
     $page = null;
     foreach ($cfg['CmsPages_load'] as $pageClass) {
         try {
-            $page = new $pageClass($pageTemplate);
+            $page = new $pageClass();
             break;
         } catch (Exception $e) {
             $page = null;

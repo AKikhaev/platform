@@ -1,7 +1,8 @@
 <?php
 abstract class CmsPage extends AclProcessor { /* page */
     public $pageUri;
-    protected $runAction = 'defaultAction';
+    protected $runAction = 'indexAction';
+    protected $runParams = [];
     public $inEditCan = false;
     public $page = [];
     protected $pagePath = array();		// Крошки
@@ -36,7 +37,8 @@ abstract class CmsPage extends AclProcessor { /* page */
 
     function getContent()
     {
-        return call_user_func([$this,$this->runAction]);
+        //return call_user_func([$this,$this->runAction]);
+        return $this->{$this->runAction}(...$this->runParams);
     }
 
     /** Сортировка потомков
