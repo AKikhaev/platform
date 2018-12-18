@@ -10,7 +10,7 @@ abstract class CmsPage extends AclProcessor { /* page */
     protected $pageMenu = array();		// Меню страницы
     protected $pageAllMenu = array();		// Полное меню
     protected $title;
-    public function __construct(&$pageTemplate) {}
+    public function __construct() {}
     public function getTitle() {return $this->title;}
     public function initAjx(&$ajaxList = []){
         $rc = new ReflectionClass($this);

@@ -223,5 +223,5 @@ class TmplMapperUnit extends CmsPage {
 
 	}
 
-    public static function getContent() {}
+    public function getContent() {}
 }
