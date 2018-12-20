@@ -113,6 +113,7 @@ _akcms.FileUploader = function(container,options){
         maxNumberOfFiles:0,
         maxChunkSize:512*1024,
         onDone: null,
+        titles:true,
 
         color: "#556b2f",
         backgroundColor: "white"
@@ -186,58 +187,81 @@ _akcms.FileUploader = function(container,options){
 
     var showUploadingFileThumbnail = function(data){
         var reader = new FileReader();
-        var file = data.files[0];
+        var file = data.files[0],file_ext = file.name.split('.').pop().toLowerCase();
+        if (['jpg','jpeg','png','gif'].indexOf(file_ext)>-1) {
+            //https://jsfiddle.net/xor3L8db/
+            reader.onload = function (e) {
+                //_this.secImageImg.prop('src',reader.result);
+                var img = document.createElement("img");
+                img.addEventListener("load", function (e) {
+                    var width = img.width, height = img.height;
+                    var max_width = settings.tn_width, max_height = settings.tn_height, x_ratio = max_width / width,
+                        y_ratio = max_height / height;
+                    var tn_width, tn_height, cntrX, cntrY, tn_cntrX, tn_cntrY, putX, putY;
+                    cntrX = width / 2;
+                    cntrY = height / 2;
+                    tn_width = Math.ceil(y_ratio * width);
+                    tn_height = max_height;
+                    tn_cntrX = y_ratio * cntrX;
+                    //tn_cntrY = y_ratio*cntrY;
+                    putX = max_width / 2 - tn_cntrX;
+                    putY = 0;
+                    if (putX > 0) {
+                        putX = 0;
+                    }
+                    if (putX < max_width - tn_width) {
+                        putX = max_width - tn_width;
+                    }
 
-        //https://jsfiddle.net/xor3L8db/
-        reader.onload = function(e) {
-            //_this.secImageImg.prop('src',reader.result);
-            var img = document.createElement("img");
-            img.addEventListener("load",function (e) {
-                var width = img.width, height = img.height;
-                var max_width = settings.tn_width, max_height = settings.tn_height, x_ratio = max_width / width, y_ratio = max_height / height;
-                var tn_width, tn_height, cntrX, cntrY, tn_cntrX, tn_cntrY, putX, putY;
-                cntrX = width/2;cntrY = height/2;
-                tn_width = Math.ceil(y_ratio * width);
-                tn_height = max_height;
-                tn_cntrX = y_ratio*cntrX;
-                //tn_cntrY = y_ratio*cntrY;
-                putX = max_width/2-tn_cntrX;
-                putY = 0;
-                if (putX>0) { putX = 0; }
-                if (putX<max_width-tn_width) { putX = max_width-tn_width; }
+                    if (tn_width < max_width) {
+                        tn_height = Math.ceil(x_ratio * height);
+                        tn_width = max_width;
+                        //tn_cntrX = x_ratio*cntrX;
+                        tn_cntrY = x_ratio * cntrY;
+                        putX = 0;
+                        putY = max_height / 2 - tn_cntrY;
+                        if (putY > 0) {
+                            putY = 0;
+                        }
+                        if (putY < max_height - tn_height) {
+                            putY = max_height - tn_height;
+                        }
+                    }
 
-                if (tn_width < max_width) {
-                    tn_height = Math.ceil(x_ratio * height);
-                    tn_width = max_width;
-                    //tn_cntrX = x_ratio*cntrX;
-                    tn_cntrY = x_ratio*cntrY;
-                    putX = 0;
-                    putY = max_height/2-tn_cntrY;
-                    if (putY>0) { putY = 0; }
-                    if (putY<max_height-tn_height) { putY = max_height-tn_height; }
-                }
+                    var canvas = document.createElement("canvas");
+                    canvas.width = max_width;
+                    canvas.height = max_height;
+                    var ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, width, height, putX, putY, tn_width, tn_height);
 
-                var canvas = document.createElement("canvas");
-                canvas.width = max_width; canvas.height = max_height;
-                var ctx = canvas.getContext("2d");
-                ctx.drawImage(img, 0,0,width,height,putX,putY,tn_width,tn_height);
+                    var itemDiv = template.clone().appendTo(container);
+                    itemDiv.find("img.FileUploader_img").attr("src", canvas.toDataURL("image/jpeg"));
+                    addEvents(itemDiv, data);
+                    data.context = itemDiv;
 
-                var itemDiv = template.clone().appendTo(container);
-                itemDiv.find("img.FileUploader_img").attr("src",canvas.toDataURL("image/jpeg"));
-                addEvents(itemDiv,data);
-                data.context = itemDiv;
-
-                //document.getElementById("e_sec_imgfile").src = canvas.toDataURL("image/jpeg");
-                //ctx = null; canvas = null; img = null; // clean
-            },false);
-            img.src = reader.result;
-        };
-        if (file) { reader.readAsDataURL(file); }
+                    //document.getElementById("e_sec_imgfile").src = canvas.toDataURL("image/jpeg");
+                    //ctx = null; canvas = null; img = null; // clean
+                }, false);
+                img.src = reader.result;
+            };
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        } else {
+            var itemDiv = template.clone().appendTo(container);
+            itemDiv.find("img.FileUploader_img")
+                .attr("src", '/akcms/assets/Icons/filetypes/' + file_ext + '.png')
+                .attr("title",file.name);
+            itemDiv.find("div.FileUploader_rotateBtn").remove();
+            addEvents(itemDiv, data);
+            data.context = itemDiv;
+        }
     };
 
     var createServerFile = function(itemData){
         var itemDiv = template.clone();
-        itemDiv.find("img.FileUploader_img").attr("src",itemData.urlPreview);
+        var itemPreviewImg = itemDiv.find("img.FileUploader_img").attr("src",itemData.urlPreview);
+        if (settings.titles) { itemPreviewImg.attr('title',itemData.cof_file); }
         itemDiv.find("div.FileUploader_rotateBtn").remove();
         itemData.files = [{
             name:itemData.cof_file,

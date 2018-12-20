@@ -99,7 +99,7 @@ php server/acme/v1/certs.php --prod
 * Генерация конфигов с использованием сертификатов 
 cls && acli getStarted nginx && service nginx configtest && service nginx reload
 * Обновление сертификатов (для cron)
-php server/acme/certs.php
+php server/acme/v1/certs.php --prod
 ```
 * [Оценка ssl](https://www.ssllabs.com/ssltest/)
 * Список доменов сайта: 
