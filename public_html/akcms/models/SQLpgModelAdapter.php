@@ -490,8 +490,8 @@ trait SQLpgModelAdapter {
         else if (count($this->query_join)>0) $query .= ' '.implode(' ',$this->query_join); // таблицы перечислены в массиве
 
         //todo Сложные условия, указание сравнения
-        if (is_string($this->query_where) && $this->query_where!='') $query .= ' WHERE '.$this->query_where; // готовый query
-        elseif (is_int($this->query_where)) $query .= ' WHERE '.$this->_pr_whereID($this->query_where); // Число
+        if (is_numeric($this->query_where)) $query .= ' WHERE '.$this->_pr_whereID($this->query_where); // Число
+        elseif (is_string($this->query_where) && $this->query_where!='') $query .= ' WHERE '.$this->query_where; // готовый query
         elseif (is_object($this->query_where) && is_subclass_of($this->query_where, 'cmsModelAbstract')) $query .= ' WHERE '.$this->query_where->_pr_whereEQ(); //Класс самого себя
         elseif (is_array($this->query_where) && count($this->query_where)>0) $query .= ' WHERE '.implode(' AND ',$this->query_where); //набор готовых условий для склейки
 

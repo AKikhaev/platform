@@ -42,6 +42,9 @@ mkdir -p /data/certs/www
 chown mstr:www-data /data/certs
 chown mstr:www-data /data/certs/www
 
+#find . -type d -exec chmod 755 {} \;
+#find . -type f -exec chmod 644 {} \;
+
 chmod 0770 /data/nfs/$projectName/git_pull.bat
 
 echo

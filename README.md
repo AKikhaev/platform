@@ -100,6 +100,10 @@ php server/acme/v1/certs.php --prod
 cls && acli getStarted nginx && service nginx configtest && service nginx reload
 * Обновление сертификатов (для cron)
 php server/acme/certs.php
+
+* Тестирование
+cls && curl -k --verbose --header 'Host: www.example.com' 'https://77.222.54.58/ping'
+
 ```
 * [Оценка ssl](https://www.ssllabs.com/ssltest/)
 * Список доменов сайта: 

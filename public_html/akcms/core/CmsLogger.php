@@ -79,6 +79,23 @@ class CmsLogger
     }
 
     /**
+     * Вывод переменной в лог (var_dump)
+     * @param $vars
+     */
+    public static function var_dump($vars) {
+        self::beep();
+        self::write(self::var_dump_export(...func_get_args()).PHP_EOL);
+    }
+    /**
+     * Вывод переменной в лог (var_dump) и останов
+     * @param $var
+     */
+    public static function var_dump__($var) {
+        self::var_dump(...func_get_args());
+        exit();
+    }
+
+    /**
      * Текстовое форматированное представление переданных переменных любого типа
      * @param $vars
      * @return mixed|null|string|string[]
@@ -109,23 +126,6 @@ class CmsLogger
      */
     public static function var_log__($var) {
         self::var_log(...func_get_args());
-        exit();
-    }
-
-    /**
-     * Вывод переменной в лог (var_dump)
-     * @param $vars
-     */
-    public static function var_dump($vars) {
-        self::beep();
-        self::write(self::var_dump_export(...func_get_args()).PHP_EOL);
-    }
-    /**
-     * Вывод переменной в лог (var_dump) и останов
-     * @param $var
-     */
-    public static function var_dump__($var) {
-        self::var_dump(...func_get_args());
         exit();
     }
 
