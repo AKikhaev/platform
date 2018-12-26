@@ -69,6 +69,17 @@ class FileManagerItem{
         return  $url;
     }
 
+    /** User preview url
+     * @param string $prePath
+     * @return string
+     */
+    public function pathPreview($prePath='s'){
+        return in_array($this->fileInfo->cofFileExt,['jpg','png','bmp','gif','jpeg'])
+            ? $this->pathUrl($prePath)
+            : '/akcms/assets/Icons/filetypes/'.$this->fileInfo->cofFileExt.'.png';
+
+    }
+
     /** Remove file
      * @return int
      * @throws DBException
@@ -96,7 +107,7 @@ class FileManagerItem{
     {
         $data = $this->fileInfo->asArray();
         $data['url'] = $this->pathUrl();
-        $data['urlPreview'] = $this->pathUrl('s');
+        $data['urlPreview'] = $this->pathPreview();
         return json_encode($data);
     }
 
@@ -342,6 +353,26 @@ class FileManager extends PgUnitAbstract {
         return $list;
     }
 
+    /** build html preview html spans
+     * @param $files FileManagerItem[]
+     * @return string
+     */
+    public static function listToHtml($files){
+        $html = '';
+        $tn_width = 100;
+        $tn_height = 100;
+        if (count($files)>0) foreach ($files as $file) {
+            /* @var $file FileManagerItem */
+            $html .= 
+                "<span class='FileUploader_Item' style='width: ".$tn_width."px; height: ".$tn_height."px'>" .
+                "<a href='".$file->pathUrl()."' title='".$file->getFile()."' target='_blank'>".
+                "<img width='".$tn_width."' height='".$tn_height."' class='FileUploader_img' src='".$file->pathPreview()."'>" .
+                "</a>".
+                "</span>";
+        }
+        return $html;
+    }
+    
     /** get file by id
      * @param $id
      * @return false|FileManagerItem
