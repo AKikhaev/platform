@@ -56,6 +56,8 @@ CREATE DATABASE project_name WITH OWNER = project_name ENCODING = 'UTF8';
 ALTER DATABASE project_name SET timezone TO 'Europe/Moscow';
 \c project_name
 ALTER SCHEMA public OWNER TO project_name;
+
+pg_restore -d database_name -x -O -v --role=user_name /data/nfs/project_name/server/postgres/newsite.dmp
 ```
 
 * Базовая настройка сервера
