@@ -70,14 +70,14 @@ _akcms.switchClass=function(isTrue,el,className){
     else { el.removeClass(className); }
 };
 _akcms.cookie = {
-    set: function(name,value,expires, options) {
+    set: function(name,value,expires_hours, options) {
         if (options===undefined) { options = {path:"/"}; }
         var expires_date = new Date();
-        if ( expires ) {
-            expires_date.setHours(expires_date.getHours() + expires);
+        if ( expires_hours ) {
+            expires_date.setHours(expires_date.getHours() + expires_hours);
         }
         document.cookie = name+"="+encodeURIComponent( value ) +
-            ( ( expires ) ? ";expires="+expires_date.toGMTString() : "" ) +
+            ( ( expires_hours ) ? ";expires="+expires_date.toGMTString() : "" ) +
             ( ( options.path ) ? ";path=" + options.path : "/" ) +
             ( ( options.domain ) ? ";domain=" + options.domain : "" ) +
             ( ( options.secure ) ? ";secure" : "" );
@@ -93,6 +93,11 @@ _akcms.cookie = {
 _akcms.replaceAll = function(str, find, replace) {
     return str.replace(new RegExp(find, "g"), replace);
 };
+_akcms.getURLParameter = function(name,url) {
+    if (url==undefined) { url = window.location.search; }
+    var match = RegExp("[?&]" + name + "=([^&]*)").exec(url);
+    return match && decodeURIComponent(match[1].replace(/\+/g, " "));
+}
 _akcms.FileUploader = function(container,options){
     var _this = this,filesUpload = [];
     if (typeof container === "string") { container = $(container); }

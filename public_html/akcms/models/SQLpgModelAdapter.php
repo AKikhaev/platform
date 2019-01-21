@@ -651,11 +651,11 @@ trait SQLpgModelAdapter {
      * @return $this|$this[]
      * @throws DBException
      */
-    public function all() {
+    public function getAll() {
         return $this->where()->get();
     }
 
-    /** return all records as array
+    /** return all records as array of array
      * @return array
      * @throws DBException
      */
@@ -665,7 +665,12 @@ trait SQLpgModelAdapter {
     	return $this->sql->query_all($this->query);
 	}
 
-	public function columnAsArray($col=0){
+    /** return one column as single array
+     * @param int $col
+     * @return array
+     * @throws DBException
+     */
+	public function getColumnAsArray($col=0){
         if ($this->query=='') throw new DBException('No query for '.__CLASS__);
         if ($this->query=='!') $this->buildQuery();
         return $this->sql->query_all_column($this->query,$col);
@@ -717,11 +722,13 @@ trait SQLpgModelAdapter {
     /** prepare insert */
     private function pr_i() {
         $_f = array(); $_v = array();
-        foreach ($this->filled as $k=>$v) if ($this->struct['primary']!=$k) {
+        foreach ($this->filled as $k=>$v) {
             $field = $this->struct['fields'][$k];
-            $FloatClass = 'CMS'.$field['FIELD_CLASS'];
-            $_f[] = $field['COLUMN_NAME'];
-            $_v[] = $FloatClass::quote($this->sql,$this->data[$field['COLUMN_NAME']]);
+            if ($this->struct['primary']!=$k || !isset($field['IDENTITY'])) { //Если не ключевое и не автоинкремент
+                $FloatClass = 'CMS'.$field['FIELD_CLASS'];
+                $_f[] = $field['COLUMN_NAME'];
+                $_v[] = $FloatClass::quote($this->sql,$this->data[$field['COLUMN_NAME']]);
+            }
         }
         return 'INSERT INTO '.static::$tableName.'('.implode(',',$_f).') VALUES ('.implode(',',$_v).')';
     }

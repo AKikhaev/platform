@@ -311,7 +311,8 @@ class pgCmsModelGenerator {
 			unset($field['PRIMARY_POSITION']);
 			unset($field['DATA_TYPE']);
             unset($field['COMPLETE_TYPE']);
-			unset($field['IDENTITY']);
+			if ($field['NULLABLE']!=true) unset($field['NULLABLE']);
+			if ($field['IDENTITY']!=true) unset($field['IDENTITY']);
 			//unset($field['COMMENT']);
 		}
         $tableInfo['primary'] = $primary;

@@ -158,7 +158,22 @@ class ChromePhp
     public static function log()
     {
         $args = func_get_args();
-        return self::_log('', $args);
+        self::_log('', $args);
+    }
+
+    /**
+     * var_dump a variable to the console
+     *
+     * @param mixed $data,... unlimited OPTIONAL number of additional logs [...]
+     * @return void
+     */
+    public static function var_dump()
+    {
+        $args = func_get_args();
+        foreach ($args as &$v) {
+            $v = CmsLogger::var_dump_export($v);
+        }
+        self::_log('', $args);
     }
 
     /**
