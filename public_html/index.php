@@ -44,6 +44,7 @@ try {
                 $pagecontent = preg_replace('/\<img\s/','<img itemprop="image" ',$pagecontent,1);
                 $shape['title'] = $page->getTitle();
                 $html = shp::tmpl('pages/'.$pageTemplate,array('content'=>$pagecontent));
+                //if ($cfg['debug']) var_dump__($shape);
                 $html = shp::str($html, $shape, false);
                 VisualTheme::replaceStaticHolders($html, $page->page);
                 //$html = Minify_HTML::minify($html);

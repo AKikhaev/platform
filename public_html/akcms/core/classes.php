@@ -347,8 +347,8 @@ class CmsUser {
 		$cmsUser->usrName = $name;
 		$cmsUser->usrActcode = $actcode;
 		if ($soname!=='') $cmsUser->usrSoname = $soname;
-		if (core::$IS_CLI) $cmsUser->usrRegisteredId = 'cli';
-		elseif (core::get_client_ip() !== false) $cmsUser->usrRegisteredId = core::get_client_ip();
+		if (core::$IS_CLI) $cmsUser->usrRegisteredIp = 'cli';
+		elseif (core::get_client_ip() !== false) $cmsUser->usrRegisteredIp = core::get_client_ip();
 		$regData = $cmsUser->insert()?$cmsUser->asArray():[];
 		unset($regData['usr_password_md5']);
 		return $regData;

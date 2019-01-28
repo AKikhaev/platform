@@ -224,40 +224,11 @@ function checkForm(&$var, &$checkRule, $permissionOk = true) {
 	return $result;
 }
 
-function checkFormAjax(&$var, &$checkRule, $permissionOk = true) {
-	return checkForm($var, $checkRule, $permissionOk);
-}
-
-function checkFormAssoc(&$var, &$checkRule, $permissionOk = true) {
-	$res = array();
-	$data = checkForm($var, $checkRule, $permissionOk);
-	foreach ($data as $val) { $res[$val['f']] = $val['s']; }
-	return $res;
-}
-
 /* Преобразует ассоциативный массив в массив массивов для ajax */
 function assocArray2KeyValue($arr) {
 	$narr = array();
 	foreach ($arr as $k=>$v) $narr[] = array('k'=>$k,'v'=>$v);
 	return $narr;
-}
-
-
-function messagesToErrorArray($messages,$errors) {
-	$narr = array();
-	foreach ($errors as $k=>$v)
-		$narr[] = array('f'=>'e_'.$k,'m'=>isset($messages[$k.'-'.$v])?$messages[$k.'-'.$v]:$v);
-	return $narr;
-}
-
-Function dgtToChar($dgt) {
-	return $dgt<10?$dgt:chr($dgt+87);
-}
-
-Function Str_($str,$cnt) { //Возвращает n-значное число
-  if ($cnt>strlen($str))
-   return str_repeat('0',$cnt-strlen($str)).$str;
-  else return $str;
 }
 
 Function GetTruncText($str,$cnt,$p3after = true) // Возвращает часть строки. Обрезает строку

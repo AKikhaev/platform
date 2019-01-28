@@ -11,6 +11,11 @@ class cliUnit {
     protected $runMethod = 'helpAction';
     protected $options_available = [];
 
+    public function __construct()
+    {
+        if(PHP_SAPI!=='cli')die('<!-- not allowed -->');
+    }
+
     public function run(){
         $commands = func_get_args();
         if (isset(cli::$options['bash_completion_cword'])) $this->runMethod = 'bash_completion';

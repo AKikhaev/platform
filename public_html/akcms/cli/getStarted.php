@@ -10,8 +10,8 @@ class getStarted extends cliUnit {
 
     public function __construct()
     {
+        parent::__construct();
         $this->projectName = $this->getProjectName();
-        if(PHP_SAPI!=='cli')die('<!-- not allowed -->');
     }
 
     public function getProjectName(){
