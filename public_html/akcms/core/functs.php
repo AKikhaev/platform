@@ -1,31 +1,67 @@
 <?php
 class functs {
+    /** return true when str has non empty value
+     * @param $str
+     * @return bool
+     */
     static function strHasValue($str) {
         return $str!==null && $str!=='';
     }
 
+    /** return str value or empty, null as empty string
+     * @param $str
+     * @return string
+     */
     static function strValue($str) {
         return $str===null?'':$str;
     }
 
+    /** implode without nulls or empty strings
+     * @param $glue
+     * @param array $pieces
+     * @return string
+     */
     static function implodeIgnoreEmptyNull($glue , array $pieces){
         return implode($glue, array_filter($pieces,function ($element){
             return $element!==null && $element !='';
         }));
     }
 
+    /** returns beautiful size value
+     * @param $size
+     * @param array $unit
+     * @return string
+     */
     static function prettySize($size,array $unit=array('б.','Кб.','Мб.','Гб.','Тб.','Пб.'))
     {
         if ($size===0) return '0 '.$unit[0];
         return round($size/ (1024 ** $i = floor(log($size, 1024))),2).' '.$unit[$i];
     }
 
+    /** return correctly JSON for array of objects
+     * @param $objectsArray
+     * @return string
+     */
     static function json_encode_objectsArray($objectsArray) {
         $items = [];
         foreach ($objectsArray as $item) {
             $items[] = (string)$item;
         }
         return '['.implode(',',$items).']';
+    }
+
+    /** return preg match result value or null
+     * @param $pattern
+     * @param $subject
+     * @param int $returnValue
+     * @return null
+     */
+    static function preg_get($pattern, $subject, $returnValue = 1) {
+        $value = null;
+        if (preg_match($pattern, $subject, $matches)===1 && isset($matches[$returnValue])) {
+            $value = $matches[$returnValue];
+        }
+        return $value;
     }
 }
 
@@ -630,28 +666,31 @@ function _ls($code = '0'){
 }
 
 /**
- * @param $url Адрес
+ * @param string $url Адрес
  * @param array $headers_add Доп. Заголовки
  * @param array $GET
  * @param array $POST
  * @param bool $followlocation разрешить редиректы
  * @param bool $cookies
- * @param string $cookiefile путь
+ * @param string $cookiefile путь ../cookie_file.txt
  * @param bool|string $proxy false|строка прокси
  * @return array
  */
 function _getUrlContent(
     $url,
-    $headers_add = array(),
-    $GET=array(),
-    $POST=array(),
+    $headers_add = [],
+    $GET=[],
+    $POST=[],
+    $proxy = false,
     $followlocation=true,
-    &$cookies = false,
     $cookiefile='../cookie_file.txt',
-    $proxy = false)
+    &$cookies = false
+)
 {
     /* @var $Cacher CacheController */
     global $Cacher;
+
+    if ($cookiefile==null) $cookiefile = '../cookie_file.txt';
 
     //$cacheKey = md5(serialize(func_get_args()));
 

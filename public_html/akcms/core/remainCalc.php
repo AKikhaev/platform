@@ -8,6 +8,20 @@ class remainCalc {
     private $str;
     private $value = 0;
 
+    /**
+     * remainCalc constructor.
+     * @param int $count
+     * Количетво
+     * @param string $str
+     * Заголовок
+     * @param int $skip
+     * Расчет, при пропуске указанного количества
+     */
+    public function __construct($count=null, $str='',$skip=0)
+    {
+        if ($count!=null) $this->init($count,$str,$skip);
+    }
+
     /** Инициализация калькулятора
      * @param $count
      * Количетво
@@ -16,10 +30,14 @@ class remainCalc {
      * @param int $skip
      * Расчет, при пропуске указанного количества
      */
-    function init($count, $str='',$skip=0) {
-        if ($count == 0)
+    function init($count, $str='', $skip=0) {
+        $count_value = 0;
+        if ($count instanceof Countable) $count_value = count($count);
+        if (is_numeric($count)) $count_value = $count;
+
+        if ($count_value == 0)
             echo 'count=0, ' . $str . "\n";
-        $this->count = $count;
+        $this->count = $count_value;
         $this->skip=$skip;
         $this->value = $skip;
         $this->str = ' ' . $str . ' ';

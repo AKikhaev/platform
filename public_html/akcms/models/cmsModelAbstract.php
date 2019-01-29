@@ -59,7 +59,7 @@ class tableKeyData {
  *
  * {#properties#}
  */
-abstract class cmsModelAbstract implements SeekableIterator
+abstract class cmsModelAbstract implements SeekableIterator, Countable
 {
     public static $tableName = '{#tableName#}';
     protected $schemaName = '{#schemaName#}';
