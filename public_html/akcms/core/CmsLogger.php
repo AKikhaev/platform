@@ -3,7 +3,7 @@ class CmsLogger
 {
     private static $terminals = [];
     public static $debug = false;
-    public static function enableDebug() { self::$debug=true; }
+    public static $ignoreCLI = false;
 
     /** formating array as horizontal table
      * @param $data
@@ -37,6 +37,7 @@ class CmsLogger
             self::write(PHP_EOL);
         }
     }
+    public static function enableDebug() { self::$debug=true; }
 
     /** formatting model data as vertical table
      * @param cmsModelAbstract $model
@@ -176,7 +177,7 @@ class CmsLogger
      * @return bool
      */
     public static function write($data, $terminal=null){
-        if ($terminal==null) {
+        if ($terminal==null && !self::$ignoreCLI) {
             if (core::$IS_CLI) {
                 echo $data;
                 return true;

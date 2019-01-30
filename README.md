@@ -117,6 +117,19 @@ openssl x509 -text -in /data/certs/project_name/cert.crt
 cat /data/certs/project_name/cert.crt | openssl x509 -text | grep -o 'DNS:[^,]*' | cut -f2 -d:
 cat /data/certs/project_name/cert.crt | openssl x509 -text | grep -o 'Not After :[^,]*'
 ```
+##### Пошаговое развертывание
+
+* Подключение логрования в консоль 
+```
+постоянно: 
+  Добавить в /etc/fstab: /dev/pts /data/nfs/project_name/dev/pts auto bind 0 0
+  Подключить без перезагрузки: mount -a
+временно: 
+  mount --bind /dev/pts /data/nfs/project_name/dev/pts
+```
+* cron
+`* * * * * *  php /data/nfs/project_name/public_html/akcms/core/acli.php <…>`
+
 ##### Известные проблемы
 
 * opcache:

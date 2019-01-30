@@ -8,12 +8,20 @@ require_once('akcms/core/core.php'); LOAD_CORE_CLI();
  * Class cliUnit
  */
 class cliUnit {
+    protected $concurrentLimit = 0;
     protected $runMethod = 'helpAction';
     protected $options_available = [];
 
     public function __construct()
     {
         if(PHP_SAPI!=='cli')die('<!-- not allowed -->');
+        if ($this->concurrentLimit>0) {
+            $find = exec('ps -o command --no-headers -p '.getmypid());
+            exec('ps -A -o command --no-headers',$psOut);
+            $concurrent = 0; foreach ($psOut as $cmd) if ($cmd==$find) $concurrent++;
+            if ($concurrent>$this->concurrentLimit) { CmsLogger::logError('Concurrent limit exceeded! ('.$concurrent.')'); die();}
+            else CmsLogger::log("Started $concurrent concurrent process.");
+        }
     }
 
     public function run(){

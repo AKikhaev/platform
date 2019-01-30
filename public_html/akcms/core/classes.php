@@ -715,6 +715,13 @@ final class core {
             //$cfg['debug']===true
             //$host = $_SERVER['HTTP_HOST'];
 
+            try {
+                $mailer = new CmsMailer(true);
+            } catch (Throwable $e) {
+                core::GlobalExceptionHandler($e);
+                $mailer = null;
+            }
+
             unset(
                 $GLOBALS['cfg'], $GLOBALS['_SERVER'], $GLOBALS['page'], $GLOBALS['runObj'], $GLOBALS['shapes'],
                 $GLOBALS['shape'], $GLOBALS['Cacher'], $GLOBALS['pagecontent'], $GLOBALS['e'], $GLOBALS['html'],
@@ -728,7 +735,28 @@ final class core {
                 self::$GlobalErrors . $GlobalVars . '<=='.PHP_EOL
             );
             if (!$sent) $sent = @sendTelegram(self::$ErrorFirstTitle.PHP_EOL.$inf);
-            if (!$sent) sendMailHTML($emailTo, 'ERROR '.self::$ErrorFirstTitle, self::ErrorsStringToHTML(self::$GlobalErrors).'<pre>'.$GlobalVars.'</pre>','',$cfg['email_from']);
+            if (!$sent) {
+                //sendMailHTML($emailTo, 'ERROR '.self::$ErrorFirstTitle, self::ErrorsStringToHTML(self::$GlobalErrors).'<pre>'.$GlobalVars.'</pre>','',$cfg['email_from']);
+                if ($mailer !== null) {
+                    $mailer->addAddress($emailTo);
+                    $mailer->Subject = 'ERROR ' . self::$ErrorFirstTitle;
+                    $mailer->Body = self::ErrorsStringToHTML(self::$GlobalErrors) . '<pre>' . $GlobalVars . '</pre>';
+                    try {
+                        if ($mailer->send())
+                            $sent = true;
+                        else
+                            throw new CmsException($mailer->ErrorInfo);
+                    } catch (Throwable $e) {
+                        core::GlobalExceptionHandler($e);
+                    }
+                } else {
+                    $sent = false;
+                }
+            }
+            if (!$sent) {
+                //todo error file log
+                var_dump__(self::$GlobalErrors);
+            }
             //if (self::$IS_CLI) sleep(2);
         }
         //if (isset(core::$prodServer)) try { new LiveinternetSeTracker($cfg['liveinternet_account']); } catch(Exception $e) {}
