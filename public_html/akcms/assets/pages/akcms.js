@@ -36,8 +36,9 @@ _akcms.ruWordForm = function($n, $f1, $f2, $f5) {
     return $f5;
 };
 _akcms.alerts={
-    template: $("<div class='alert alert-dismissible fade show' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button></div>"),
+    template: $("<div class='alert akCMS_alert alert-dismissible fade show' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button></div>"),
     show:function(msg,type,wait){
+        window.console.log(msg);
         var el = this.template.clone().prepend("<span>"+msg+"</span>");
         if (type!==undefined) { el.addClass("alert-"+type); }
         el.prependTo($("#alertContainer")).alert();
@@ -47,6 +48,7 @@ _akcms.alerts={
             }, wait);
         }
     },
+    removeAll: function() { $("div.akCMS_alert").alert("close"); },
     primary:  function (msg) { this.show(msg,"primary"); },
     secondary:function (msg) { this.show(msg,"secondary"); },
     success:  function (msg) { this.show(msg,"success",5000); },
@@ -94,7 +96,7 @@ _akcms.replaceAll = function(str, find, replace) {
     return str.replace(new RegExp(find, "g"), replace);
 };
 _akcms.getURLParameter = function(name,url) {
-    if (url==undefined) { url = window.location.search; }
+    if (url===undefined) { url = window.location.search; }
     var match = RegExp("[?&]" + name + "=([^&]*)").exec(url);
     return match && decodeURIComponent(match[1].replace(/\+/g, " "));
 }
