@@ -34,6 +34,7 @@ class profiler {
     public static function showOverallTimeToTerminal($sqlDebug = false){
         /* @var  pgdb $sql */
         global $sql;
+        CmsLogger::clearScreen();
         $name = 'Overall';
         self::$sql_logger = function($sql) use ($name){
             CmsLogger::write(

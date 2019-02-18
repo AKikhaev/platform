@@ -15,7 +15,7 @@ class cliUnit {
     public function __construct()
     {
         if(PHP_SAPI!=='cli')die('<!-- not allowed -->');
-        if ($this->concurrentLimit>0) {
+        if ($this->concurrentLimit>0 && !isset(cli::$options['bash_completion_cword'])) {
             $find = exec('ps -o command --no-headers -p '.getmypid());
             exec('ps -A -o command --no-headers',$psOut);
             $concurrent = 0; foreach ($psOut as $cmd) if ($cmd==$find) $concurrent++;
@@ -32,7 +32,24 @@ class cliUnit {
             unset($commands[0]);
         }
         if (method_exists($this,$this->runMethod)) {
-            $this->{$this->runMethod}(...$commands);
+            try {
+                $this->{$this->runMethod}(...$commands);
+            } catch (ArgumentCountError $e) {
+                CmsLogger::logError('Parameters required. See help');
+                $rc = new ReflectionClass($this);
+                $method = $rc->getMethod($this->runMethod);
+                $comment = $method->getDocComment();
+                if ($comment!==false) {
+                    echo '  '.mb_substr($method->getName(),0,-6).":\n";
+                    foreach (explode("\n",$comment) as $line) {
+                        $line = mb_trim($line,'\/\*\s');
+                        if ($line==='') continue;
+                        if (mb_strpos($line,'@')!==false) break;
+                        echo '    '.$line.PHP_EOL;
+                    }
+                }
+            }
+
         } else echo "Cli sub command not found!\n";
     }
 

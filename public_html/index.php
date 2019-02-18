@@ -8,8 +8,9 @@ try {
     #ob_start(); // Start output buffer
     $pageClass = '';
     $pageTemplate = '';
-
     $site = new site(); //custom storage, loader
+
+    if ($GLOBALS['cfg']['debug']) profiler::showOverallTimeToTerminal(true);
 
     /* @var  $page CmsPage */
     $page = null;

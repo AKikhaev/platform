@@ -85,7 +85,11 @@ class CmsLogger
      */
     public static function var_dump($vars) {
         self::beep();
-        self::write(self::var_dump_export(...func_get_args()).PHP_EOL);
+        $stacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+        self::write(
+            basename($stacktrace[0]['file']).':'.$stacktrace[0]['line'].': '._ls(1).
+            self::var_dump_export(...func_get_args())._ls().PHP_EOL
+        );
     }
     /**
      * Вывод переменной в лог (var_dump) и останов
@@ -119,7 +123,11 @@ class CmsLogger
      */
     public static function var_log($vars) {
         self::beep();
-        self::write(self::var_log_export(...func_get_args()).PHP_EOL);
+        $stacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+        self::write(
+            basename($stacktrace[0]['file']).':'.$stacktrace[0]['line'].': '._ls(1).
+            self::var_log_export(...func_get_args()).PHP_EOL
+        );
     }
     /**
      * Вывод переменной в лог (print_r) и останов
@@ -202,10 +210,22 @@ class CmsLogger
     public static function writeLn($data, $terminal=null){ return self::write($data.PHP_EOL, $terminal); }
 
     /**
+     * Выдает в лог последовательность очистки окна терминала и прокрутки
+     * @param null $terminal
+     */
+    public static function clearScreenScroll($terminal=null) { self::write("\e[2J\e[H\e[3J",$terminal); }
+
+    /**
      * Выдает в лог последовательность очистки окна терминала
      * @param null $terminal
      */
-    public static function clearScreen($terminal=null) { self::write("\e[2J\e[H\e[3J",$terminal); }
+    public static function clearScreen($terminal=null) { self::write("\e[2J\e[H",$terminal); }
+
+    /**
+     * Выдает в лог последовательность очистки прокрутки
+     * @param null $terminal
+     */
+    public static function clearScroll($terminal=null) { self::write("\e[3J",$terminal); }
 
     /**
      * Выдает в лог последовательность beep

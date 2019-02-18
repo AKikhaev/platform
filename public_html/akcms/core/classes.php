@@ -139,9 +139,10 @@ class CacheController { /* cache */
         if ($this->cache_read($key,$result)) {
         } else {
             $result = $function();
-            if ($result !== null && $result != '') {
+            // bad answer also answer
+            //if ($result !== null && $result != '') {
                 $this->cache_write($key, $result, $life);
-            }
+            //}
         }
         return $result;
     }
@@ -149,8 +150,8 @@ class CacheController { /* cache */
 	/// Todo:Renaming needed
 
 	public function cache_read($key, &$val) {
-		$ipath = $this->getPath($key);
-		$dump = file_exists($ipath)?file_get_contents($ipath):false;
+        $ipath = $this->getPath($key);
+        $dump = file_exists($ipath)?file_get_contents($ipath):false;
 		if ($dump!==false) {
 			$c_obj = unserialize($dump);
 			if (time()<$c_obj['u'] || $this->forceCache) {
@@ -170,7 +171,7 @@ class CacheController { /* cache */
 	public function cache_write($key, &$val, $life=86400, $until=0) {
 		$ipath = $this->getPath($key,true);
 		$c_obj = array('d'=>$val,'u'=> $until==0?time()+$life:$until);
-		return file_put_contents($ipath,serialize($c_obj))>0;
+        return file_put_contents($ipath,serialize($c_obj))>0;
 	}
 	
 	public function cache_exists($key) {
@@ -180,7 +181,8 @@ class CacheController { /* cache */
 	
 	public function cache_drop($key) {
 		$ipath = $this->getPath($key);
-		if (file_exists($ipath)) @unlink($ipath);
+		if (file_exists($ipath)) return @unlink($ipath);
+		return false;
 	}
 }
 
@@ -207,9 +209,12 @@ class CacheWholePage {
         $content = '';
         if (
             //!CmsUser::isLogin() &&
-            !isset($_COOKIE['cacheskip']) &&
+            !core::$isAjax &&
+            !(isset($_COOKIE['cacheskip']) && $_COOKIE['cacheskip']=='1') &&
             $Cacher->cache_read($key,$content)
         ) {
+            //$Cacher->cache_drop($key);
+            ChromePhp::log($key);
             echo $content; die;
         }
         return false;
@@ -276,6 +281,11 @@ class CmsUser {
             $sql->pgf_text($loginOrEmail),
             $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$password)));
         $datausr = $sql->query_first_assoc($query);
+        if ($datausr!==false){
+            $user = new modelCmsUsers($datausr['id_usr']);
+            $user->usrLastLogin = VisualTheme::dateRus('c',time());
+            $user->update();
+        }
         if ($datausr!==false) return self::forceAuth($datausr);
         else return false;
     }
@@ -286,6 +296,11 @@ class CmsUser {
             $sql->pgf_text($login),
             $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$autohash)));
         $datausr = $sql->query_first_assoc($query);
+        if ($datausr!==false){
+            $user = new modelCmsUsers($datausr['id_usr']);
+            $user->usrLastLogin = VisualTheme::dateRus('c',time());
+            $user->update();
+        }
         if ($datausr!==false) return self::forceAuth($datausr);
         else return false;
     }
@@ -296,6 +311,11 @@ class CmsUser {
             $sql->d($id),
             $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$autohash)));
         $datausr = $sql->query_first_assoc($query);
+        if ($datausr!==false){
+            $user = new modelCmsUsers($datausr['id_usr']);
+            $user->usrLastLogin = VisualTheme::dateRus('c',time());
+            $user->update();
+        }
         if ($datausr!==false) return self::forceAuth($datausr);
         else return false;
     }

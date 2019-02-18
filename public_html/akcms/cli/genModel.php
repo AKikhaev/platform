@@ -468,7 +468,7 @@ class genModel extends cliUnit {
      * @param string $filter
      * @throws CmsException
      */
-    public function genAllAction($filter = ''){
+    public function genAction($filter = ''){
         global $sql,$cfg;
 
         $schema = $cfg['db'][1]['schema'];
