@@ -5,7 +5,8 @@
 #projectNameShort - name without spaces, dashes instead tabs,dots
 
 executeScriptDir=$(dirname "$(readlink -f "$0")")
-mapfile -d / -t pwds <<<"$executeScriptDir/"
+IFS='/' read -r -a pwds <<< "$executeScriptDir"
+#mapfile -d / -t pwds <<<"$executeScriptDir/"
 projectName=${pwds[3]}
 
 scriptsDir=/data/nfs/$projectName/server

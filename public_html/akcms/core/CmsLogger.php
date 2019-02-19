@@ -116,7 +116,6 @@ class CmsLogger
         $printVar = preg_replace('/\n\s*\n/',"\n",$printVar);
         return $printVar;
     }
-
     /**
      * Вывод переменной в лог (print_r)
      * @param $vars
@@ -145,6 +144,122 @@ class CmsLogger
         $var = func_get_args();
         if (!Core::$IS_CLI && !Core::$isAjax)
             echo '<script>console.log('.json_encode(count($var)==1?$var[0]:$var).');</script>';
+    }
+
+    /**
+     * @param $variable
+     * @param int $strlen
+     * @param int $width
+     * @param int $depth
+     * @param int $i
+     * @param array $objects
+     * @return string
+     * @see https://www.leaseweb.com/labs/2013/10/smart-alternative-phps-var_dump-function/
+     */
+    public static function var_debug_export($variable,$strlen=100,$width=25,$depth=10,$i=0,&$objects = array())
+    {
+        $search = array("\0", "\a", "\b", "\f", "\n", "\r", "\t", "\v");
+        $replace = array('\0', '\a', '\b', '\f', '\n', '\r', '\t', '\v');
+
+        $string = '';
+
+        switch(gettype($variable)) {
+            case 'boolean':      $string.= $variable?'true':'false'; break;
+            case 'integer':      $string.= $variable;                break;
+            case 'double':       $string.= $variable;                break;
+            case 'resource':     $string.= '[resource]';             break;
+            case 'NULL':         $string.= "null";                   break;
+            case 'unknown type': $string.= '???';                    break;
+            case 'string':
+                $len = strlen($variable);
+                $variable = str_replace($search,$replace,substr($variable,0,$strlen),$count);
+                $variable = substr($variable,0,$strlen);
+                if ($len<$strlen) $string.= '"'.$variable.'"';
+                else $string.= 'string('.$len.'): "'.$variable.'"...';
+                break;
+            case 'array':
+                $len = count($variable);
+                if ($i==$depth) $string.= 'array('.$len.') {...}';
+                elseif(!$len) $string.= 'array(0) {}';
+                else {
+                    $keys = array_keys($variable);
+                    $spaces = str_repeat(' ',$i*2);
+                    $string.= "array($len)\n".$spaces.'{';
+                    $count=0;
+                    foreach($keys as $key) {
+                        if ($count==$width) {
+                            $string.= "\n".$spaces."  ...";
+                            break;
+                        }
+                        $string.= "\n".$spaces."  [$key] => ";
+                        $string.= self::var_debug_export($variable[$key],$strlen,$width,$depth,$i+1,$objects);
+                        $count++;
+                    }
+                    $string.="\n".$spaces.'}';
+                }
+                break;
+            case 'object':
+                $id = array_search($variable,$objects,true);
+                if ($id!==false)
+                    $string.=get_class($variable).'#'.($id+1).' {...}';
+                else if($i==$depth)
+                    $string.=get_class($variable).' {...}';
+                else {
+                    $id = array_push($objects,$variable);
+                    $array = (array)$variable;
+                    $spaces = str_repeat(' ',$i*2);
+                    $string.= get_class($variable)."#$id\n".$spaces.'{';
+                    $properties = array_keys($array);
+                    foreach($properties as $property) {
+                        $name = str_replace("\0",':',trim($property));
+                        $string.= "\n".$spaces."  [$name] => ";
+                        $string.= self::var_debug_export($array[$property],$strlen,$width,$depth,$i+1,$objects);
+                    }
+                    $string.= "\n".$spaces.'}';
+                }
+                break;
+        }
+
+        if ($i>0) return $string;
+
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        do $caller = array_shift($backtrace); while ($caller && !isset($caller['file']));
+        if ($caller) $string = $caller['file'].':'.$caller['line']."\n".$string;
+
+        $string = preg_replace('/\n\s+\{/',' {',$string);
+        return $string;
+    }
+
+    /**
+     * Вывод переменной в лог (var_debug)
+     * @param $variable
+     * @param int $strlen
+     * @param int $width
+     * @param int $depth
+     * @param int $i
+     * @param array $objects
+     */
+    public static function var_debug($variable,$strlen=100,$width=25,$depth=1,$i=0,&$objects = array()) {
+        self::beep();
+        $stacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+        self::write(
+            basename($stacktrace[0]['file']).':'.$stacktrace[0]['line'].': '._ls(1).
+            self::var_debug_export(...func_get_args()).PHP_EOL
+        );
+    }
+
+    /**
+     * Вывод переменной в лог (var_debug) и останов
+     * @param $variable
+     * @param int $strlen
+     * @param int $width
+     * @param int $depth
+     * @param int $i
+     * @param array $objects
+     */
+    public static function var_debug__($variable,$strlen=100,$width=25,$depth=0,$i=0,&$objects = array()) {
+        self::var_debug(...func_get_args());
+        exit();
     }
 
     /**

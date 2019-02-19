@@ -19,7 +19,9 @@ function acli(){
 	local PWD=$(pwd -P)
 	if  [[ "$PWD" == "/data/nfs/"* ]] ; then
 		local pwds
-		mapfile -d / -t pwds <<<"$PWD/"
+		#https://stackoverflow.com/questions/10586153/split-string-into-an-array-in-bash
+		IFS='/' read -r -a pwds <<< "$PWD"
+		#mapfile -d / -t pwds <<<"$PWD/"
 		projectName=${pwds[3]}
 		if  [[ "$@" == "monitor" ]] ; then
 		    cls && bash /data/nfs/$projectName/server/monitor.sh
@@ -36,7 +38,8 @@ function _acli_complete_()
 	local PWD=$(pwd -P)
 	if  [[ "$PWD" == "/data/nfs/"* ]] ; then
 		local pwds
-		mapfile -d / -t pwds <<<"$PWD/"
+		IFS='/' read -r -a pwds <<< "$PWD"
+		#mapfile -d / -t pwds <<<"$PWD/"
 		projectName=${pwds[3]}
 
 		local cmd="${1##*/}"

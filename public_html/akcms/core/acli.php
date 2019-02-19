@@ -32,21 +32,28 @@ class cliUnit {
             unset($commands[0]);
         }
         if (method_exists($this,$this->runMethod)) {
-            try {
+            $rc = new ReflectionClass($this);
+            $method = $rc->getMethod($this->runMethod);
+            if (count($commands)>=$method->getNumberOfRequiredParameters()) {
                 $this->{$this->runMethod}(...$commands);
-            } catch (ArgumentCountError $e) {
+            } else {
                 CmsLogger::logError('Parameters required. See help');
-                $rc = new ReflectionClass($this);
-                $method = $rc->getMethod($this->runMethod);
+                $parameters = [];
+                foreach ($method->getParameters() as $parameter){
+                    $parameters[] = $parameter->name;
+                }
+                $parameters = count($parameters)>0 ? ' {'.implode(',',$parameters).'}' : '';
                 $comment = $method->getDocComment();
                 if ($comment!==false) {
-                    echo '  '.mb_substr($method->getName(),0,-6).":\n";
+                    echo '  '.mb_substr($method->getName(),0,-6).$parameters.":\n";
                     foreach (explode("\n",$comment) as $line) {
                         $line = mb_trim($line,'\/\*\s');
                         if ($line==='') continue;
                         if (mb_strpos($line,'@')!==false) break;
                         echo '    '.$line.PHP_EOL;
                     }
+                } else {
+                    echo '  '.mb_substr($method->getName(),0,-6).$parameters."\n";
                 }
             }
 
@@ -83,16 +90,24 @@ class cliUnit {
         if ($rc->getDocComment()!==false) foreach (explode("\r",$comment) as $line) echo mb_trim($line,'\/\*\s');
         foreach ($rc->getMethods() as $method) {
             if (mb_substr($method->getName(),-6)==='Action') {
+                $parameters = [];
+                foreach ($method->getParameters() as $parameter){
+                    $parameters[] = $parameter->name;
+                }
+                $parameters = count($parameters)>0 ? ' {'.implode(',',$parameters).'}' : '';
                 $comment = $method->getDocComment();
                 if ($comment!==false) {
-                    echo '  '.mb_substr($method->getName(),0,-6).":\n";
+                    echo '  '.mb_substr($method->getName(),0,-6).$parameters.":\n";
                     foreach (explode("\n",$comment) as $line) {
                         $line = mb_trim($line,'\/\*\s');
                         if ($line==='') continue;
                         if (mb_strpos($line,'@')!==false) break;
                         echo '    '.$line.PHP_EOL;
                     }
+                } else {
+                    echo '  '.mb_substr($method->getName(),0,-6).$parameters."\n";
                 }
+
             }
         }
     }

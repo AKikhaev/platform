@@ -32,7 +32,7 @@ class remainCalc {
      */
     function init($count, $str='', $skip=0) {
         $count_value = 0;
-        if ($count instanceof Countable) $count_value = count($count);
+        if (is_array($count) || $count instanceof Countable) $count_value = count($count);
         if (is_numeric($count)) $count_value = $count;
 
         if ($count_value == 0)
