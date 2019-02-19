@@ -229,6 +229,7 @@ class CmsUser {
     public static $rights = array();
     public static $user = array();
 	private static $fields = 'id_usr,usr_login,usr_name,usr_admin,usr_enabled,usr_grp,usr_activated,usr_email';
+	public static $preventIpChange = false;
 
     /**
      * @param int $length
@@ -269,6 +270,7 @@ class CmsUser {
 	private static function forceAuth($userData){
         if (!isset($_COOKIE[session_name()])) session_start();
         $_SESSION['u'] = $userData['usr_login'];
+        $_SESSION['time'] = date('c');
         $_SESSION['ip'] = core::get_client_ip();
         CmsUser::$user = $userData;
         return true;
@@ -475,7 +477,8 @@ class CmsUser {
         if (isset($_COOKIE[session_name()])) {
             session_start();
             if (isset($_SESSION['u']) && isset($_SESSION['ip'])) {
-                if ($_SESSION['ip'] != $_SERVER['REMOTE_ADDR']) CmsUser::logout(); else {
+                if (self::$preventIpChange && $_SESSION['ip'] != $_SERVER['REMOTE_ADDR']) CmsUser::logout();
+                else {
                     $login = $_SESSION['u'];
                     #if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') $login = '79615272331';
                     $query = sprintf('select *,array(SELECT (__if(usrrght_mode,\'\',\'!\'::text)||usrrght_name) FROM cms_users_groups_rgth where usrrght_grpid=any(usr_grp)) as rights from cms_users where usr_login = %s and usr_enabled and usr_activated limit 1;',
