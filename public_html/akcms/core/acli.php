@@ -35,7 +35,12 @@ class cliUnit {
             $rc = new ReflectionClass($this);
             $method = $rc->getMethod($this->runMethod);
             if (count($commands)>=$method->getNumberOfRequiredParameters()) {
-                $this->{$this->runMethod}(...$commands);
+                try {
+                    $this->{$this->runMethod}(...$commands);
+                } catch (Throwable $e) {
+                    core::GlobalExceptionHandler($e);
+                }
+                flush();
             } else {
                 CmsLogger::logError('Parameters required. See help');
                 $parameters = [];

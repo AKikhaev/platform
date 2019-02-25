@@ -581,7 +581,8 @@ final class core {
                     break;
                 } else {
                     $arr = [];
-                    foreach ($v as $nn=>$value) if ($nn<3){
+                    $k = 0;
+                    foreach ($v as $nn=>$value) if ($k++<3){
                         $arr[] = (is_numeric($nn)?'':$nn.'=>').self::GlobalErrorHandler_paramToText($n,$value,$lvl+1,$parameters,$d);
                     }
                     $v = '['.implode(',',$arr).(count($v)>count($arr)?',…'.count($v):'').']';
@@ -652,7 +653,8 @@ final class core {
                                 $eDie
                             );
                         }
-                        foreach ($d['args'] as $n=>&$v){
+                        $k = 0;
+                        foreach ($d['args'] as $n=>&$v) if ($k++<15){
                             $v = self::GlobalErrorHandler_paramToText($n,$v,0,$parameters,$d);
                         }
                         $i .= '('.implode(',',$d['args']).')';
@@ -781,6 +783,7 @@ final class core {
                 var_dump__(self::$GlobalErrors);
             }
             //if (self::$IS_CLI) sleep(2);
+            flush();
         }
         //if (isset(core::$prodServer)) try { new LiveinternetSeTracker($cfg['liveinternet_account']); } catch(Exception $e) {}
     }

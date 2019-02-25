@@ -85,9 +85,10 @@ class CmsLogger
      */
     public static function var_dump($vars) {
         self::beep();
-        $stacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+        $stacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        $stacktrace_num = 0; if (strpos($stacktrace[0]['file'],__FILE__)!==false) $stacktrace_num = 1;
         self::write(
-            basename($stacktrace[0]['file']).':'.$stacktrace[0]['line'].': '._ls(1).
+            basename($stacktrace[$stacktrace_num]['file']).':'.$stacktrace[$stacktrace_num]['line'].': '._ls(1).
             self::var_dump_export(...func_get_args())._ls().PHP_EOL
         );
     }
@@ -122,9 +123,10 @@ class CmsLogger
      */
     public static function var_log($vars) {
         self::beep();
-        $stacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+        $stacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        $stacktrace_num = 0; if (strpos($stacktrace[0]['file'],__FILE__)!==false) $stacktrace_num = 1;
         self::write(
-            basename($stacktrace[0]['file']).':'.$stacktrace[0]['line'].': '._ls(1).
+            basename($stacktrace[$stacktrace_num]['file']).':'.$stacktrace[$stacktrace_num]['line'].': '._ls(1).
             self::var_log_export(...func_get_args()).PHP_EOL
         );
     }
@@ -222,11 +224,11 @@ class CmsLogger
 
         if ($i>0) return $string;
 
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-        do $caller = array_shift($backtrace); while ($caller && !isset($caller['file']));
-        if ($caller) $string = $caller['file'].':'.$caller['line']."\n".$string;
+//        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+//        do $caller = array_shift($backtrace); while ($caller && !isset($caller['file']));
+//        if ($caller) $string = $caller['file'].':'.$caller['line']."\n".$string;
 
-        $string = preg_replace('/\n\s+\{/',' {',$string);
+        $string = preg_replace('/\n\s*\{/',' {',$string);
         return $string;
     }
 
@@ -241,9 +243,10 @@ class CmsLogger
      */
     public static function var_debug($variable,$strlen=100,$width=25,$depth=1,$i=0,&$objects = array()) {
         self::beep();
-        $stacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+        $stacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        $stacktrace_num = 0; if (strpos($stacktrace[0]['file'],__FILE__)!==false) $stacktrace_num = 1;
         self::write(
-            basename($stacktrace[0]['file']).':'.$stacktrace[0]['line'].': '._ls(1).
+            basename($stacktrace[$stacktrace_num]['file']).':'.$stacktrace[$stacktrace_num]['line'].': '._ls(1).
             self::var_debug_export(...func_get_args()).PHP_EOL
         );
     }
