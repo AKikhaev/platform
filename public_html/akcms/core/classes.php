@@ -191,16 +191,17 @@ class CacheController { /* cache */
  */
 class CacheWholePage {
     public static $cacheThis = false;
+    public static $life=31536000; // 86400*365
 
     /** Cache whole url when $cacheThis is true
      * @param $content
      * @param int $life
      */
-    public static function cacheTry($content,$life=31536000) { // 86400*365
+    public static function cacheTry($content) {
         if (!self::$cacheThis) return;
         global $Cacher;
         $key = $_SERVER['REQUEST_URI'];
-        $Cacher->cache_write($key,$content,$life);
+        $Cacher->cache_write($key,$content,self::$life);
     }
 
     private static function outWholePage() {

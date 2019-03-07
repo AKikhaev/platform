@@ -33,13 +33,31 @@ class sphdb
         return $this->db_conn->affected_rows;
     }
 
+    public function query_all($query)
+    {
+        $sqlres = $this->query($query);
+        $res = $sqlres->fetch_all(MYSQLI_ASSOC);
+        $sqlres->free();
+        return $res;
+    }
+
     function query_one($query)
     {
         $sqlres = $this->query($query);
         if ($sqlres->num_rows > 0) $res = $sqlres->fetch_row()[0]; else $res = false;
-        $sqlres->free_result();
+        $sqlres->free();
         return $res;
     }
+
+    public function query_first($query)
+    {
+        $sqlres = $this->query($query);
+        $res = $sqlres->fetch_assoc();
+        $sqlres->free();
+
+        return $res;
+    }
+
 
     function t($v)
     {

@@ -62,6 +62,7 @@ class CmsLogger
             }
         }
         ksort($data);
+        //self::var_dump__($data);
         self::table($data,['Название','Имя','Значение'],[1=>STR_PAD_LEFT]);
     }
 

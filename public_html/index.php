@@ -1,4 +1,4 @@
-<?php #❶❷❸❹❺❻❼❽❾
+<?php #❶❷❸❹❺❻❼❽❾ ②
 #core::$time_start = microtime(true);
 # error tracking
 try {
@@ -10,7 +10,7 @@ try {
     $pageTemplate = '';
     $site = new site(); //custom storage, loader
 
-    if ($GLOBALS['cfg']['debug']) profiler::showOverallTimeToTerminal(true);
+    //if ($GLOBALS['cfg']['debug']) profiler::showOverallTimeToTerminal(true);
 
     /* @var  $page CmsPage */
     $page = null;
