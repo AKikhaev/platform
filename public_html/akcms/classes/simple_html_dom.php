@@ -155,6 +155,14 @@ class simple_html_dom_node
         $this->children = null;
     }
 
+    function dumpNode(){
+        echo "\n";
+        echo 'text:'.\ParserCLI::trimspaces($this->text())."\n";
+        echo 'inner:'.\ParserCLI::trimspaces($this->innertext())."\n";
+        echo 'outer:'.\ParserCLI::trimspaces($this->outertext())."\n";
+        echo "\n";
+    }
+
     // dump node's tree
     function dump($show_attr=true, $deep=0)
     {
