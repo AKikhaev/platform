@@ -84,11 +84,11 @@ class remainCalc {
             _ls(36). $elapsed_str .
             _ls(37) . $this->str .
             _ls(35) . $num . '/' . $this->count .
-            _ls(32). ' '. floor($speed).'/s' .
+            _ls(32). ' '. number_format($speed,2,'.','').'/s' .
             _ls(33). ' remain: ' . $remain_str .'  ' . _ls(1) . _ls(34) . $msg. _ls(0);
 		if ($num == $this->count || $printLog===1) echo "\n";
 
-        CmsLogger::title(floor($num/$this->count*100)."% $this->str $num/$this->count $remain_str $elapsed_str $msgTitle"); //Заголовок окна
+        CmsLogger::title(number_format($num/$this->count*100,2,'.','')."% $this->str $num/$this->count $remain_str $elapsed_str $msgTitle"); //Заголовок окна
 
         @ob_flush();
         $this->nextPlot = $elapsed+5;
