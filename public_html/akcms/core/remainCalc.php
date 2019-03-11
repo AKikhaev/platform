@@ -88,7 +88,8 @@ class remainCalc {
             _ls(33). ' remain: ' . $remain_str .'  ' . _ls(1) . _ls(34) . $msg. _ls(0);
 		if ($num == $this->count || $printLog===1) echo "\n";
 
-        CmsLogger::title(number_format($num/$this->count*100,2,'.','')."% $this->str $num/$this->count $remain_str $elapsed_str $msgTitle"); //Заголовок окна
+        $percent = str_replace('.','%.',number_format($num/$this->count*100,2,'.',''));
+        CmsLogger::title($percent." $this->str $num/$this->count $remain_str $elapsed_str $msgTitle"); //Заголовок окна
 
         @ob_flush();
         $this->nextPlot = $elapsed+5;
