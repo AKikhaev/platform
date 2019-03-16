@@ -63,10 +63,129 @@ class functs {
         }
         return $value;
     }
+
+    /** Возвращает верную форму слова в соответсвии с правилами русского языка
+     * @param $dgt
+     * @param $f1
+     * @param $f2
+     * @param $f5
+     * @return mixed
+     */
+    static function pluralForm($dgt,$f1,$f2,$f5=null)
+    {
+        if ($f5===null) return $dgt>1 ? $f2 : $f1;
+        if ((int)($dgt%100/10)===1) return $f5;
+        switch ($dgt%10) {
+            case 1:
+                return $f1;
+            case 2: case 3: case 4:
+                return $f2;
+            default:
+            //case 5: case 6: case 7: case 8: case 9: case 0:
+            return $f5;
+        }
+    }
 }
 
 function mb_trim($string, $trim_chars = '\s'){
     return preg_replace('/^['.$trim_chars.']*(?U)(.*)['.$trim_chars.']*$/um', '\\1',$string);
+}
+
+//
+//    Strangely, PHP doesn't have a mb_str_replace multibyte function
+//    As we'll only ever use this function with UTF-8 characters, we can simply "hard-code" the character set
+//
+if (!function_exists('mb_str_replace')) {
+    function mb_str_replace($search, $replace, $subject)
+    {
+        if (is_array($subject)) {
+            $ret = array();
+            foreach ($subject as $key => $val) {
+                $ret[$key] = mb_str_replace($search, $replace, $val);
+            }
+            return $ret;
+        }
+
+        foreach ((array) $search as $key => $s) {
+            if ($s == '' && $s !== 0) {
+                continue;
+            }
+            $r = !is_array($replace) ? $replace : (array_key_exists($key, $replace) ? $replace[$key] : '');
+            $pos = mb_strpos($subject, $s, 0, 'UTF-8');
+            while ($pos !== false) {
+                $subject = mb_substr($subject, 0, $pos, 'UTF-8') . $r . mb_substr($subject, $pos + mb_strlen($s, 'UTF-8'), 65535, 'UTF-8');
+                $pos = mb_strpos($subject, $s, $pos + mb_strlen($r, 'UTF-8'), 'UTF-8');
+            }
+        }
+        return $subject;
+    }
+}
+
+function mb_strpos_all($haystack, $needle) {
+    $s = 0;
+    $i = 0;
+    while(is_int($i)) {
+
+        $i = mb_strpos($haystack, $needle, $s);
+
+        if(is_int($i)) {
+            $aStrPos[] = $i;
+            $s = $i + mb_strlen($needle);
+        }
+    }
+
+    if(isset($aStrPos)) {
+        return $aStrPos;
+    } else {
+        return false;
+    }
+}
+
+if (!function_exists('mb_ucfirst') && extension_loaded('mbstring'))
+{
+    /**
+     * mb_ucfirst - преобразует первый символ в верхний регистр
+     * @param string $str - строка
+     * @param string $encoding - кодировка, по-умолчанию UTF-8
+     * @return string
+     */
+    function mb_ucfirst($str, $encoding='UTF-8')
+    {
+        $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding).
+            mb_substr($str, 1, mb_strlen($str), $encoding);
+        return $str;
+    }
+}
+
+function mb_str_pad($input, $length, $pad_str=' ', $type = STR_PAD_RIGHT)
+{
+    $input_len = mb_strlen($input);
+    if ($length <= $input_len)
+        return $input;
+    $pad_str_len = mb_strlen($pad_str);
+    $pad_len = $length - $input_len;
+    if ($type == STR_PAD_RIGHT)
+    {
+        $repeat_times = ceil($pad_len / $pad_str_len);
+        return mb_substr($input.str_repeat($pad_str, $repeat_times), 0, $length);
+    }
+    if ($type == STR_PAD_LEFT)
+    {
+        $repeat_times = ceil($pad_len / $pad_str_len);
+        return mb_substr(str_repeat($pad_str, $repeat_times), 0, floor($pad_len)).$input;
+    }
+    if ($type == STR_PAD_BOTH)
+    {
+        $pad_len /= 2;
+        $pad_amount_left = floor($pad_len);
+        $pad_amount_right = ceil($pad_len);
+        $repeat_times_left = ceil($pad_amount_left / $pad_str_len);
+        $repeat_times_right = ceil($pad_amount_right / $pad_str_len);
+        $padding_left = mb_substr(str_repeat($pad_str, $repeat_times_left), 0, $pad_amount_left);
+        $padding_right = mb_substr(str_repeat($pad_str, $repeat_times_right), 0, $pad_amount_right);
+        return $padding_left.$input.$padding_right;
+    }
+    trigger_error('utf8_str_pad: Unknown padding type ('.$type.')', E_USER_ERROR);
 }
 
 function makePager($pager_Count, $pager_pgSize, $pager_pgNum, $urlstr, $NoFirstNum=true) {
@@ -355,43 +474,6 @@ function intervalToWordsExact($sec) {
     return implode(' ',$text);
 }
 
-
-function mb_strpos_all($haystack, $needle) {
-    $s = 0;
-    $i = 0;
-    while(is_int($i)) {
-
-        $i = mb_strpos($haystack, $needle, $s);
-
-        if(is_int($i)) {
-            $aStrPos[] = $i;
-            $s = $i + mb_strlen($needle);
-        }
-    }
-
-    if(isset($aStrPos)) {
-        return $aStrPos;
-    } else {
-        return false;
-    }
-}
-
-if (!function_exists('mb_ucfirst') && extension_loaded('mbstring'))
-{
-    /**
-     * mb_ucfirst - преобразует первый символ в верхний регистр
-     * @param string $str - строка
-     * @param string $encoding - кодировка, по-умолчанию UTF-8
-     * @return string
-     */
-    function mb_ucfirst($str, $encoding='UTF-8')
-    {
-        $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding).
-            mb_substr($str, 1, mb_strlen($str), $encoding);
-        return $str;
-    }
-}
-
 /**
  * Возвращает сумму прописью
  * @author runcore
@@ -570,36 +652,6 @@ function getCoordsByAddress($addr)
 	return $result;  
 }
 
-function mb_str_pad($input, $length, $pad_str=' ', $type = STR_PAD_RIGHT)
-{
-    $input_len = mb_strlen($input);
-    if ($length <= $input_len)
-        return $input;
-    $pad_str_len = mb_strlen($pad_str);
-    $pad_len = $length - $input_len;
-    if ($type == STR_PAD_RIGHT)
-    {
-        $repeat_times = ceil($pad_len / $pad_str_len);
-        return mb_substr($input.str_repeat($pad_str, $repeat_times), 0, $length);
-    }
-    if ($type == STR_PAD_LEFT)
-    {
-        $repeat_times = ceil($pad_len / $pad_str_len);
-        return mb_substr(str_repeat($pad_str, $repeat_times), 0, floor($pad_len)).$input;
-    }
-    if ($type == STR_PAD_BOTH)
-    {
-        $pad_len /= 2;
-        $pad_amount_left = floor($pad_len);
-        $pad_amount_right = ceil($pad_len);
-        $repeat_times_left = ceil($pad_amount_left / $pad_str_len);
-        $repeat_times_right = ceil($pad_amount_right / $pad_str_len);
-        $padding_left = mb_substr(str_repeat($pad_str, $repeat_times_left), 0, $pad_amount_left);
-        $padding_right = mb_substr(str_repeat($pad_str, $repeat_times_right), 0, $pad_amount_right);
-        return $padding_left.$input.$padding_right;
-    }
-    trigger_error('utf8_str_pad: Unknown padding type ('.$type.')', E_USER_ERROR);
-}
 
 /** Консоль. Цвет
  *

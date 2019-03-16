@@ -41,6 +41,20 @@ class sphdb
         return $res;
     }
 
+    public function query_all_column($query, $col=0)
+    {
+        $data = [];
+        $sqlres = $this->query($query);
+        if ($sqlres->num_rows == 0) $data = false;
+        else {
+            while ($row = $sqlres->fetch_row()) {
+                $data[] = $row[$col];
+            }
+        }
+        $sqlres->free();
+        return $data;
+    }
+
     function query_one($query)
     {
         $sqlres = $this->query($query);

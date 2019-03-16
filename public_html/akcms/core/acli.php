@@ -8,6 +8,9 @@ require_once('akcms/core/core.php'); LOAD_CORE_CLI();
  * Class cliUnit
  */
 class cliUnit {
+    /**
+     * @var int Не позволяет запускать комманды, количество активных копий которых превышает лимит. 0 - без ограничений
+     */
     protected $concurrentLimit = 0;
     protected $runMethod = 'helpAction';
     protected $options_available = [];

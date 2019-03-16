@@ -40,6 +40,8 @@ function LOAD_CORE_CLI() {
 		set_include_path(str_replace(':',';', get_include_path()));
 	}
 
+    if (file_exists('akcms/u/VisualTheme.php')) { require_once 'akcms/u/VisualTheme.php'; }
+
 	if (!in_array('--silence_greetings',$_SERVER['argv']))
 	    echo (_ls(35)._ls(1).'ITteka CMS'._ls(36).'v'.CMS_VERSION._ls().' ('._ls(33)._ls(1).$cfg['site_domain']._ls().') '._ls(34)._ls(1).'CLI MODE'._ls()."\n");
 }
