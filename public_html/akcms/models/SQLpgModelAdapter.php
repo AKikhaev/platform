@@ -184,6 +184,20 @@ trait SQLpgModelAdapter {
     }
 
     /**
+     * Add new field to query fields
+     * @param string $field
+     */
+    public function fieldAdd(string $field) {
+        if (is_array($this->query_fields)) {
+            $this->query_fields[] = $field;
+        } else if ($this->query_fields==='') {
+            $this->query_fields = $field;
+        } else {
+            $this->query_fields .= ','.$field;
+        }
+    }
+
+    /**
      * Set query from
      *
      * @param array|string $from

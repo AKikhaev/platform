@@ -506,14 +506,16 @@ class FileManager extends PgUnitAbstract {
         if (file_exists($fileTempPath)) {
             $fileName = preg_replace('/\.jpeg$/iu','.jpg',$fileName);
 
-            foreach ($this->get($obj,$objId,$objField) as $file) {
-                if ($file->getFile()==$fileName &&
-                    filesize($file->pathIn())==filesize($fileTempPath) &&
-                    md5_file($file->pathIn())==md5_file($fileTempPath)
-                ) {
-                    unlink($fileTempPath);
-                    $file->isDuplicate = true;
-                    return $file;
+            if ($srvId == 0) { // Temporary. Need cross server operation api
+                foreach ($this->get($obj, $objId, $objField) as $file) {
+                    if ($file->getFile() == $fileName &&
+                        filesize($file->pathIn()) == filesize($fileTempPath) &&
+                        md5_file($file->pathIn()) == md5_file($fileTempPath)
+                    ) {
+                        unlink($fileTempPath);
+                        $file->isDuplicate = true;
+                        return $file;
+                    }
                 }
             }
 

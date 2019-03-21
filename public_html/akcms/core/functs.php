@@ -387,7 +387,7 @@ function assocArray2KeyValue($arr) {
 }
 
 Function GetTruncText($str,$cnt,$p3after = true) // Возвращает часть строки. Обрезает строку
-												//  до указанной длины или меньlе по последнему слову
+												//  до указанной длины или меньше по последнему слову
 {
 	if (mb_strlen($str)<=$cnt) return $str;
 	$str = mb_substr($str,0,$cnt);

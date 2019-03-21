@@ -1,7 +1,7 @@
 <?php
 
 /** Makes key value dictionary from any table with primary key
- * Class tableDictionary
+ * Class tableKeyValueDictionary
  */
 class tableKeyValueDictionary{
     protected $data = [];
@@ -10,8 +10,7 @@ class tableKeyValueDictionary{
      * @param cmsModelAbstract $table
      * table object
      * @param $textField
-     * text field name as in object
-     * @throws DBException
+     * returned text field name as in object
      */
     public function __construct(cmsModelAbstract $table,$textField)
     {
@@ -42,7 +41,7 @@ class tableKeyData {
         }
     }
 
-    /** returns value associated with key or just key
+    /** returns array data value associated with key or just key
      * @param $key
      * @return mixed
      */

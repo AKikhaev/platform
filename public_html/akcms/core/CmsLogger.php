@@ -326,7 +326,7 @@ class CmsLogger
      * @param null $terminal
      * @return bool
      */
-    public static function writeLn($data, $terminal=null){ return self::write($data.PHP_EOL, $terminal); }
+    public static function writeLn($data='', $terminal=null){ return self::write($data.PHP_EOL, $terminal); }
 
     /**
      * Выдает в лог последовательность очистки окна терминала и прокрутки
