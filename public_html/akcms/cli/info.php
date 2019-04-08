@@ -64,4 +64,12 @@ ORDER BY bytes DESC
         } else CmsLogger::logError("Таблицы не найдены");
     }
 
+    /** Writes unix time as readable text
+     * @param $time
+     * @throws Exception
+     */
+    public function timeToStringAction($time){
+        CmsLogger::writeLn(date('c',$time));
+    }
+
 }
