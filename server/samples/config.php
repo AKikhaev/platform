@@ -17,6 +17,7 @@ $cfg['default_timezone'] = 'Europe/Moscow';
 $cfg['site_cookies_expire'] = time()*20*365*24*60*60;
 $cfg['site_session_name'] = 'aks';
 $cfg['site_session_name_qr'] = 'akq';
+$cfg['site_session_parameters'] = [];
 $cfg['ga_account'] = 'UA-XXXXXX-XX';											                ###
 #$cfg['liveinternet_account'] = 'beside.ru';									                ###
 $cfg['imagespath'] = 's/images/';
