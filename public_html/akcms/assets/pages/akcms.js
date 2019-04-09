@@ -99,7 +99,29 @@ _akcms.getURLParameter = function(name,url) {
     if (url===undefined) { url = window.location.search; }
     var match = RegExp("[?&]" + name + "=([^&]*)").exec(url);
     return match && decodeURIComponent(match[1].replace(/\+/g, " "));
-}
+};
+_akcms.UrlParameters = function(_url){
+    var initUrlVars = function(_url) {
+        var vars = {};
+        if (_url===undefined) { _url = window.location.href; }
+        var parts = _url.replace(/[?&]+([^=&]+)=([^&]*)/gi,
+            function(m,key,value) {
+                vars[key] = decodeURIComponent(value.replace(/\+/g, " "));
+            });
+        return vars;
+    };
+    var UrlVars = initUrlVars(_url);
+    this.getAll = function(){ return UrlVars; };
+    this.set = function(name,value) {  UrlVars[name] = value; };
+    this.unset = function(name) {  delete UrlVars[name]; };
+    this.url = function(){ return $.param(UrlVars); };
+};
+/**
+ * Create FileUploader object
+ * @param container
+ * @param options
+ * @constructor
+ */
 _akcms.FileUploader = function(container,options){
     var _this = this,filesUpload = [];
     if (typeof container === "string") { container = $(container); }
@@ -276,7 +298,7 @@ _akcms.FileUploader = function(container,options){
         }];
         addEvents(itemDiv,itemData);
         return itemDiv;
-    }
+    };
 
     this.getServerFiles = function() {
         $.ajax({

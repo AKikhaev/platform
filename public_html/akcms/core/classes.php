@@ -474,9 +474,9 @@ class CmsUser {
     }
 
     public static function init() {
-        global $sql;
+        global $cfg,$sql;
         if (isset($_COOKIE[session_name()])) {
-            session_start();
+            session_start($cfg['site_session_parameters']);
             if (isset($_SESSION['u']) && isset($_SESSION['ip'])) {
                 if (self::$preventIpChange && $_SESSION['ip'] != $_SERVER['REMOTE_ADDR']) CmsUser::logout();
                 else {
