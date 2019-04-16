@@ -116,6 +116,87 @@ _akcms.UrlParameters = function(_url){
     this.unset = function(name) {  delete UrlVars[name]; };
     this.url = function(){ return $.param(UrlVars); };
 };
+_akcms.cart = function(){
+    var cartData = {};
+    var load = function(){
+        cartData = {};
+        var text = _akcms.cookie.get("cart");
+        if (text === null) { return {}; }
+        var items = text.split("|");
+        jQuery.each(items,function(i,item){
+            var values = item.split(":");
+            var id = values.shift();
+            var quantity  = values.shift();
+            cartData[id] = {
+                id:id,
+                quantity:quantity,
+                data:values
+            };
+        });
+    };
+    var save = function(){
+        var items = [];
+        jQuery.each(cartData,function (i,item) {
+            var el = item.data;
+            el.unshift(item.quantity);
+            el.unshift(item.id);
+            items.push(el.join(":"));
+        });
+        var text = items.join("|");
+        _akcms.cookie.set("cart",text,24*31);
+    };
+    this.getAll = function(){
+        load();
+        return cartData;
+    };
+    this.add =  function(id,quantity,data){
+        load();
+        if (quantity===undefined) { quantity = 1; }
+        if (data===undefined) { data = []; }
+        if (cartData[id]===undefined) {
+            cartData[id] = {
+                id: id,
+                quantity: quantity,
+                data: []
+            };
+        }
+        else {
+            cartData[id].data = data;
+        }
+        save();
+    };
+    this.updateQuanity = function(id,quantity){
+        load();
+        if (cartData[id]!==undefined) {
+            cartData[id].quantity = quantity;
+            save();
+            return cartData[id].quantity;
+        }
+    };
+    this.plusQuantity = function(id){
+        load();
+        if (cartData[id]!==undefined) {
+            cartData[id].quantity = parseInt(cartData[id].quantity,10) + 1;
+            save();
+            return cartData[id];
+        }
+    };
+    this.minusQuantity = function(id){
+        load();
+        if (cartData[id]!==undefined) {
+            if (cartData[id].quantity > 1) {
+                cartData[id].quantity = parseInt(cartData[id].quantity, 10) - 1;
+                save();
+            }
+            return cartData[id];
+        }
+    };
+    this.remove = function(id){
+        load();
+        delete cartData[id];
+        save();
+    };
+};
 /**
  * Create FileUploader object
  * @param container

@@ -1,4 +1,4 @@
-<?php #❶❷❸❹❺❻❼❽❾ ②
+<?php #❶❷❸❹❺❻❼❽❾ ② ₽
 #core::$time_start = microtime(true);
 # error tracking
 try {
