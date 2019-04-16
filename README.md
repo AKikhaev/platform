@@ -235,6 +235,15 @@ _ph_text_trunc:
                 2 - двойные
     * $cnt    - Длина строки 
 ```
+##### Переодические задачи CRON
+```bash
+# m h dom mon dow command
+  6 2   *   *   * /backups/backup.sh a
+  5 2   *   *   1 php /data/nfs/project_name/server/acme/v1/certs.php && service nginx restart
+  5 *   *   *   * php /data/nfs/knpzken_ru/public_html/akcms/core/acli.php jobs diskSize
+  1 1   1   *   * wget -O /etc/ssl/certs/cacert.pem https://curl.haxx.se/ca/cacert.pem
+  truncate -s   0 /data/nfs/*/logs/*.log - очистка всех логов во всех проектах
+```
 
 ##### Важно знать
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo), [Markdown-Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
@@ -258,9 +267,6 @@ _ph_text_trunc:
 * [Оптимизация](https://github.com/jupeter/clean-code-php), 
   [по-русски](https://github.com/peter-gribanov/clean-code-php)
 * [auto deploy](https://gist.github.com/noelboss/3fe13927025b89757f8fb12e9066f2fa#file-post-receive)
-
-##### Задачи для CRON 
-* truncate -s 0 /data/nfs/*/logs/*.log - очистка всех логов во всех проектах
 
 #### useful
 * acli getStarted nginx && service nginx configtest && service nginx reload

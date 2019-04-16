@@ -6,11 +6,6 @@
 class info extends cliUnit {
     //protected $options_available = ['-bash_completion','--silence_greetings'];
 
-    public function __construct()
-    {
-        if(PHP_SAPI!=='cli')die('<!-- not allowed -->');
-    }
-
     /** About page by ID
      * @param null $id
      * @throws DBException
@@ -28,7 +23,7 @@ class info extends cliUnit {
     /** Tables size
      * @param string $filter
      */
-    public function postgreSizeAction($filter = '%.%'){
+    public function postgresSizeAction($filter = '%.%'){
         global $sql,$cfg;
         if (mb_strpos($filter,'.')===false) $filter = $cfg['db'][1]['schema'].'.'.$filter;
         $filter = str_replace('*','%',$filter);
