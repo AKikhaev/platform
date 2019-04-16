@@ -92,6 +92,29 @@ _akcms.cookie = {
         this.set(name, "", -10);
     }
 };
+/**
+ * callback(e), e: newValue,oldValue,url
+ *
+ * @type {{onMessageReload: _akcms.tabMessage.onMessageReload, onMessage: _akcms.tabMessage.onMessage, send: _akcms.tabMessage.send}}
+ */
+_akcms.tabMessage = {
+    send:function(key,message) {
+        if (message===undefined) {
+            message = (new Date()).getTime();
+        }
+        localStorage.setItem("tab_"+key,message);
+    },
+    onMessage:function(key,callback){
+        window.addEventListener("storage", function (e) { if (e.key === "tab_"+key) {
+            callback(e);
+        } }, false);
+    },
+    onMessageReload:function(key){
+        _akcms.tabMessage.onMessage(key,function () {
+            document.location.reload();
+        });
+    }
+};
 _akcms.replaceAll = function(str, find, replace) {
     return str.replace(new RegExp(find, "g"), replace);
 };
