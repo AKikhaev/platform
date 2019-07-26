@@ -811,10 +811,11 @@ function _getUrlContent(
         'headers_len'   => $headers_len,
         'time_start'    => $time_start,
         'time_duration' => microtime(true)-$time_start,
-        'data'          => substr($output, $headers_len),
-        'error_no'         => curl_getinfo($ch,CURLINFO_OS_ERRNO)
+        'data'          => substr($output, $headers_len)
+        //'error_no'      => curl_getinfo($ch,CURLINFO_OS_ERRNO)
     );
     if (empty($output)) {
+        $res['error_no'] = curl_getinfo($ch,CURLINFO_OS_ERRNO);
         $res['error'] = curl_error($ch);
     }
     curl_close($ch);
