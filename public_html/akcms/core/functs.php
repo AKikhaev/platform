@@ -748,7 +748,7 @@ function _getUrlContent(
 
     $res = '';
     $headers = array(
-        'User-Agent'=>'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0',
+        'User-Agent'=>'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0',
         'Accept'=>'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language'=>'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
         'Accept-Encoding'=>'gzip, deflate',
@@ -777,6 +777,8 @@ function _getUrlContent(
         //CURLOPT_SSL_VERIFYHOST => 2,
         //CURLOPT_CAINFO => '_scripts/thawtePrimaryRootCA.crt',
         CURLINFO_HEADER_OUT => true,
+        CURLOPT_CONNECTTIMEOUT => 30,
+        CURLOPT_TIMEOUT => 90
     ));
     if ($proxy!==false) {
         curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
@@ -809,8 +811,12 @@ function _getUrlContent(
         'headers_len'   => $headers_len,
         'time_start'    => $time_start,
         'time_duration' => microtime(true)-$time_start,
-        'data'          => substr($output, $headers_len)
+        'data'          => substr($output, $headers_len),
+        'error_no'         => curl_getinfo($ch,CURLINFO_OS_ERRNO)
     );
+    if (empty($output)) {
+        $res['error'] = curl_error($ch);
+    }
     curl_close($ch);
     if (count($GET)>0) $res['get'] = $GET;
     if (count($POST)>0) {

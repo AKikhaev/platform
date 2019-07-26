@@ -98,9 +98,14 @@ _akcms.cookie = {
  * @type {{onMessageReload: _akcms.tabMessage.onMessageReload, onMessage: _akcms.tabMessage.onMessage, send: _akcms.tabMessage.send}}
  */
 _akcms.tabMessage = {
+    time:null,
+    init:function(){
+        _akcms.tabMessage.time = new Date().toISOString();
+    },
     send:function(key,message) {
         if (message===undefined) {
-            message = (new Date()).getTime();
+            if (_akcms.tabMessage.time==null) { _akcms.tabMessage.init(); }
+            message = _akcms.tabMessage.time;
         }
         localStorage.setItem("tab_"+key,message);
     },
@@ -110,8 +115,11 @@ _akcms.tabMessage = {
         } }, false);
     },
     onMessageReload:function(key){
-        _akcms.tabMessage.onMessage(key,function () {
-            document.location.reload();
+        if (_akcms.tabMessage.time == null) { _akcms.tabMessage.init(); }
+        _akcms.tabMessage.onMessage(key,function (e) {
+            if (e.newValue !== _akcms.tabMessage.time) {
+                document.location.reload();
+            }
         });
     }
 };

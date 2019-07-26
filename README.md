@@ -65,6 +65,8 @@ pg_restore -d database_name -x -O -v --role=user_name /data/nfs/project_name/ser
 ```bash
 adduser --system --no-create-home --group www-user
 adduser mstr
+sudo usermod -a -G www-user mstr
+id mstr
 
 ## prepare project deploy
 mkdir -p /data/nfs
