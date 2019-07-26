@@ -259,7 +259,6 @@ _ph_text_trunc:
 * Прикрепляемые файлы
 * Отмечать не активные разделы при редактировании заголовков в режиме редактирования. 
   Отобразить инструмент включения отключения перед `{#ed:namefull:l#}` 
-* Права на редактирование разделов, подразделов
 * Создание подстраниц с панели кнопкой +
 * Редактирование параметров раздела с панели
 * Ускорить загрузку TinyMce
@@ -269,6 +268,15 @@ _ph_text_trunc:
 * [Оптимизация](https://github.com/jupeter/clean-code-php), 
   [по-русски](https://github.com/peter-gribanov/clean-code-php)
 * [auto deploy](https://gist.github.com/noelboss/3fe13927025b89757f8fb12e9066f2fa#file-post-receive)
+
+##### Used libraries
+* https://github.com/paquettg/php-html-parser
+* https://github.com/sunra/php-simple-html-dom-parser sometimes returns nothing
+* https://github.com/PHPMailer/PHPMailer/ use CmsMailer
+* https://github.com/MAXakaWIZARD/phpmorphy/ use phpMorphyAdapter
+* https://github.com/t0k4rt/phpqrcode
+* https://github.com/mmucklo/inflect
+* https://github.com/ccampbell/chromephp
 
 #### useful
 * acli getStarted nginx && service nginx configtest && service nginx reload
