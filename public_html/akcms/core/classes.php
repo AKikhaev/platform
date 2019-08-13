@@ -161,7 +161,27 @@ class CacheController { /* cache */
 		}
 		return false;
 	}
-	
+
+	public function cache_read_metadata($key) {
+        $ipath = $this->getPath($key);
+        $dump = file_exists($ipath)?file_get_contents($ipath):false;
+		if ($dump!==false) {
+			$c_obj = unserialize($dump);
+            $c_obj['key'] = $key;
+            $c_obj['u'] = VisualTheme::dateRus('j F E в H:i',$c_obj['u']);
+            $c_obj['file_crt'] = VisualTheme::dateRus('j F E в H:i',filectime($ipath));
+            $c_obj['file_mdf'] = VisualTheme::dateRus('j F E в H:i',filemtime($ipath));
+            $c_obj['file_usr'] = posix_getpwuid(fileowner($ipath))['name'];
+            $c_obj['file_usr_id'] = fileowner($ipath);
+            $c_obj['file_grp'] = posix_getgrgid(filegroup($ipath))['name'];
+            $c_obj['file_grp_id'] = filegroup($ipath);
+            $c_obj['data_size'] = functs::prettySize(strlen($c_obj['d']));
+            $c_obj['file_size'] = functs::prettySize(filesize($ipath));
+            return $c_obj;
+		}
+		return null;
+	}
+
 	public function cache_read_drop($key, &$val) {
 		$f = $this->cache_read($key,$val);
 		if ($f) $this->cache_drop($key);

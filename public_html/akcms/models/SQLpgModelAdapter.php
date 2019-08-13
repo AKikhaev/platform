@@ -226,6 +226,7 @@ trait SQLpgModelAdapter {
      *
      * instanceof cmsModelAbstract
      *
+     * @url https://postgrespro.ru/docs/postgrespro/11/functions-array
      * @param array $where
      * @param string $concatSQL ' AND '
      * @return string
@@ -266,7 +267,7 @@ trait SQLpgModelAdapter {
             // [where] AND [where] AND [...] | set of and wheres
             $f = [];
             foreach ($where as $w) {
-                $f[] = $this->_where($w);
+                $f[] = $this->_where($w,$concatSQL);
             }
             $where = implode($concatSQL, $f);
             return $where;
@@ -301,6 +302,10 @@ trait SQLpgModelAdapter {
      *
      * field = value
      *
+     * field IN (values)
+     *
+     * field !IN (values)
+     *
      * field =ANY [values]
      *
      * field BETWEEN 1 2
@@ -309,8 +314,27 @@ trait SQLpgModelAdapter {
      *
      * id
      *
+     * Оператор	Описание
+     *
+     * =	равно
+     *
+     * <	меньше
+     *
+     * \>	больше
+     *
+     * <=	меньше или равно
+     *
+     * \>=	больше или равно
+     *
+     * @>	содержит
+     *
+     * <@	содержится в
+     *
+     * &&	пересечение (есть общие элементы)
+     *
      * instanceof cmsModelAbstract
      *
+     * @link https://postgrespro.ru/docs/postgrespro/11/functions-array
      * @param array|string|int $where id value may be only int. Otherwise go another way
      * @return $this|$this[]
      * @throws DBException
@@ -337,11 +361,13 @@ trait SQLpgModelAdapter {
      *
      * instanceof cmsModelAbstract
      *
+     * @link https://postgrespro.ru/docs/postgrespro/11/functions-array
      * @param array $where
      * @return $this|$this[]
      * @throws DBException
      */
     public function and_($where = []) {
+        if ($where===[]) return $this;
         $this->query = '!';
         $where = $this->_where(func_get_args());
         $this->query_where .= ' AND ('.$where.')';
@@ -363,11 +389,13 @@ trait SQLpgModelAdapter {
      *
      * instanceof cmsModelAbstract
      *
+     * @link https://postgrespro.ru/docs/postgrespro/11/functions-array
      * @param array $where
      * @return $this|$this[]
      * @throws DBException
      */
     public function andNot_($where = []) {
+        if ($where===[]) return $this;
         $this->query = '!';
         $where = $this->_where(func_get_args());
         $this->query_where .= ' AND NOT('.$where.')';
@@ -389,11 +417,13 @@ trait SQLpgModelAdapter {
      *
      * instanceof cmsModelAbstract
      *
+     * @link https://postgrespro.ru/docs/postgrespro/11/functions-array
      * @param array $where
      * @return $this|$this[]
      * @throws DBException
      */
     public function andOrs_($where = []) {
+        if ($where===[]) return $this;
         $this->query = '!';
         $where = $this->_where(func_get_args(),' OR ');
         $this->query_where .= ' AND ('.$where.')';
@@ -415,11 +445,13 @@ trait SQLpgModelAdapter {
      *
      * instanceof cmsModelAbstract
      *
+     * @link https://postgrespro.ru/docs/postgrespro/11/functions-array
      * @param array $where
      * @return $this|$this[]
      * @throws DBException
      */
     public function or_($where = []) {
+        if ($where===[]) return $this;
         $this->query = '!';
         $where = $this->_where(func_get_args());
         $this->query_where .= ' OR ('.$where.')';

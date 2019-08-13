@@ -68,9 +68,10 @@ class CmsLogger
 
     /**
      * Текстовое форматированное представление переданных переменных любого типа
+     * @param $vars
      * @return false|null|string|string[]
      */
-    public static function var_dump_export() {
+    public static function var_dump_export($vars) {
         ob_start();
         var_dump(...func_get_args()); $printVar = ob_get_contents();
         ob_end_clean();
@@ -81,7 +82,7 @@ class CmsLogger
     }
 
     /**
-     * Вывод переменной в лог (var_dump)
+     * Вывод переменной в лог (var_dump) c файлом и строкой
      * @param $vars
      */
     public static function var_dump($vars) {
@@ -95,9 +96,9 @@ class CmsLogger
     }
     /**
      * Вывод переменной в лог (var_dump) и останов
-     * @param $var
+     * @param $vars
      */
-    public static function var_dump__($var) {
+    public static function var_dump__($vars) {
         self::var_dump(...func_get_args());
         exit();
     }
@@ -119,7 +120,7 @@ class CmsLogger
         return $printVar;
     }
     /**
-     * Вывод переменной в лог (print_r)
+     * Вывод переменной в лог (print_r) c файлом и строкой
      * @param $vars
      */
     public static function var_log($vars) {
@@ -133,9 +134,9 @@ class CmsLogger
     }
     /**
      * Вывод переменной в лог (print_r) и останов
-     * @param $var
+     * @param $vars
      */
-    public static function var_log__($var) {
+    public static function var_log__($vars) {
         self::var_log(...func_get_args());
         exit();
     }

@@ -291,25 +291,40 @@ class pgdb {
     public function dtFromDateTime(DateTime $v) {return $this->t($v->format('Y-m-d H:i:s T'));}
     public function dtFromInt($v) {return $this->t( date('Y-m-d H:i:s T',$v));}
 
-    /* array of text */
+    /*** array to base text array
+     * @param $v
+     * @return string
+     */
     function a_t($v) {
         foreach ($v as &$i) $i = '\''.pg_escape_string($i).'\'';
         return 'ARRAY['.implode(',',$v).']::text[]';
     }
 
-    /* array of digit */
+    /*** array to base int array
+     * @param $v
+     * @return string
+     */
     public function a_d($v) {return $this->pgf_array_int($v);}
 
-    /* digital array to array */
+    /*** base array to normal array
+     * @param $v
+     * @return array
+     */
     public function da_a($v) {
         $v = str_replace(['{','}','ARRAY[',']'],'',$v);
         return $v==''?array():explode(',',$v);
     }
 
-    /* array of float */
+    /*** array to base float array
+     * @param $v
+     * @return string
+     */
     public function a_f($v) {return $this->pgf_array_float($v);}
 
-    /* text array to array */
+    /*** text array to array
+     * @param $v
+     * @return array
+     */
     function at_a($v)
     {
         $v = trim($v,'{}');
