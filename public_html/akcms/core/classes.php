@@ -177,6 +177,8 @@ class CacheController { /* cache */
             $c_obj['file_grp_id'] = filegroup($ipath);
             $c_obj['data_size'] = functs::prettySize(strlen($c_obj['d']));
             $c_obj['file_size'] = functs::prettySize(filesize($ipath));
+            $c_obj['file_path'] = $ipath;
+            $c_obj['file_perm'] = sprintf('%o',fileperms($ipath));
             return $c_obj;
 		}
 		return null;
