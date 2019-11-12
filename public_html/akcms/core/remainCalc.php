@@ -36,7 +36,7 @@ class remainCalc {
         if (is_numeric($count)) $count_value = $count;
 
         if ($count_value == 0)
-            echo 'count=0, ' . $str . "\n";
+            echo 'count=0! Remain approximating impossible! ' . $str . "\n";
         $this->count = $count_value;
         $this->skip=$skip;
         $this->value = $skip;

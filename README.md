@@ -73,11 +73,12 @@ id mstr
 mkdir -p /data/nfs
 chmod 0777 /data/nfs
 su mstr
+git config --global credential.helper store
 git clone --bare https://itteka_deploy@bitbucket.org/itteka/cms.git /home/mstr/cms.git
-read -p "Enter project name: " project_name; git --git-dir=/home/mstr/cms.git worktree add /data/nfs/$project_name
+read -p "Enter project name: " project_name; git --git-dir=/home/mstr/cms.git worktree add /data/nfs/$project_name; cd /data/nfs/$project_name; 
 #exit
 chmod 0755 /data/nfs
-sh server/initRootDir.sh
+bash server/initRootDir.sh
 ##
 
 ### connect as mstr  ###

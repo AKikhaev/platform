@@ -566,9 +566,10 @@ class FileManager extends PgUnitAbstract {
 
     /** Lazy initialization from path build ready parameters without any queries
      * @param $id
-     * @param string $fileExt
      * @param int $srvId
+     * @param string $fileExt
      * @return FileManagerItem
+     * @throws DBException
      */
     static public function getLazy($id,$srvId = 0,$fileExt='jpg') {
         $fmi = new FileManagerItem();
@@ -581,10 +582,11 @@ class FileManager extends PgUnitAbstract {
 
     /**
      * @param $id
-     * @param int $srvId
      * @param string $prePath
+     * @param int $srvId
      * @param string $fileExt
      * @return string
+     * @throws DBException
      */
     static public function getLazyPreview($id,$prePath = 'o',$srvId = 0,$fileExt='jpg') {
         $fmi = new FileManagerItem();
