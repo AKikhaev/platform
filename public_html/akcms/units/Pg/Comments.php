@@ -115,7 +115,7 @@ class Pg_Comments extends PgUnitAbstract {
 			
 			$qpart = 'from cms_comments where cmnt_sec_id='.$page->page['section_id'].($editMode?'':' and cmnt_enabled');
 			$query = 'select count(*) as totalrecords '.$qpart;
-			$totalset = $sql->query_first_assoc($query); $countRecords = $totalset['totalrecords'];
+			$totalset = $sql->query_first($query); $countRecords = $totalset['totalrecords'];
 			$query = sprintf ('select * '.$qpart.' order by cmnt_date desc');
 			$query = sprintf ($query.' LIMIT %d OFFSET (%d-1)*%d;',
 				$pgSize,

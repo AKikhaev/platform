@@ -81,11 +81,11 @@ final class PageUnit extends CmsPage {
 		$query = sprintf ('select *,now()>sec_from as sec_from_showing from cms_sections where %s ilike sec_url_full || %s order by length(sec_url_full) desc limit 1;',
 			$sql->t($pathstr_str),
 			"'%'");
-		$this->page = $sql->query_first_assoc($query);
+		$this->page = $sql->query_first($query);
 		//($loadAnyway?'':'and sec_enabled and now()>sec_from')
 
 		// Добавляем в список разрешений всех родителей и себя
-        foreach ($sql->da_a($this->page['sec_ids_closest']) as $id) {
+        foreach ($sql->ad_a($this->page['sec_ids_closest']) as $id) {
             $this->acl[] = 'pg'.$id;
         }
 
@@ -103,7 +103,7 @@ final class PageUnit extends CmsPage {
 		{
 			$query = sprintf ('select * from cms_sections where sec_parent_id=%d '.($loadAnyway?'':'and sec_enabled and now()>sec_from').' order by sec_sort limit 1;', 
 			$this->page['section_id']);
-			$pagenew = $sql->query_first_assoc($query);
+			$pagenew = $sql->query_first($query);
 			
 			if ($pagenew===false)$this->page['sec_content']='Нет дочерних страниц!';
 				else $this->page = $pagenew;
@@ -207,6 +207,11 @@ final class PageUnit extends CmsPage {
 		return $base_forms;
 	}
 
+    /**
+     * @param bool $indxpage
+     * @return bool|mixed|string
+     * @throws DBException
+     */
 	public function reindex($indxpage = false)
 	{
 	    return 't';//////
@@ -221,8 +226,8 @@ final class PageUnit extends CmsPage {
 			$indxpage['section_id'],
 			$sql->pgf_array_text($base_forms)
 		);
-		$res=$sql->query_fr($query);
-		return $res[0]; //'t':'f'
+		$res=$sql->query_one($query);
+		return $res; //'t':'f'
 	}
 
 	//Gallery
@@ -329,7 +334,7 @@ final class PageUnit extends CmsPage {
 		if (count($checkResult)==0) {
 			$query = sprintf ('SELECT __cms_sections__up(%d) as res;', 
 				$_POST['section_id']);
-			$dataset = $sql->query_first_assoc($query);
+			$dataset = $sql->query_first($query);
 			return json_encode($dataset['res']);
 		} 
 		return json_encode(array('error'=>$checkResult));
@@ -344,7 +349,7 @@ final class PageUnit extends CmsPage {
 		if (count($checkResult)==0) {
 			$query = sprintf ('SELECT __cms_sections__top(%d) as res;', 
 				$_POST['section_id']);
-			$dataset = $sql->query_first_assoc($query);
+			$dataset = $sql->query_first($query);
 			return json_encode($dataset['res']);
 		} 
 		return json_encode(array('error'=>$checkResult));
@@ -359,7 +364,7 @@ final class PageUnit extends CmsPage {
 		if (count($checkResult)==0) {
 			$query = sprintf ('SELECT __cms_sections__down(%d) as res;', 
 				$_POST['section_id']);
-			$dataset = $sql->query_first_assoc($query);
+			$dataset = $sql->query_first($query);
 			return json_encode($dataset['res']);
 		} 
 		return json_encode(array('error'=>$checkResult));
@@ -374,7 +379,7 @@ final class PageUnit extends CmsPage {
 		if (count($checkResult)==0) {
 			$query = sprintf ('SELECT __cms_sections__bttm(%d) as res;', 
 				$_POST['section_id']);
-			$dataset = $sql->query_first_assoc($query);
+			$dataset = $sql->query_first($query);
 			return json_encode($dataset['res']);
 		} 
 		return json_encode(array('error'=>$checkResult));
@@ -574,7 +579,7 @@ final class PageUnit extends CmsPage {
 
             $res = false;
 			try {
-                $res = @$sql->query_fa($query);
+                $res = @$sql->query_first($query);
 			} catch (DBException $e) {
 				if ($e->isDuplicate)
 					$checkResult[] = array('f'=>'sec_url','s'=>'Это url уже занято');
@@ -774,12 +779,12 @@ final class PageUnit extends CmsPage {
 		if (count($checkResult)==0) {
 			$query = sprintf ('select count(*) as sec_count from cms_sections where sec_parent_id=%d;', 
 			$_POST['section_id']);
-			$dataset = $sql->query_first_assoc($query);
+			$dataset = $sql->query_first($query);
 			if ($dataset['sec_count']>0) $checkResult[] = array('f'=>'dpndc','s'=>'haschild');
 
 			$query = sprintf ('select count(*) as sec_count from cms_sections where section_id=%d and sec_units<>\'\';', 
 			$_POST['section_id']);
-			$dataset = $sql->query_first_assoc($query);
+			$dataset = $sql->query_first($query);
 			if ($dataset['sec_count']>0) $checkResult[] = array('f'=>'dpndc','s'=>'hasunits');			
 		}
 		if (count($checkResult)==0) {

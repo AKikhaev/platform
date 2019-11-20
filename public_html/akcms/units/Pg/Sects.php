@@ -53,7 +53,7 @@ class Pg_Sects extends PgUnitAbstract {
 			
 			$query_whr = $editMode?'':'sec_enabled and sec_to_news and';
 			$query = 'select count(*) as totalrecords from cms_sections where '.$query_whr.' sec_content<>\'\'';
-			$totalset = $sql->query_first_assoc($query); $countRecords = $totalset['totalrecords'];
+			$totalset = $sql->query_first($query); $countRecords = $totalset['totalrecords'];
 			$query = sprintf ('select section_id,sec_url_full,sec_enabled,sec_to_news,sec_created,sec_namefull,sec_contshort,sec_content from cms_sections where '.$query_whr.' sec_content<>\'\' order by sec_created desc LIMIT %d OFFSET (%d-1)*%d;',
 				$pgSize,
 				$pgNum,

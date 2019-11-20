@@ -12,8 +12,8 @@ require_once 'akcms/core/classes.php'; core::init();
 //if ($cfg['debug']===true) profiler::showOverallTimeToTerminal();
 //if ($cfg['debug']===true) CmsLogger::write('===>>> '.$_SERVER['SCRIPT_URL']);
 
-$sql = new pgdb();
-$sphql = new sphdb();
+$sql = new pgDB();
+$sphql = new sphDB();
 $Cacher = new CacheController();
 $shape = ['js_admin'=>''];
 

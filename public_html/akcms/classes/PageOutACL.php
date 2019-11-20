@@ -20,7 +20,7 @@ class PageOutACL extends AclProcessor
     {
         global $sql;
         if (isset($pageData['sec_ids_closest']))
-            foreach ($sql->da_a($pageData['sec_ids_closest']) as $id) {
+            foreach ($sql->ad_a($pageData['sec_ids_closest']) as $id) {
                 $this->acl[] = 'pg'.$id;
             }
 

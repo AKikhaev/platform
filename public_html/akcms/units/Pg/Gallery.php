@@ -65,7 +65,7 @@ class Pg_Gallery extends PgUnitAbstract {
 		global $sql;
 		$res = array('p'=>array());
 		$query = 'SELECT z.* FROM cms_galeries z WHERE z.id_glr=(SELECT a.id_glr FROM cms_galeries a inner join cms_gallery_photos b on (a.id_glr=b.cgp_glr_id) where a.glr_enabled and b.cgp_enabled group by a.glr_sort,a.id_glr HAVING count(*)>3 order by a.glr_sort desc LIMIT 1)';
-		$gallery = $sql->query_first_assoc($query);
+		$gallery = $sql->query_first($query);
 		if ($gallery!==false) {
 			$query = sprintf ('select cgp_name,cgp_file from cms_gallery_photos where cgp_enabled and cgp_glr_id=%d', 
 			$gallery['id_glr']);
@@ -106,7 +106,7 @@ class Pg_Gallery extends PgUnitAbstract {
 		{
 			$query = sprintf('SELECT glr_sys FROM cms_galeries WHERE id_glr = %d;',
 				$_POST['id_glr']);
-			$glrSys = $sql->query_first_assoc($query);
+			$glrSys = $sql->query_first($query);
 			if ($glrSys===false || ($glrSys!==false?$glrSys['glr_sys'] === 'f':false)) {
 				$query = sprintf ('SELECT cgp_file as file FROM cms_gallery_photos WHERE cgp_glr_id = %d;',
 				$_POST['id_glr']);
@@ -687,7 +687,7 @@ class Pg_Gallery extends PgUnitAbstract {
 			$pgSize = 12;
 			$query_where = $editMode?(isset($this->Injected)?'where glr_sec_id='.$page->page['section_id']:''):'where glr_enabled and not glr_sys and glr_file<>\'\''.(isset($this->Injected)?' and glr_sec_id='.$page->page['section_id']:'');
 			$query = 'select count(*) as totalrecords from cms_galeries '.$query_where;
-			$totalset = $sql->query_first_assoc($query); $countRecords = $totalset['totalrecords'];
+			$totalset = $sql->query_first($query); $countRecords = $totalset['totalrecords'];
 			$query = sprintf ('select * from cms_galeries '.$query_where.' order by glr_sort desc LIMIT %d OFFSET (%d-1)*%d;',
 				$pgSize,
 				$pgNum,

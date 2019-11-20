@@ -303,9 +303,9 @@ class CmsUser {
         global $sql;
         $query = sprintf('select '.self::$fields.' from cms_users where %s = %s and usr_password_md5 = %s and usr_enabled and usr_activated limit 1;',
 			$emailInsteadLogin ? 'usr_email' : 'usr_login',
-            $sql->pgf_text($loginOrEmail),
-            $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$password)));
-        $datausr = $sql->query_first_assoc($query);
+            $sql->t($loginOrEmail),
+            $sql->t(md5($GLOBALS['cfg']['usrprepass'].$password)));
+        $datausr = $sql->query_first($query);
         if ($datausr!==false){
             $user = new modelCmsUsers($datausr['id_usr']);
             $user->usrLastLogin = VisualTheme::dateRus('c',time());
@@ -318,9 +318,9 @@ class CmsUser {
     public static function authAuto($login,$autohash) {
         global $sql;
         $query = sprintf('select '.self::$fields.' from cms_users where usr_login = %s and usr_autohash = %s and usr_enabled and usr_activated limit 1;',
-            $sql->pgf_text($login),
-            $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$autohash)));
-        $datausr = $sql->query_first_assoc($query);
+            $sql->t($login),
+            $sql->t(md5($GLOBALS['cfg']['usrprepass'].$autohash)));
+        $datausr = $sql->query_first($query);
         if ($datausr!==false){
             $user = new modelCmsUsers($datausr['id_usr']);
             $user->usrLastLogin = VisualTheme::dateRus('c',time());
@@ -334,8 +334,8 @@ class CmsUser {
         global $sql;
         $query = sprintf('select '.self::$fields.' from cms_users where id_usr = %d and usr_autohash = %s and usr_enabled and usr_activated limit 1;',
             $sql->d($id),
-            $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$autohash)));
-        $datausr = $sql->query_first_assoc($query);
+            $sql->t(md5($GLOBALS['cfg']['usrprepass'].$autohash)));
+        $datausr = $sql->query_first($query);
         if ($datausr!==false){
             $user = new modelCmsUsers($datausr['id_usr']);
             $user->usrLastLogin = VisualTheme::dateRus('c',time());
@@ -348,16 +348,16 @@ class CmsUser {
     public static function hasLogin($login) {
         global $sql;
         $query = sprintf('select '.self::$fields.' from cms_users where usr_login ilike %s;',
-            $sql->pgf_text($login));
-        $datausr = $sql->query_first_assoc($query);
+            $sql->t($login));
+        $datausr = $sql->query_first($query);
         return $datausr;
     }
 
     public static function hasEmail($email) {
         global $sql;
         $query = sprintf('select '.self::$fields.' from cms_users where usr_email ilike %s;',
-            $sql->pgf_text($email));
-        $datausr = $sql->query_first_assoc($query);
+            $sql->t($email));
+        $datausr = $sql->query_first($query);
         return $datausr;
     }
 
@@ -365,7 +365,7 @@ class CmsUser {
         global $sql;
         $query = sprintf('select '.self::$fields.' from cms_users where id_usr = %d;',
             $sql->d($id));
-        $datausr = $sql->query_first_assoc($query);
+        $datausr = $sql->query_first($query);
         return $datausr;
     }
 
@@ -403,8 +403,8 @@ class CmsUser {
         global $sql;
         $lostcode = md5('юhuu'.random_bytes(20));
         $query = sprintf('UPDATE cms_users SET usr_lostcode = %s WHERE usr_login = %s RETURNING usr_email;',
-            $sql->pgf_text($lostcode),
-            $sql->pgf_text($login)
+            $sql->t($lostcode),
+            $sql->t($login)
         );
         $res = $sql->query_first_row($query);
 		return $res!=false?array('email'=>$res[0],'lostcode'=>$lostcode):false;
@@ -413,9 +413,9 @@ class CmsUser {
     public static function newLostpass($login,$lostcode,$password) {
         global $sql;
         $query = sprintf('UPDATE cms_users SET usr_lostcode = \'\', usr_password_md5=%s WHERE usr_lostcode=%s AND usr_login = %s RETURNING usr_email;',
-            $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$password)),
-            $sql->pgf_text($lostcode),
-            $sql->pgf_text($login)
+            $sql->t(md5($GLOBALS['cfg']['usrprepass'].$password)),
+            $sql->t($lostcode),
+            $sql->t($login)
         );
         $res = $sql->query_first_row($query);
         return $res!=false?array('email'=>$res[0]):false;
@@ -425,8 +425,8 @@ class CmsUser {
         global $sql;
         if ($code=='') return false;
         $query = sprintf('SELECT count(*) as reccount FROM cms_users WHERE usr_login = %s AND usr_lostcode = %s;',
-            $sql->pgf_text($login),
-            $sql->pgf_text($code)
+            $sql->t($login),
+            $sql->t($code)
         );
         $res = $sql->query_first_row($query);
         return $res!=false?$res[0]>0:false;
@@ -435,9 +435,9 @@ class CmsUser {
     public static function changePassword($login,$passwordOld,$password) {
         global $sql;
         $query = sprintf('UPDATE cms_users SET usr_password_md5=%s WHERE usr_password_md5=%s AND usr_login = %s;',
-            $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$password)),
-            $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$passwordOld)),
-            $sql->pgf_text(mb_strtolower($login))
+            $sql->t(md5($GLOBALS['cfg']['usrprepass'].$password)),
+            $sql->t(md5($GLOBALS['cfg']['usrprepass'].$passwordOld)),
+            $sql->t(mb_strtolower($login))
         );
         $res = $sql->command($query);
         return $res?true:false;
@@ -446,8 +446,8 @@ class CmsUser {
     public static function changeName($login,$name) {
         global $sql;
         $query = sprintf('UPDATE cms_users SET usr_name=%s WHERE usr_login = %s;',
-            $sql->pgf_text($name),
-            $sql->pgf_text(mb_strtolower($login))
+            $sql->t($name),
+            $sql->t(mb_strtolower($login))
         );
         $res = $sql->command($query);
         return $res?true:false;
@@ -456,8 +456,8 @@ class CmsUser {
     public static function setNewPassword($login,$password) {
         global $sql;
         $query = sprintf('UPDATE cms_users SET usr_password_md5=%s WHERE usr_login = %s;',
-            $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$password)),
-            $sql->pgf_text(mb_strtolower($login))
+            $sql->t(md5($GLOBALS['cfg']['usrprepass'].$password)),
+            $sql->t(mb_strtolower($login))
         );
         $res = $sql->command($query);
         return $res?true:false;
@@ -466,7 +466,7 @@ class CmsUser {
     public static function setNewPassword_id($id,$password) {
         global $sql;
         $query = sprintf('UPDATE cms_users SET usr_password_md5=%s WHERE id_usr = %d RETURNING id_usr,usr_login,usr_name,usr_email;',
-            $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$password)),
+            $sql->t(md5($GLOBALS['cfg']['usrprepass'].$password)),
             $sql->d($id)
         );
         $res = $sql->query_first($query);
@@ -477,7 +477,7 @@ class CmsUser {
         global $sql;
         $autohash = md5(mt_rand(10000000,99999999));
         $query = sprintf('UPDATE cms_users SET usr_autohash=%s WHERE id_usr = %d;',
-            $sql->pgf_text(md5($GLOBALS['cfg']['usrprepass'].$autohash)),
+            $sql->t(md5($GLOBALS['cfg']['usrprepass'].$autohash)),
             $sql->d($id)
         );
         $res = $sql->command($query);
@@ -487,8 +487,8 @@ class CmsUser {
     public static function activate($login,$actcode,$autoLogin = false) {
         global $sql;
         $query = sprintf('UPDATE cms_users SET usr_activated = true WHERE usr_enabled AND NOT usr_activated AND usr_login = %s AND usr_actcode = %s RETURNING '.self::$fields,
-            $sql->pgf_text($login),
-            $sql->pgf_text($actcode)
+            $sql->t($login),
+            $sql->t($actcode)
         );
         $datausr = $sql->query_first($query);
         if ($datausr!==false && $autoLogin) self::forceAuth($datausr);
@@ -505,8 +505,8 @@ class CmsUser {
                     $login = $_SESSION['u'];
                     #if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') $login = '79615272331';
                     $query = sprintf('select *,array(SELECT (__if(usrrght_mode,\'\',\'!\'::text)||usrrght_name) FROM cms_users_groups_rgth where usrrght_grpid=any(usr_grp)) as rights from cms_users where usr_login = %s and usr_enabled and usr_activated limit 1;',
-                        $sql->pgf_text($login));
-                    $datausr = $sql->query_first_assoc($query);
+                        $sql->t($login));
+                    $datausr = $sql->query_first($query);
                     if ($datausr!==false?$datausr['usr_login']==$login:false) {
                         CmsUser::$rights = array();
                         foreach (explode(',',trim($datausr['rights'],'}{')) as $right) {

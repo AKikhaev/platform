@@ -59,7 +59,7 @@ class Pg_Search extends PgUnitAbstract {
 				$sql->pgf_wordarrays_text(array()),
 				$pageSize,
 				$pageIndex);
-			$totalset = $sql->query_first_assoc($query); $countRecords = $totalset['totalrecords']; $maxRank = count($fndarr); # $maxRank = $totalset['maxrank'];
+			$totalset = $sql->query_first($query); $countRecords = $totalset['totalrecords']; $maxRank = count($fndarr); # $maxRank = $totalset['maxrank'];
 			$dataset = $sql->query_all('FETCH ALL IN dataset;'); $sql->command('commit;');
 			if ($countRecords>0 && $dataset!==false) {
 				$startnum = $pageSize*($pageIndex-1)+1;

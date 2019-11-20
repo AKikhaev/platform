@@ -180,7 +180,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 			.($t === ''?'':' AND b.gb_id in (SELECT gb_id FROM georghram.cms_gb_tags_gb tgb INNER JOIN georghram.cms_gb_tags bt ON (tgb.gbt_id=bt.gbt_id) WHERE gbt_text = '.$sql->t(strip_tags($t)).')')
 			.($editMode?'':' AND b.gb_enabled');
 			$query = 'select count(*) as totalrecords '.$qpart;
-			$totalset = $sql->query_first_assoc($query); $countRecords = $totalset['totalrecords'];
+			$totalset = $sql->query_first($query); $countRecords = $totalset['totalrecords'];
 			$query = sprintf ('select b.*,g.cgp_name as answerer,g.cgp_file as photo '.$qpart.' order by b.gb_date desc');
 			$query = sprintf ($query.' LIMIT %d OFFSET (%d-1)*%d;',
 				$pgSize,

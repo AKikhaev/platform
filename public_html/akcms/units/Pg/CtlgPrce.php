@@ -31,7 +31,7 @@ class Pg_CtlgPrce extends PgUnitAbstract {
 			';
 			
 			$query = 'SELECT count(*) as totalrecords '.$sqlb;
-			$totalset = $sql->query_first_assoc($query); $countRecords = $totalset['totalrecords'];
+			$totalset = $sql->query_first($query); $countRecords = $totalset['totalrecords'];
 			$query = sprintf ('SELECT
 			  s.sec_url_full,
 			  s.sec_namefull,

@@ -187,10 +187,14 @@ class CmsLogger
                 elseif(!$len) $string.= 'array(0) {}';
                 else {
                     $keys = array_keys($variable);
-                    $spaces = str_repeat(' ',$i*2);
+                    $spaces = str_repeat("\t",$i*1);
                     $string.= "array($len)\n".$spaces.'{';
                     $count=0;
                     foreach($keys as $key) {
+                        if ($key==='GLOBALS') {
+                            $string.= "\n".$spaces."  [$key] => *RECURSE*";
+                            continue;
+                        }
                         if ($count==$width) {
                             $string.= "\n".$spaces."  ...";
                             break;
@@ -211,7 +215,8 @@ class CmsLogger
                 else {
                     $id = array_push($objects,$variable);
                     $array = (array)$variable;
-                    $spaces = str_repeat(' ',$i*2);
+                    // todo: https://stackoverflow.com/questions/2821927/detect-if-an-object-property-is-private-in-php
+                    $spaces = str_repeat("\t",$i*1);
                     $string.= get_class($variable)."#$id\n".$spaces.'{';
                     $properties = array_keys($array);
                     foreach($properties as $property) {
@@ -231,6 +236,8 @@ class CmsLogger
 //        if ($caller) $string = $caller['file'].':'.$caller['line']."\n".$string;
 
         $string = preg_replace('/\n\s*\{/',' {',$string);
+        $string = preg_replace('/\n\s+\}/','}',$string);
+
         return $string;
     }
 

@@ -35,7 +35,7 @@ class Pg_UsersMng extends PgUnitAbstract {
     public function _Group($value,$field,$data) {
         global $sql;
         $groups = [];
-        foreach ($sql->da_a($value) as $groupId) {
+        foreach ($sql->ad_a($value) as $groupId) {
             $groups[] = $this->groups_dict[$groupId]['v'];
         }
         return implode(', ',$groups);
@@ -43,9 +43,9 @@ class Pg_UsersMng extends PgUnitAbstract {
     public function _EdtGroup($value,$field,$data) {
         global $sql;
         $html = '';
-        $values = $sql->da_a($value);
+        $values = $sql->ad_a($value);
         foreach ($this->groups_dict as $item) {
-            $html .= sprintf('<label><input type="checkbox" value="%s" name="%s[]" %s>%s</label><br/>',
+            $html .= sprintf('<label><input type="checkbox" value="%s" name="%s[]" %s> %s</label><br/>',
                 $item['k'],
                 $field,
                 in_array($item['k'],$values)?'checked':'',
@@ -137,7 +137,7 @@ class Pg_UsersMng extends PgUnitAbstract {
                 } else {
                     $html .= '<h2>Редактирование пользователя</h2>';
                     $query = 'SELECT id_usr,usr_login,usr_name,usr_enabled,usr_grp,usr_activated,usr_email FROM cms_users WHERE NOT usr_admin AND id_usr=' . $id;
-                    $user = $sql->query_fa($query);
+                    $user = $sql->query_first($query);
                 }
 
                 $errors = [];

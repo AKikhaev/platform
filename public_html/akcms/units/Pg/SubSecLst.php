@@ -27,7 +27,7 @@ class Pg_SubSecLst extends PgUnitAbstract {
 			
 			$query_where = sprintf('from cms_sections where section_id<>%1$s and sec_parent_id=%1$s'.($editMode?'':' AND sec_from<now() and sec_enabled and sec_showinmenu'),$page->page['section_id']);			
 			$query = 'select count(*) as totalrecords '.$query_where;			
-			$totalset = $sql->query_first_assoc($query); $countRecords = $totalset['totalrecords'];
+			$totalset = $sql->query_first($query); $countRecords = $totalset['totalrecords'];
 			
 			$res = '
 			<style>

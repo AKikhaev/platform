@@ -268,7 +268,7 @@ class Pg_Ctlg extends PgUnitAbstract {
             $catiId = substr($this->unitParam[0],1);
 			$query = sprintf ('select * from cms_cat_gds where '.($editMode?'':'cati_show and').' cati_id=%d;', 
 			$catiId);
-			$item = $sql->query_first_assoc($query);
+			$item = $sql->query_first($query);
 			if ($item==false) throw new CmsException('page_not_found');
 			
 			if ($item['cati_photofile'] === '') $item['cati_photofile'] = '0.jpg';#
@@ -478,7 +478,7 @@ class Pg_Ctlg extends PgUnitAbstract {
 			
 			$query_where = sprintf('from cms_cat_gds where cati_sec_id=%d'.($editMode?'':' and cati_show'),$page->page['section_id']);			
 			$query = 'select count(*) as totalrecords '.$query_where;
-			$totalset = $sql->query_first_assoc($query); $countRecords = $totalset['totalrecords'];
+			$totalset = $sql->query_first($query); $countRecords = $totalset['totalrecords'];
 			
 			$query = 'select * '.$query_where.' ORDER BY cati_sort';		
 			$query = sprintf ($query.' LIMIT %d OFFSET (%d-1)*%d;',

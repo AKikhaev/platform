@@ -252,7 +252,7 @@ class Pg_News extends PgUnitAbstract {
 			$pgSize = 10;
 			
 			$query = 'select count(*) as totalrecords from cms_news '.($editMode?'':'where news_enabled');
-			$totalset = $sql->query_first_assoc($query); $countRecords = $totalset['totalrecords'];
+			$totalset = $sql->query_first($query); $countRecords = $totalset['totalrecords'];
 			$query = sprintf ('select * from cms_news '.($editMode?'':'where news_enabled').' order by news_date desc LIMIT %d OFFSET (%d-1)*%d;',
 				$pgSize,
 				$pgNum,

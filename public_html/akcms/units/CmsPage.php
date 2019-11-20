@@ -62,7 +62,7 @@ abstract class CmsPage extends AclProcessor { /* page */
         global $sql;
         $query = sprintf ('SELECT '.MENU_FIELDS.' from cms_sections where sec_url_full=%s '.($showHidden?'':'and sec_enabled and sec_showinmenu and now()>sec_from').';',
             $sql->t($urlFull));
-        $dataset = $sql->query_first_assoc($query);
+        $dataset = $sql->query_first($query);
         if ($prefix!==false && $dataset!==false) $dataset['sec_url_full'] = $prefix.$dataset['sec_url_full'];
         return $dataset;
     }
@@ -71,7 +71,7 @@ abstract class CmsPage extends AclProcessor { /* page */
         global $sql;
         $query = sprintf ('SELECT '.MENU_FIELDS.' from cms_sections where section_id=%d '.($showHidden?'':'and sec_enabled and sec_showinmenu and now()>sec_from').';',
             $Id);
-        $dataset = $sql->query_first_assoc($query);
+        $dataset = $sql->query_first($query);
         if ($prefix!==false && $dataset!==false) $dataset['sec_url_full'] = $prefix.$dataset['sec_url_full'];
         return $dataset;
     }
@@ -118,7 +118,7 @@ abstract class CmsPage extends AclProcessor { /* page */
                 {
                     $query = sprintf ('select sec_url_full from cms_sections where sec_parent_id=%d and sec_enabled and now()>sec_from order by sec_sort limit 1;',
                         $menuAllItem['section_id']);
-                    $dataset = $sql->query_first_assoc($query);
+                    $dataset = $sql->query_first($query);
                     if ($dataset!==false) {
                         $menuAllItem['sec_url_full'] = ($prefix!==false?$prefix:'').$dataset['sec_url_full'];
                     }

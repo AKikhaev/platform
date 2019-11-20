@@ -73,31 +73,42 @@ class pgdbQuery implements Iterator {
     }
 }
 
-class pgdb {
-    private $db_conn;
+/** Postgres database adapter
+ * Class pgdb
+ */
+class pgDB extends CmsDBAbstract
+{
     protected $debug = false;
 
-    public function __construct() {}
-
-    private function connect()
+    /**
+     * @throws DBException
+     */
+    protected function connect()
     {
         global $cfg;
-        $dbnum = 1;
-        $this->db_conn = pg_pconnect('host='.$cfg['db'][$dbnum]['host'].
-            ' port=5432 dbname='.$cfg['db'][$dbnum]['database'].
-            ' user='.$cfg['db'][$dbnum]['username'].
-            ' password='.$cfg['db'][$dbnum]['password']);
-        if ($this->db_conn===false) throw new CmsException('DB_connect');
-        pg_query($this->db_conn,'SET client_encoding TO \'UTF-8\';SET search_path TO '.$cfg['db'][$dbnum]['schema'].';');
+        $this->db_conn = pg_pconnect('host='.$cfg['db'][$this->cfgNumber]['host'].
+            ' port=5432 dbname='.$cfg['db'][$this->cfgNumber]['database'].
+            ' user='.$cfg['db'][$this->cfgNumber]['username'].
+            ' password='.$cfg['db'][$this->cfgNumber]['password']);
+        if ($this->db_conn===false) throw new DBException('DB_connect');
+        pg_query($this->db_conn,'SET client_encoding TO \'UTF-8\';SET search_path TO '.$cfg['db'][$this->cfgNumber]['schema'].';');
         if ($this->debug) call_user_func(profiler::$sql_logger,'connected');
     }
 
-    public function getClientEncoding()
+
+    /**
+     * close connection
+     */
+    public function close()
     {
-        if (!$this->db_conn) $this->connect();
-        return pg_client_encoding();
+        if ($this->db_conn) pg_close($this->db_conn);
     }
 
+    /**
+     * @param $query
+     * @return bool|resource
+     * @throws DBException
+     */
     public function query($query)
     {
         if (!$this->db_conn) $this->connect();
@@ -109,6 +120,11 @@ class pgdb {
         return $sqlres;
     }
 
+    /**
+     * @param $query
+     * @return int|mixed
+     * @throws DBException
+     */
     public function command($query)
     {
         if (!$this->db_conn) $this->connect();
@@ -120,10 +136,11 @@ class pgdb {
         return pg_affected_rows($sqlres);
     }
 
-    public function queryObj($query) {
-        return new pgdbQuery($this->query($query));
-    }
-
+    /**
+     * @param $query
+     * @return array|bool
+     * @throws DBException
+     */
     public function query_all($query)
     {
         $sqlres = $this->query($query);
@@ -132,16 +149,12 @@ class pgdb {
         return $res;
     }
 
-    public function query_dict($query)
-    {
-        $dict = [];
-        $data = $this->query_all($query);
-        if ($data!==false) foreach ($data as $k=>$item){
-            $dict[current($item)] = $item;
-        }
-        return $dict;
-    }
-
+    /**
+     * @param $query
+     * @param int $col
+     * @return array|bool
+     * @throws DBException
+     */
     public function query_all_column($query, $col=0)
     {
         $sqlres = $this->query($query);
@@ -151,7 +164,26 @@ class pgdb {
         return $res;
     }
 
-    public function query_first_assoc($query)
+    /**
+     * @param $query
+     * @return bool|mixed|string
+     * @throws DBException
+     */
+    public function query_one($query)
+    {
+        $sqlres = $this->query($query);
+        if (pg_num_rows($sqlres)>0) $res = pg_fetch_result($sqlres,0,0); else $res = false;
+        pg_free_result($sqlres);
+
+        return $res;
+    }
+
+    /**
+     * @param $query
+     * @return array|mixed
+     * @throws DBException
+     */
+    public function query_first($query)
     {
         $sqlres = $this->query($query);
         $res = pg_fetch_assoc($sqlres);
@@ -169,40 +201,6 @@ class pgdb {
         return $res;
     }
 
-    public function query_one($query)
-    {
-        $sqlres = $this->query($query);
-        if (pg_num_rows($sqlres)>0) $res = pg_fetch_result($sqlres,0,0); else $res = false;
-        pg_free_result($sqlres);
-
-        return $res;
-    }
-
-    public function query_first($query)
-    {
-        $sqlres = $this->query($query);
-        $res = pg_fetch_assoc($sqlres);
-        pg_free_result($sqlres);
-
-        return $res;
-    }
-
-    public function pgf_text($v)
-    {
-        return '\''.pg_escape_string($v).'\'';
-    }
-
-    public function pgf_array_int($v)
-    {
-        foreach ($v as &$i) $i = @(int)$i; # check it is digit
-        return 'ARRAY['.implode(',',$v).']::bigint[]';
-    }
-
-    public function pgf_array_float($v)
-    {
-        foreach ($v as &$i) $i = @(float)$i; # check it is float
-        return 'ARRAY['.implode(',',$v).']';
-    }
 
     public function pgf_array_text($v)
     {
@@ -229,10 +227,6 @@ class pgdb {
         //return '\'{'.implode(',',$resarr).'}\'';
     }
 
-    public function pgf_boolean($v)
-    {
-        return ($v=='t' or $v=='true' or $v===true)?'True':'False';
-    }
 
     /* prepare insert */
     public function pr_i($table, $fields) {
@@ -275,23 +269,40 @@ class pgdb {
     }
 
     ################################ short syntax
-    /* text */
-    public function t($v) {return $this->pgf_text($v);}
+    /** escape text value
+     * @param $v
+     * @return mixed
+     */
+    public function t($v)
+    {
+        return '\''.pg_escape_string($v).'\'';
+    }
 
-    /* digit */
-    public function d($v) {return @(int)$v;}
+    /** filter integer value
+     * @param $v
+     * @return mixed
+     */
+    public function d($v) {
+        return @(int)$v;
+    }
 
-    /* float */
-    public function f($v) {return @(float)$v;}
+    /** filter float value
+     * @param $v
+     * @return mixed
+     */
+    public function f($v) {
+        return @(float)$v;
+    }
 
-    /* boolean */
-    public function b($v) {return $this->pgf_boolean($v);}
+    /** filter boolean value
+     * @param $v
+     * @return mixed
+     */
+    public function b($v) {
+        return ($v=='t' or $v=='true' or $v===true)?'True':'False';
+    }
 
-    /* DATETIME */
-    public function dtFromDateTime(DateTime $v) {return $this->t($v->format('Y-m-d H:i:s T'));}
-    public function dtFromInt($v) {return $this->t( date('Y-m-d H:i:s T',$v));}
-
-    /*** array to base text array
+    /** array to base text array
      * @param $v
      * @return string
      */
@@ -300,26 +311,31 @@ class pgdb {
         return 'ARRAY['.implode(',',$v).']::text[]';
     }
 
-    /*** array to base int array
+    /** array to base int array
      * @param $v
      * @return string
      */
-    public function a_d($v) {return $this->pgf_array_int($v);}
+    public function a_d($v) {
+        foreach ($v as &$i) $i = @(int)$i; # check it is digit
+        return 'ARRAY['.implode(',',$v).']::bigint[]';
+    }
+    /** array to base float array
+     * @param $v
+     * @return string
+     */
+    public function a_f($v) {
+        foreach ($v as &$i) $i = @(float)$i; # check it is float
+        return 'ARRAY['.implode(',',$v).']';
+    }
 
     /*** base array to normal array
      * @param $v
      * @return array
      */
-    public function da_a($v) {
+    public function ad_a($v) {
         $v = str_replace(['{','}','ARRAY[',']'],'',$v);
         return $v==''?array():explode(',',$v);
     }
-
-    /*** array to base float array
-     * @param $v
-     * @return string
-     */
-    public function a_f($v) {return $this->pgf_array_float($v);}
 
     /*** text array to array
      * @param $v
@@ -332,13 +348,9 @@ class pgdb {
         return $items;
     }
 
-    public function query_fa($query) {
-        return $this->query_first_assoc($query);
-    }
-
-    public function query_fr($query) {
-        return $this->query_first_row($query);
-    }
+    /* DATETIME */
+    public function dtFromDateTime(DateTime $v) {return $this->t($v->format('Y-m-d H:i:s T'));}
+    public function dtFromInt($v) {return $this->t( date('Y-m-d H:i:s T',$v));}
 
     /**
      * @param bool $debug
@@ -368,5 +380,24 @@ class pgdb {
         }
 
         return $data;
+    }
+
+    public function queryObj($query) {
+        return new pgdbQuery($this->query($query));
+    }
+
+    /**
+     * @param $query
+     * @return array
+     * @throws DBException
+     */
+    public function query_dict($query)
+    {
+        $dict = [];
+        $data = $this->query_all($query);
+        if ($data!==false) foreach ($data as $k=>$item){
+            $dict[current($item)] = $item;
+        }
+        return $dict;
     }
 }

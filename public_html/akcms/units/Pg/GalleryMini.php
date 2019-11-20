@@ -29,7 +29,7 @@ class Pg_GalleryMini extends Pg_Gallery {
 		{
 			$query = sprintf ('SELECT __cms_gallery_sec__assign(%d,%s);', 
 				$page->page['section_id'],
-				$sql->pgf_array_int(isset($_POST['glrs'])?$_POST['glrs']:array())
+				$sql->a_d(isset($_POST['glrs'])?$_POST['glrs']:array())
 			);
 			$db_res = $sql->query_first_row($query);
 			return json_encode($db_res[0] === 't'?'t':'f');
