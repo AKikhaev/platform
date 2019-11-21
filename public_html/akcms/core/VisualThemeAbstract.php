@@ -248,6 +248,7 @@ abstract class VisualThemeAbstract
      * 2 - с новых
      * 3 - со старых
      * @return false|string
+     * @throws DBException
      */
     public static function _ph_tmpl_children(&$pageData,$editMode,$text,$template,$howchild=3,$limit=0,$sec_id=-1,$skipthis='no'){
         /* @var $sql pgdb */
@@ -292,6 +293,7 @@ abstract class VisualThemeAbstract
      * a - один за одним, запуск для каждой сущности
      * f - общий запуск, foreach необходимо выполнять вручную
      * @return false|string
+     * @throws DBException
      */
     public static function _ph_tmpl_children_e(&$pageData,$editMode,$text,$template,$howchild=3,$limit=0,$sec_id=-1,$mode = 'a'){
         /* @var $sql pgdb */
@@ -348,6 +350,7 @@ abstract class VisualThemeAbstract
     /** Возвращает ассоциированные сохраненные данные строк раздела
      * @param int $secId
      * @return mixed
+     * @throws DBException
      */
     protected static function &getSectionStrings($secId = 0) {
         /* @var $sql pgdb */
@@ -385,6 +388,7 @@ abstract class VisualThemeAbstract
      * @param string $debug
      * символ ! отлючает подстановнку данных из базы
      * @return false|string
+     * @throws DBException
      */
     public static function _ph_editable(&$pageData,$editMode,$text,$field,$mult = 's',$hint = '',$debug = ''){
         $stay_original = mb_stripos($debug,'!')!==false;

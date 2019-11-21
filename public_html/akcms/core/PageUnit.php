@@ -224,7 +224,7 @@ final class PageUnit extends CmsPage {
 
 		$query = sprintf ('select __cms_srchwords_sections__assign(%d,%s);', 
 			$indxpage['section_id'],
-			$sql->pgf_array_text($base_forms)
+			$sql->a_t($base_forms)
 		);
 		$res=$sql->query_one($query);
 		return $res; //'t':'f'
@@ -450,7 +450,7 @@ final class PageUnit extends CmsPage {
 			$tags = trim($_POST['sec_tags']) === ''?array():explode(',',$_POST['sec_tags']);
 			$query = sprintf ('select __cms_tags_sections__assign(%d,%s);', 
 				$this->page['section_id'],
-				$sql->pgf_array_text($tags)
+				$sql->a_t($tags)
 			);			
 			$db_res = $sql->query_first_row($query);
 			
@@ -790,7 +790,7 @@ final class PageUnit extends CmsPage {
 		if (count($checkResult)==0) {
 			$query = sprintf('select __cms_tags_sections__assign(%d,%s);', 
 				$this->page['section_id'],
-				$sql->pgf_array_text(array())
+				$sql->a_t(array())
 			);			
 			$db_res = $sql->query_first_row($query);
 			

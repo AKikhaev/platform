@@ -64,7 +64,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 			$tags = trim($_POST['gb_tags']) === ''?array():explode(',',$_POST['gb_tags']);
 			$query = sprintf ('SELECT __cms_gb_tags__assign(%d,%s);',
 				$_POST['gb_id'],
-				$sql->pgf_array_text($tags)
+				$sql->a_t($tags)
 			);			
 			$db_res = $sql->query_first_row($query);
 			
@@ -83,7 +83,7 @@ class Pg_GuestBook extends PgUnitAbstract {
 		{			
 			$query = sprintf ('SELECT __cms_gb_tags__assign(%d,%s);',
 				$_POST['gb_id'],
-				$sql->pgf_array_text(array())
+				$sql->a_t(array())
 			);			
 			$db_res = $sql->query_first_row($query);
 			

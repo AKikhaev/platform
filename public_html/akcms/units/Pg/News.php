@@ -40,7 +40,7 @@ class Pg_News extends PgUnitAbstract {
 
 		$query = sprintf ('select __cms_srchwords_news__assign(%d,%s);', 
 			$indxnews['news_id'],
-			$sql->pgf_array_text($base_forms));
+			$sql->a_t($base_forms));
 		$res_count = $sql->command($query);
 		return $res_count>0?'t':'f';
 	}

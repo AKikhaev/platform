@@ -17,34 +17,6 @@ $sphql = new sphDB();
 $Cacher = new CacheController();
 $shape = ['js_admin'=>''];
 
-function LOAD_CORE_CLI() {
-	GLOBAL $cfg,$CliUser;
-	
-	#function CORE_CLI_TERMINATE(){die();}
-	#pcntl_signal(SIGINT, 'CORE_CLI_TERMINATE'); // Ctrl+C
-	#pcntl_signal(SIGTERM, 'CORE_CLI_TERMINATE'); // killall myscript / kill <PID>
-	#pcntl_signal(SIGHUP, 'CORE_CLI_TERMINATE'); // обрыв связи
-	$CliUser = function_exists('posix_getpwuid') ? posix_getpwuid(posix_getuid()) : array('name'=>get_current_user());
-	core::$OS_WIN = DIRECTORY_SEPARATOR==='\\';
-	core::$IS_CLI = true;
-	$_SERVER['DOCUMENT_ROOT'] = getcwd();
-    $_SERVER['HTTP_HOST'] = 'CLI:'.$cfg['site_domain'];
-    $_SERVER['SERVER_NAME'] = 'CLI:'.$cfg['site_domain'];
-    $_SERVER['REQUEST_URI'] = core::hidePathForShow('/'.trim($GLOBALS['argv'][0],'/'));
-    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-
-	#set_error_handler("GlobalErrorHandler");
-	if (core::$OS_WIN) {
-		//system('chcp 65001>null');
-		//mb_http_output('cp866'); ob_start('mb_output_handler');
-		set_include_path(str_replace(':',';', get_include_path()));
-	}
-
-    if (file_exists('akcms/u/VisualTheme.php')) { require_once 'akcms/u/VisualTheme.php'; }
-
-	if (!in_array('--silence_greetings',$_SERVER['argv']))
-	    echo (_ls(35)._ls(1).'ITteka CMS'._ls(36).'v'.CMS_VERSION._ls().' ('._ls(33)._ls(1).$cfg['site_domain']._ls().') '._ls(34)._ls(1).'CLI MODE'._ls()."\n");
-}
 /* Загрузка */
 /**
  * @throws CmsException

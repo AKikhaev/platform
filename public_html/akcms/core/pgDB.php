@@ -201,19 +201,6 @@ class pgDB extends CmsDBAbstract
         return $res;
     }
 
-
-    public function pgf_array_text($v)
-    {
-        foreach ($v as &$i) $i = '\''.pg_escape_string($i).'\'';
-        return 'ARRAY['.implode(',',$v).']::text[]';
-    }
-
-    public function pgf_extract_array_text($v)
-    {
-        $v = trim($v,'{}');
-        return str_getcsv($v,',','"');
-    }
-
     public function pgf_wordarrays_text($v)
     {
         $arrNum = 0;
@@ -227,48 +214,6 @@ class pgDB extends CmsDBAbstract
         //return '\'{'.implode(',',$resarr).'}\'';
     }
 
-
-    /* prepare insert */
-    public function pr_i($table, $fields) {
-        $_f = array(); $_v = array();
-        foreach ($fields as $f=>$v) {
-            $_f[] = $f;
-            $_v[] = $v;
-        }
-        return 'INSERT INTO '.$table.'('.implode(',',$_f).') VALUES ('.implode(',',$_v).')';
-    }
-
-    public function pr_is($table, $fieldsList) {
-        $fields = '';
-        $values = array();
-        foreach ($fieldsList as  $item) {
-            $_f = array();
-            $_v = array();
-            foreach ($item as $f => $v) {
-                $_f[] = $f;
-                $_v[] = $v;
-            }
-            if ($fields=='') $fields = '('.implode(',',$_f).')';
-            $values[] = '('.implode(',',$_v).')';
-        }
-        return 'INSERT INTO '.$table.$fields.' VALUES '.implode(',',$values);
-    }
-
-    /* prepare update */
-    public function pr_u($table, $fields, $where='') {
-        $_f = array();
-        foreach ($fields as $f=>$v) $_f[] = $f.'='.$v;
-        #return 'UPDATE '.$table.' SET '.implode(',',$_f).($where==''?'':' WHERE '.$where);
-        return 'UPDATE '.$table.' SET '.implode(',',$_f).(' WHERE '.$where);
-    }
-
-    public function pr_d($table, $fields) {
-        $_f = array();
-        foreach ($fields as $f=>$v) $_f[] = $f.'='.$v;
-        return 'DELETE FROM '.$table.' WHERE '.implode(' AND ',$_f);
-    }
-
-    ################################ short syntax
     /** escape text value
      * @param $v
      * @return mixed
@@ -306,7 +251,8 @@ class pgDB extends CmsDBAbstract
      * @param $v
      * @return string
      */
-    function a_t($v) {
+    public function a_t($v)
+    {
         foreach ($v as &$i) $i = '\''.pg_escape_string($i).'\'';
         return 'ARRAY['.implode(',',$v).']::text[]';
     }
