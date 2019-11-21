@@ -2,6 +2,7 @@
 
 /** MySQL database adapter
  * Class mydb
+ * @llink https://jeka.by/ask/212/mysql-get-comments-to-fields-php/
  */
 class myDB extends CmsDBAbstract
 {
@@ -20,6 +21,7 @@ class myDB extends CmsDBAbstract
             $cfg['db'][$this->cfgNumber]['password'],
             $cfg['db'][$this->cfgNumber]['database']
         );
+        $this->db_conn->set_charset("utf8");
         if (mysqli_connect_error()) {
             throw new DBException("DB_no_data: ".mysqli_connect_error());
         }

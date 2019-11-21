@@ -5,7 +5,6 @@ define('CMS_ADMIN','admin');
 
 require_once 'akcms/core/functs.php';
 require_once 'akcms/u/config/config.php';
-//require_once 'akcms/core/pgdb.php';
 require_once 'akcms/core/classes.php'; core::init();
 
 //if ($cfg['debug']===true) CmsLogger::clearScreen();
@@ -21,7 +20,7 @@ $shape = ['js_admin'=>''];
 /**
  * @throws CmsException
  */
-function LOAD_CORE() {
+function CORE_LOAD_WEB() {
 	GLOBAL $cfg,$path,$pathstr,$pathlen;
 	
 	# error tracking
@@ -45,7 +44,6 @@ function LOAD_CORE() {
 	header('X-XSS-Protection: 1; mode=block');
 	header('X-Powered-By: itteka.ru');
 	session_name($cfg['site_session_name']);
-	#ini_set('mbstring.func_overload ','1');
 	$path = array();
 	#$iplong = sprintf("%u", ip2long($_SERVER['REMOTE_ADDR']));
 	#$browser = isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT']:null;
@@ -95,5 +93,12 @@ function LOAD_CORE() {
 		require_once 'akcms/u/config/redirect.php';
 	}
 
-    require_once 'akcms/u/VisualTheme.php';
+	class_exists('VisualTheme');
+}
+function CORE_LOAD_LITE(){
+    GLOBAL $cfg;
+    header('Content-type: text/html; charset=UTF-8');
+    header('X-XSS-Protection: 1; mode=block');
+    header('X-Powered-By: itteka.ru');
+    session_name($cfg['site_session_name']);
 }

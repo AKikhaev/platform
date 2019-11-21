@@ -2,7 +2,7 @@
 #core::$time_start = microtime(true);
 # error tracking
 try {
-    require_once 'akcms/core/core.php'; LOAD_CORE(); # init core
+    require_once 'akcms/core/core.php'; CORE_LOAD_WEB(); # init core
     /* @var $sql pgdb */
 
     #ob_start(); // Start output buffer
@@ -27,43 +27,7 @@ try {
     }
 	if ($page === null) throw $e;
 
-    if (core::$isAjax) {
-        core::$outputData .= core::proceedAjax();
-        die(core::$outputData);
-    }
-    else {
-        if (core::$inEdit) {
-            $shape['content'] = $page->getContent();
-            $shape['title'] = $page->getTitle();
-            #$shape['worktime'] = (microtime(true)-core::$time_start);
-            core::$outputData = shp::tmpl('pages/'.$pageTemplate, $shape, true);
-        } else {
-            $html = '';
-            #if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') {var_dump__($pathstr);}
-            {
-                $pagecontent = $page->getContent();
-                $pagecontent = preg_replace('/\<img\s/','<img itemprop="image" ',$pagecontent,1);
-                $shape['title'] = $page->getTitle();
-                $html = shp::tmpl('pages/'.$pageTemplate,array('content'=>$pagecontent));
-                //if ($cfg['debug']) var_dump__($shape);
-                $html = shp::str($html, $shape, false);
-                VisualTheme::replaceStaticHolders($html, $page->page);
-                //$html = Minify_HTML::minify($html);
-                //
-            }
-            if (core::$testServer) {
-                $html = str_replace('<head>', '<head><meta name="robots" content="noindex, nofollow, noarchive"/>', $html);
-                header('Cache-Control: no-store');
-                header('X-Robots-Tag: noindex, nofollow, noarchive');
-            }
-            core::$outputData = $html;
-            unset($html);
-        }
-    }
-    #$outputData = ob_get_contents(); ob_end_clean();
-    echo core::$outputData;
-    if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
-    CacheWholePage::cacheTry(core::$outputData);
+    core::proceedPage($page);
 } catch(Exception $e) {
     if (class_exists('core')) core::InTryErrorHandler($e);
     else echo '<script>console.log('.json_encode(sprintf("%s, %s(%s)",$e->getMessage(),basename($e->getFile(),'php'),$e->getLine())).')</script>';

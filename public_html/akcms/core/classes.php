@@ -211,43 +211,6 @@ class CacheController { /* cache */
 /** Output cached whole page content or throw CmsException page_not_found
  * Class CacheWholePage
  */
-class CacheWholePage {
-    public static $cacheThis = false;
-    public static $life=31536000; // 86400*365
-
-    /** Cache whole url when $cacheThis is true
-     * @param $content
-     * @param int $life
-     */
-    public static function cacheTry($content) {
-        if (!self::$cacheThis) return;
-        global $Cacher;
-        $key = $_SERVER['REQUEST_URI'];
-        $Cacher->cache_write($key,$content,self::$life);
-    }
-
-    private static function outWholePage() {
-        global $Cacher;
-        $key = $_SERVER['REQUEST_URI'];
-        $content = '';
-        if (
-            //!CmsUser::isLogin() &&
-            !core::$isAjax &&
-            !(isset($_COOKIE['cacheskip']) && $_COOKIE['cacheskip']=='1') &&
-            $Cacher->cache_read($key,$content)
-        ) {
-            //$Cacher->cache_drop($key);
-            ChromePhp::log($key);
-            echo $content; die;
-        }
-        return false;
-    }
-
-    public function __construct()
-    {
-        if (!self::outWholePage()) { throw new CmsException("page_not_found"); }
-    }
-}
 class CmsUser {
     public static $rights = array();
     public static $user = array();
@@ -574,6 +537,50 @@ final class core {
         date_default_timezone_set($cfg['default_timezone']);
     }
 
+    /**
+     * @param CmsPage $page
+     * @throws CmsException
+     */
+    public static function proceedPage(CmsPage $page){
+        global $pageTemplate,$shape;
+        if (self::$isAjax) {
+            self::$outputData .= self::proceedAjax($page);
+            die(self::$outputData);
+        }
+        else {
+            if (self::$inEdit) {
+                $shape['content'] = $page->getContent();
+                $shape['title'] = $page->getTitle();
+                #$shape['worktime'] = (microtime(true)-core::$time_start);
+                self::$outputData = shp::tmpl('pages/'.$pageTemplate, $shape, true);
+            } else {
+                $html = '';
+                #if ($_SERVER['REMOTE_ADDR']=='109.172.77.170') {var_dump__($pathstr);}
+                {
+                    $pagecontent = $page->getContent();
+                    $pagecontent = preg_replace('/\<img\s/','<img itemprop="image" ',$pagecontent,1);
+                    $shape['title'] = $page->getTitle();
+                    $html = shp::tmpl('pages/'.$pageTemplate,array('content'=>$pagecontent));
+                    //if ($cfg['debug']) var_dump__($shape);
+                    $html = shp::str($html, $shape, false);
+                    VisualTheme::replaceStaticHolders($html, $page->page);
+                    //$html = Minify_HTML::minify($html);
+                    //
+                }
+                if (self::$testServer) {
+                    $html = str_replace('<head>', '<head><meta name="robots" content="noindex, nofollow, noarchive"/>', $html);
+                    header('Cache-Control: no-store');
+                    header('X-Robots-Tag: noindex, nofollow, noarchive');
+                }
+                self::$outputData = $html;
+                unset($html);
+            }
+        }
+        #$outputData = ob_get_contents(); ob_end_clean();
+        echo self::$outputData;
+        if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
+        CacheWholePage::cacheTry(core::$outputData);
+    }
     public static function get_client_ip() {
         $ip = getenv('HTTP_CLIENT_IP');
         if ($ip===false) $ip = getenv('HTTP_X_FORWARDED_FOR');
@@ -833,8 +840,7 @@ final class core {
         if (isset(self::$sharedObj[$obj_name])) return self::$sharedObj[$obj_name];
         else return self::$sharedObj[$obj_name] = new $obj_name();
     }
-    public static function proceedAjax(){
-        global $page;
+    public static function proceedAjax($page){
         /* @var $page CmsPage */
         $outputData = '';
         $f = false;
