@@ -11,7 +11,7 @@ try {
     $site = new site(); //custom storage, loader
 
     //if ($GLOBALS['cfg']['debug']) profiler::showOverallTimeToTerminal(true);
-
+    
     /* @var  $page CmsPage */
     $page = null;
     foreach ($cfg['CmsPages_load'] as $pageClass) {

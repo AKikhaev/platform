@@ -166,3 +166,4 @@
 <script src="/akcms/assets/fancybox/jquery.fancybox.min.js"></script>
 <script src='/akcms/assets/tinymce/tinymce.min1.js'></script>
 <div id="te_editor_place" style="display: none"></div>
+<!-- {#tmpl:parts/modalPayment#} -->

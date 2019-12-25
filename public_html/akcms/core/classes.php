@@ -1,12 +1,10 @@
 <?php
 class CmsException extends ErrorException{
-/*
-    public function __construct($message="",$code=0,$line=0,$file=''){
+    public function __construct($message='',$code=0,$line=0,$file=''){
         parent::__construct($message,$code);
-        if ($line!=0) $this->line = $line;
-        if ($file!='') $this->file = $file;
+        if ($line!==0) { $this->line = $line; }
+        if ($file!=='') { $this->file = $file; }
     }
-*/
 }
 class DBException extends CmsException { 
 	public $text = '';
