@@ -171,4 +171,21 @@ class myDB extends CmsDBAbstract
     {
         return ($v == 't' or $v == 'true' or $v === true) ? 'True' : 'False';
     }
+
+
+    /**
+     * @param $query
+     * @return array
+     * @throws DBException
+     */
+    public function query_dict($query)
+    {
+        $dict = [];
+        $data = $this->query_all($query);
+        if ($data!==false) foreach ($data as $k=>$item){
+            $dict[current($item)] = $item;
+        }
+        return $dict;
+    }
+
 }

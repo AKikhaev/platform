@@ -1,9 +1,9 @@
 ##Платформа itTeka 2.0
 ##### Что это?
-Страница-ориентированная компонентная среда развертывания web-проектов. Особенности:
+Странично-ориентированная компонентная среда развертывания web-проектов. Особенности:
 * позволяет разворачивать эффективно работающие сайты быстро
 * расширяемость модулями,  пользовательскими конфигурациями
-* Время холодной генерации <30 мсек, горячей <10 мсек
+* Время холодной генерации страниц <30 мсек, горячей <10 мсек
 * Редактор-интегрированнный шаблонизатор 
 
 ##### Как развернуть?
@@ -65,8 +65,10 @@ pg_restore -d database_name -x -O -v --role=user_name /data/nfs/project_name/ser
 ```bash
 adduser --system --no-create-home --group www-user
 adduser mstr
+sudo usermod -a -G sudo mstr
 sudo usermod -a -G www-user mstr
 sudo usermod -a -G www-data mstr
+echo mstr ALL=\(ALL\) NOPASSWD:ALL >> /etc/sudoers.d/mstr-all
 id mstr
 
 ## prepare project deploy
@@ -243,8 +245,8 @@ _ph_text_trunc:
 ```bash
 # m h dom mon dow command
   6 2   *   *   * /backups/backup.sh a
-  5 2   *   *   1 php /data/nfs/project_name/server/acme/v1/certs.php && service nginx restart
-  5 *   *   *   * php /data/nfs/knpzken_ru/public_html/akcms/core/acli.php jobs diskSize
+  5 2   *   *   1 php /data/nfs/project_name/server/acme/v1/certs.php ; service nginx restart
+  5 *   *   *   * php /data/nfs/project_name/public_html/akcms/core/acli.php jobs diskSize
   1 1   1   *   * wget -O /etc/ssl/certs/cacert.pem https://curl.haxx.se/ca/cacert.pem
   truncate -s   0 /data/nfs/*/logs/*.log - очистка всех логов во всех проектах
 ```
